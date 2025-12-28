@@ -16,6 +16,7 @@ import {
   getPathwayChapters,
 } from '@/constants/curriculum';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
+import { useSmartyContext } from '@/context/ChatContext';
 
 export default function Chapters() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function Chapters() {
     class: string;
     isPathway?: string;
   }>();
+  const { setCurrentContext } = useSmartyContext();
 
   const [chapters, setChapters] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,10 +53,12 @@ export default function Chapters() {
     if (subject && className) {
       const timer = setTimeout(() => {
         loadChapters();
+        // Set chat context for chapters screen
+        setCurrentContext(subject, undefined, undefined);
       }, 0);
       return () => clearTimeout(timer);
     }
-  }, [subject, className, loadChapters]);
+  }, [subject, className, loadChapters, setCurrentContext]);
 
   const handleChapterPress = (chapter: string) => {
     if (chapter.includes('Coming Soon') || chapter.includes('Select')) {

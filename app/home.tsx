@@ -12,16 +12,20 @@ import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme
 import { useUserStore } from '@/store/userStore';
 import { getSubjectsForClass } from '@/constants/curriculum';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
+import { useSmartyContext } from '@/context/ChatContext';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
 
 export default function Home() {
   const router = useRouter();
   const { userName, selectedClass, logout, loadUserData } = useUserStore();
   const { colors } = useTheme();
+  const { setCurrentContext } = useSmartyContext();
 
   useEffect(() => {
     loadUserData();
-  }, [loadUserData]);
+    // Set chat context for home screen
+    setCurrentContext(undefined, undefined, undefined);
+  }, [loadUserData, setCurrentContext]);
 
   const subjects = selectedClass ? getSubjectsForClass(selectedClass) : [];
   const classNum = selectedClass ? parseInt(selectedClass.replace('Class ', '')) : 0;
