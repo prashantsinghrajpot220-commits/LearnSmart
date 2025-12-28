@@ -472,3 +472,123 @@ export function needsStreamSelection(className: string): boolean {
   const classNum = parseInt(className.replace('Class ', ''));
   return (classNum === 11 || classNum === 12) && className !== 'Class 12+';
 }
+
+// Smarty's Knowledge Base - Comprehensive educational content for AI responses
+export const KNOWLEDGE_BASE = {
+  // General Study Tips
+  studyTips: [
+    "Break your study sessions into 25-minute chunks with 5-minute breaks (Pomodoro technique)",
+    "Active recall is more effective than passive reading - test yourself often",
+    "Spaced repetition helps you remember information long-term",
+    "Teaching others what you've learned reinforces your own understanding",
+    "Get enough sleep - your brain consolidates learning while you sleep",
+    "Stay hydrated and eat healthy snacks for better focus",
+    "Create a dedicated study space free from distractions",
+    "Review material within 24 hours of learning it for better retention",
+  ],
+  
+  // Time Management
+  timeManagement: [
+    "Use a planner or calendar to schedule study sessions",
+    "Tackle difficult subjects when you're most alert",
+    "Set specific goals for each study session",
+    "Prioritize topics based on exam weight and your weak areas",
+    "Balance study time across all subjects, not just favorites",
+    "Leave buffer time for unexpected challenges",
+    "Review weekly to stay on top of cumulative material",
+  ],
+
+  // Exam Preparation
+  examPrep: [
+    "Start preparing weeks before the exam, not days",
+    "Practice with past papers to understand the exam format",
+    "Focus on understanding concepts, not just memorizing",
+    "Create summary sheets for quick revision",
+    "Form study groups for discussion and peer learning",
+    "Take care of yourself the night before - rest is crucial",
+    "Read all questions carefully before answering",
+    "Manage your time during the exam wisely",
+  ],
+
+  // Common Misconceptions
+  misconceptions: {
+    science: [
+      "Myth: Lightning never strikes the same place twice. Fact: It can and does!",
+      "Myth: The Great Wall of China is visible from space. Fact: It's barely visible!",
+      "Myth: Humans only use 10% of their brains. Fact: We use all of it!",
+      "Myth: Venomous snakes are always deadly. Fact: Most are not harmful to humans.",
+    ],
+    math: [
+      "Myth: Math is about memorizing formulas. Fact: It's about understanding patterns!",
+      "Myth: Some people are 'math people' and others aren't. Fact: Anyone can learn math with practice!",
+      "Myth: You don't need math in real life. Fact: We use math constantly, often without noticing.",
+    ],
+    history: [
+      "Myth: Napoleon was very short. Fact: He was average height for his time!",
+      "Myth: Vikings wore horned helmets. Fact: That's a modern invention!",
+      "Myth: The Middle Ages were called the 'Dark Ages' because it was dark. Fact: It referred to lack of historical records!",
+    ],
+  },
+
+  // Career Guidance
+  careerPaths: {
+    science: [
+      "Engineering - Design and build things that solve problems",
+      "Medicine - Help people stay healthy and treat illnesses",
+      "Research - Discover new knowledge about our world",
+      "Environmental Science - Protect our planet",
+      "Data Science - Analyze information to find patterns",
+    ],
+    commerce: [
+      "Finance - Manage money and investments",
+      "Marketing - Help products reach the right people",
+      "Accounting - Track and organize financial records",
+      "Business - Lead and grow organizations",
+      "Economics - Understand how economies work",
+    ],
+    arts: [
+      "Teaching - Shape young minds and inspire learning",
+      "Journalism - Tell important stories to the world",
+      "Design - Create beautiful and functional things",
+      "Law - Help people navigate the legal system",
+      "Psychology - Understand human behavior and mental health",
+    ],
+  },
+};
+
+// Helper function to get study tip
+export function getStudyTip(): string {
+  const tips = KNOWLEDGE_BASE.studyTips;
+  return tips[Math.floor(Math.random() * tips.length)];
+}
+
+// Helper function to get exam prep tip
+export function getExamPrepTip(): string {
+  const tips = KNOWLEDGE_BASE.examPrep;
+  return tips[Math.floor(Math.random() * tips.length)];
+}
+
+// Helper function to get misconception for a subject
+export function getMisconception(subject: string): string {
+  const key = subject.toLowerCase() as keyof typeof KNOWLEDGE_BASE.misconceptions;
+  const misconceptions = KNOWLEDGE_BASE.misconceptions[key] || KNOWLEDGE_BASE.misconceptions.science;
+  return misconceptions[Math.floor(Math.random() * misconceptions.length)];
+}
+
+// Helper function to get career paths for a stream
+export function getCareerPaths(stream: string): string[] {
+  const key = stream.toLowerCase() as keyof typeof KNOWLEDGE_BASE.careerPaths;
+  return KNOWLEDGE_BASE.careerPaths[key] || [];
+}
+
+// Subject explanations for Smarty's knowledge base
+export const SUBJECT_EXPLANATIONS = {
+  Mathematics: "Mathematics is the study of numbers, quantities, shapes, and patterns. It develops logical thinking and problem-solving skills that are useful in many fields!",
+  Physics: "Physics is the science of matter, energy, and how they interact. It explains everything from tiny atoms to entire galaxies!",
+  Chemistry: "Chemistry is the study of substances - what they're made of, how they change, and how they interact. It's everywhere in daily life!",
+  Biology: "Biology is the study of living things - from tiny cells to entire ecosystems. It helps us understand life itself!",
+  "Social Science": "Social Science studies human society and relationships. It includes history, geography, civics, and economics.",
+  English: "English develops your reading, writing, and communication skills. It's essential for expressing ideas clearly!",
+  Hindi: "Hindi is one of India's major languages. Learning it opens doors to literature, culture, and communication!",
+  EVS: "EVS (Environmental Studies) helps us understand the world around us - nature, people, and how we all connect!",
+};

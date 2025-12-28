@@ -11,6 +11,7 @@ import { Spacing } from '@/constants/theme';
 import LessonView from '@/components/LessonView';
 import { getChapterLessons } from '@/constants/curriculum';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
+import { useSmartyContext } from '@/context/ChatContext';
 
 interface LessonContent {
   title: string;
@@ -27,6 +28,7 @@ export default function Lesson() {
     class: string;
     lesson?: string;
   }>();
+  const { setCurrentContext } = useSmartyContext();
 
   const [lessons, setLessons] = useState<LessonContent[]>([]);
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
@@ -50,10 +52,12 @@ export default function Lesson() {
     if (chapter && subject && className) {
       const timer = setTimeout(() => {
         loadLessons();
+        // Set chat context for lesson screen
+        setCurrentContext(subject, chapter, lesson);
       }, 0);
       return () => clearTimeout(timer);
     }
-  }, [chapter, subject, className, loadLessons]);
+  }, [chapter, subject, className, loadLessons, lesson, setCurrentContext]);
 
   const handleNext = () => {
     if (currentLessonIndex < lessons.length - 1) {
