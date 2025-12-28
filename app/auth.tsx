@@ -9,13 +9,15 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Colors, Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
+import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useUserStore } from '@/store/userStore';
 import Dropdown from '@/components/Dropdown';
 import { CLASS_OPTIONS } from '@/constants/curriculum';
+import { useTheme, ThemeColors } from '@/components/ThemeContext';
 
 export default function Auth() {
   const router = useRouter();
+  const { colors } = useTheme();
   const [isSignup, setIsSignup] = useState(true);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -74,6 +76,8 @@ export default function Auth() {
     }
   };
 
+  const styles = getStyles(colors);
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -89,7 +93,7 @@ export default function Auth() {
               <TextInput
                 style={[styles.input, errors.name && styles.inputError]}
                 placeholder="Enter your name"
-                placeholderTextColor={Colors.textSecondary}
+                placeholderTextColor={colors.textSecondary}
                 value={name}
                 onChangeText={setName}
                 autoCapitalize="words"
@@ -103,7 +107,7 @@ export default function Auth() {
             <TextInput
               style={[styles.input, errors.email && styles.inputError]}
               placeholder="Enter your email"
-              placeholderTextColor={Colors.textSecondary}
+              placeholderTextColor={colors.textSecondary}
               keyboardType="email-address"
               autoCapitalize="none"
               value={email}
@@ -117,7 +121,7 @@ export default function Auth() {
             <TextInput
               style={[styles.input, errors.password && styles.inputError]}
               placeholder="Enter your password"
-              placeholderTextColor={Colors.textSecondary}
+              placeholderTextColor={colors.textSecondary}
               secureTextEntry
               value={password}
               onChangeText={setPassword}
@@ -145,7 +149,7 @@ export default function Auth() {
             activeOpacity={0.8}
           >
             {isLoading ? (
-              <ActivityIndicator color={Colors.white} />
+              <ActivityIndicator color={colors.white} />
             ) : (
               <Text style={styles.primaryButtonText}>
                 {isSignup ? 'Create Account' : 'Sign In'}
@@ -173,10 +177,10 @@ export default function Auth() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   content: {
     flex: 1,
@@ -187,13 +191,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FontSizes.xxxl,
     fontWeight: FontWeights.bold,
-    color: Colors.text,
+    color: colors.text,
     textAlign: 'center',
     marginBottom: Spacing.sm,
   },
   subtitle: {
     fontSize: FontSizes.md,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: Spacing.xxl,
   },
@@ -208,35 +212,35 @@ const styles = StyleSheet.create({
   label: {
     fontSize: FontSizes.md,
     fontWeight: FontWeights.medium,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.sm,
   },
   input: {
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     borderRadius: BorderRadius.lg,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     fontSize: FontSizes.md,
-    color: Colors.text,
+    color: colors.text,
     borderWidth: 1,
-    borderColor: Colors.lightGray,
+    borderColor: colors.lightGray,
   },
   inputError: {
-    borderColor: '#DC2626',
+    borderColor: colors.error,
   },
   errorText: {
     fontSize: FontSizes.sm,
-    color: '#DC2626',
+    color: colors.error,
     marginTop: Spacing.xs,
   },
   primaryButton: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     paddingVertical: Spacing.md,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: Spacing.lg,
-    shadowColor: Colors.text,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -248,26 +252,26 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     fontSize: FontSizes.lg,
     fontWeight: FontWeights.semibold,
-    color: Colors.white,
+    color: colors.white,
   },
   secondaryButton: {
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     paddingVertical: Spacing.md,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: Spacing.md,
     borderWidth: 2,
-    borderColor: Colors.primary,
+    borderColor: colors.primary,
   },
   secondaryButtonText: {
     fontSize: FontSizes.md,
     fontWeight: FontWeights.semibold,
-    color: Colors.primary,
+    color: colors.primary,
   },
   footerText: {
     fontSize: FontSizes.sm,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: Spacing.xxl,
   },

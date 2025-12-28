@@ -1,11 +1,13 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import WelcomeSlider from '@/components/WelcomeSlider';
-import { Colors } from '@/constants/theme';
+import { useTheme } from '@/components/ThemeContext';
 
 export default function Index() {
+  const { colors } = useTheme();
+  
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <WelcomeSlider />
     </View>
   );
@@ -14,6 +16,5 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,15 +9,17 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Colors, Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
+import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import {
   getChaptersForSubject,
   getPathwaysForCategory,
   getPathwayChapters,
 } from '@/constants/curriculum';
+import { useTheme, ThemeColors } from '@/components/ThemeContext';
 
 export default function Chapters() {
   const router = useRouter();
+  const { colors } = useTheme();
   const { subject, class: className, isPathway } = useLocalSearchParams<{
     subject: string;
     class: string;
@@ -27,7 +29,7 @@ export default function Chapters() {
   const [chapters, setChapters] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const loadChapters = () => {
+  const loadChapters = useCallback(() => {
     setLoading(true);
     let chapterList: string[] = [];
 
@@ -43,16 +45,16 @@ export default function Chapters() {
 
     setChapters(chapterList);
     setLoading(false);
-  };
+  }, [className, isPathway, subject]);
 
   useEffect(() => {
     if (subject && className) {
-      const loadData = () => {
+      const timer = setTimeout(() => {
         loadChapters();
-      };
-      loadData();
+      }, 0);
+      return () => clearTimeout(timer);
     }
-  }, [subject, className, isPathway]);
+  }, [subject, className, loadChapters]);
 
   const handleChapterPress = (chapter: string) => {
     if (chapter.includes('Coming Soon') || chapter.includes('Select')) {
@@ -64,10 +66,12 @@ export default function Chapters() {
     });
   };
 
+  const styles = getStyles(colors);
+
   if (loading) {
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.loadingContent}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </ScrollView>
     );
   }
@@ -152,10 +156,10 @@ export default function Chapters() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   loadingContent: {
     flexGrow: 1,
@@ -176,27 +180,27 @@ const styles = StyleSheet.create({
   backButtonText: {
     fontSize: FontSizes.md,
     fontWeight: FontWeights.semibold,
-    color: Colors.primary,
+    color: colors.primary,
   },
   title: {
     fontSize: FontSizes.xxxl,
     fontWeight: FontWeights.bold,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.sm,
   },
   titleDark: {
     fontSize: FontSizes.xxxl,
     fontWeight: FontWeights.bold,
-    color: Colors.charcoal,
+    color: colors.charcoal,
     marginBottom: Spacing.sm,
   },
   subtitle: {
     fontSize: FontSizes.lg,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     marginBottom: Spacing.md,
   },
   pathwayBadge: {
-    backgroundColor: Colors.primaryDark,
+    backgroundColor: colors.primaryDark,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.sm,
@@ -206,27 +210,27 @@ const styles = StyleSheet.create({
   pathwayBadgeText: {
     fontSize: FontSizes.xs,
     fontWeight: FontWeights.semibold,
-    color: Colors.white,
+    color: colors.white,
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   sectionTitle: {
     fontSize: FontSizes.xl,
     fontWeight: FontWeights.semibold,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.lg,
   },
   chapterList: {
     marginBottom: Spacing.xl,
   },
   chapterCard: {
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     marginBottom: Spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: Colors.text,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -236,9 +240,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   chapterCardDark: {
-    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: Colors.primaryDark,
+    borderColor: colors.primaryDark,
   },
   disabledCard: {
     opacity: 0.6,
@@ -247,52 +250,57 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.md,
   },
   chapterNumberDark: {
-    backgroundColor: Colors.primaryDark,
+    backgroundColor: colors.primaryDark,
   },
   chapterNumberText: {
     fontSize: FontSizes.md,
     fontWeight: FontWeights.semibold,
-    color: Colors.white,
+    color: colors.white,
   },
   chapterName: {
     flex: 1,
     fontSize: FontSizes.md,
     fontWeight: FontWeights.medium,
-    color: Colors.text,
+    color: colors.text,
   },
   chapterNameDark: {
-    color: Colors.charcoal,
+    color: colors.charcoal,
     fontWeight: FontWeights.semibold,
   },
   chapterArrow: {
     fontSize: FontSizes.lg,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   chapterArrowDark: {
-    color: Colors.primaryDark,
+    color: colors.primaryDark,
   },
   placeholderCard: {
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     borderRadius: BorderRadius.lg,
     padding: Spacing.xl,
     borderLeftWidth: 4,
-    borderLeftColor: Colors.primary,
+    borderLeftColor: colors.primary,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   placeholderTitle: {
     fontSize: FontSizes.lg,
     fontWeight: FontWeights.semibold,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.sm,
   },
   placeholderText: {
     fontSize: FontSizes.md,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 22,
   },
 });

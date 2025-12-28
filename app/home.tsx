@@ -8,13 +8,16 @@ import {
   ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Colors, Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
+import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useUserStore } from '@/store/userStore';
 import { getSubjectsForClass } from '@/constants/curriculum';
+import { useTheme, ThemeColors } from '@/components/ThemeContext';
+import { DarkModeToggle } from '@/components/DarkModeToggle';
 
 export default function Home() {
   const router = useRouter();
   const { userName, selectedClass, logout, loadUserData } = useUserStore();
+  const { colors } = useTheme();
 
   useEffect(() => {
     loadUserData();
@@ -40,11 +43,16 @@ export default function Home() {
 
   const displayName = userName || 'Student';
 
+  const styles = getStyles(colors);
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <View style={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.title}>Welcome, {displayName}!</Text>
+          <View style={styles.headerTop}>
+            <Text style={styles.title}>Welcome, {displayName}!</Text>
+            <DarkModeToggle />
+          </View>
           <View style={styles.classBadge}>
             <Text style={styles.classText}>{selectedClass || 'No Class Selected'}</Text>
           </View>
@@ -129,10 +137,10 @@ function getSubjectEmoji(subject: string): string {
   return emojis[subject] || '📚';
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -145,14 +153,20 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: Spacing.xl,
   },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: Spacing.md,
+  },
   title: {
     fontSize: FontSizes.xxxl,
     fontWeight: FontWeights.bold,
-    color: Colors.text,
-    marginBottom: Spacing.md,
+    color: colors.text,
+    flex: 1,
   },
   classBadge: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.xl,
@@ -161,12 +175,12 @@ const styles = StyleSheet.create({
   classText: {
     fontSize: FontSizes.md,
     fontWeight: FontWeights.semibold,
-    color: Colors.white,
+    color: colors.white,
   },
   sectionTitle: {
     fontSize: FontSizes.xl,
     fontWeight: FontWeights.semibold,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.lg,
   },
   subjectsGrid: {
@@ -176,7 +190,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   subjectCard: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     flexBasis: Platform.select({
       web: '31%',
       default: '46%',
@@ -187,7 +201,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 120,
-    shadowColor: Colors.text,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -197,7 +211,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   disabledCard: {
-    backgroundColor: Colors.lightGray,
+    backgroundColor: colors.lightGray,
     opacity: 0.7,
   },
   subjectEmoji: {
@@ -207,27 +221,32 @@ const styles = StyleSheet.create({
   subjectName: {
     fontSize: FontSizes.md,
     fontWeight: FontWeights.semibold,
-    color: Colors.white,
+    color: colors.white,
     textAlign: 'center',
     lineHeight: 20,
   },
   placeholderCard: {
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     borderRadius: BorderRadius.lg,
     padding: Spacing.xl,
     marginBottom: Spacing.lg,
     borderLeftWidth: 4,
-    borderLeftColor: Colors.primary,
+    borderLeftColor: colors.primary,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   placeholderTitle: {
     fontSize: FontSizes.lg,
     fontWeight: FontWeights.semibold,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.sm,
   },
   placeholderText: {
     fontSize: FontSizes.md,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 22,
   },
   emptyState: {
@@ -242,23 +261,23 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: FontSizes.xl,
     fontWeight: FontWeights.semibold,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.sm,
     textAlign: 'center',
   },
   emptyText: {
     fontSize: FontSizes.md,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: Spacing.xl,
     maxWidth: 300,
   },
   actionButton: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.md,
     borderRadius: BorderRadius.lg,
-    shadowColor: Colors.text,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -270,10 +289,10 @@ const styles = StyleSheet.create({
   actionButtonText: {
     fontSize: FontSizes.md,
     fontWeight: FontWeights.semibold,
-    color: Colors.white,
+    color: colors.white,
   },
   logoutButton: {
-    backgroundColor: Colors.lightGray,
+    backgroundColor: colors.lightGray,
     paddingVertical: Spacing.md,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
@@ -283,6 +302,6 @@ const styles = StyleSheet.create({
   logoutButtonText: {
     fontSize: FontSizes.md,
     fontWeight: FontWeights.semibold,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
 });

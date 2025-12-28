@@ -1,14 +1,17 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { ThemeProvider, useTheme } from '../components/ThemeContext';
 
-export default function RootLayout() {
+function RootLayoutContent() {
+  const { colors, isDark } = useTheme();
+
   return (
     <>
-      <StatusBar style="dark" backgroundColor="#F5F1E8" />
+      <StatusBar style={isDark ? 'light' : 'dark'} backgroundColor={colors.background} />
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: '#F5F1E8' },
+          contentStyle: { backgroundColor: colors.background },
         }}
       >
         <Stack.Screen name="index" />
@@ -18,5 +21,13 @@ export default function RootLayout() {
         <Stack.Screen name="lesson" />
       </Stack>
     </>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider>
+      <RootLayoutContent />
+    </ThemeProvider>
   );
 }

@@ -8,8 +8,9 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
-import { Colors, Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
+import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useUserStore } from '@/store/userStore';
+import { useTheme, ThemeColors } from './ThemeContext';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -45,6 +46,7 @@ interface StreamSelectionModalProps {
 export default function StreamSelectionModal({ visible, onClose }: StreamSelectionModalProps) {
   const { selectedStream, setSelectedStream } = useUserStore();
   const [selectedId, setSelectedId] = React.useState(selectedStream);
+  const { colors, isDark } = useTheme();
 
   React.useEffect(() => {
     if (visible && selectedStream) {
@@ -62,6 +64,8 @@ export default function StreamSelectionModal({ visible, onClose }: StreamSelecti
       onClose();
     }
   };
+
+  const styles = getStyles(colors, isDark);
 
   return (
     <Modal
@@ -140,7 +144,7 @@ export default function StreamSelectionModal({ visible, onClose }: StreamSelecti
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -149,10 +153,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
   modalContent: {
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     borderRadius: BorderRadius.lg,
     maxHeight: '80%',
-    shadowColor: Colors.text,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -164,18 +168,18 @@ const styles = StyleSheet.create({
   header: {
     padding: Spacing.xl,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.lightGray,
+    borderBottomColor: colors.lightGray,
   },
   title: {
     fontSize: FontSizes.xl,
     fontWeight: FontWeights.bold,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.sm,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: FontSizes.md,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 20,
   },
@@ -183,7 +187,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
   },
   optionCard: {
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
@@ -193,8 +197,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   selectedOption: {
-    borderColor: Colors.primary,
-    backgroundColor: '#F8FAF7',
+    borderColor: colors.primary,
+    backgroundColor: isDark ? '#2C3E2C' : '#F8FAF7',
   },
   colorIndicator: {
     width: 4,
@@ -209,12 +213,12 @@ const styles = StyleSheet.create({
   optionTitle: {
     fontSize: FontSizes.lg,
     fontWeight: FontWeights.semibold,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: 2,
   },
   optionDescription: {
     fontSize: FontSizes.sm,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     marginBottom: Spacing.sm,
     lineHeight: 16,
   },
@@ -224,54 +228,54 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   subjectChip: {
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: BorderRadius.sm,
     borderWidth: 1,
-    borderColor: Colors.lightGray,
+    borderColor: colors.lightGray,
   },
   subjectChipText: {
     fontSize: 10,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   radioButton: {
     width: 24,
     height: 24,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: Colors.lightGray,
+    borderColor: colors.lightGray,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: Spacing.sm,
   },
   radioButtonSelected: {
-    borderColor: Colors.primary,
+    borderColor: colors.primary,
   },
   radioButtonInner: {
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
   },
   footer: {
     padding: Spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: Colors.lightGray,
+    borderTopColor: colors.lightGray,
   },
   confirmButton: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     paddingVertical: Spacing.md,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   confirmButtonDisabled: {
-    backgroundColor: Colors.lightGray,
+    backgroundColor: colors.lightGray,
   },
   confirmButtonText: {
     fontSize: FontSizes.lg,
     fontWeight: FontWeights.semibold,
-    color: Colors.white,
+    color: colors.white,
   },
 });

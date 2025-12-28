@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
-import { Colors, Spacing, BorderRadius } from '@/constants/theme';
+import { Spacing, BorderRadius } from '@/constants/theme';
+import { useTheme } from './ThemeContext';
 
 interface SkeletonProps {
   width?: number | string;
@@ -9,13 +10,14 @@ interface SkeletonProps {
 }
 
 export default function Skeleton({ width, height = 20, style }: SkeletonProps) {
-  const widthValue = width as number | undefined;
+  const { colors } = useTheme();
+  const widthValue = width as any;
 
   return (
     <View
       style={[
         styles.skeleton,
-        { width: widthValue, height },
+        { width: widthValue, height, backgroundColor: colors.lightGray },
         style,
       ]}
     />
@@ -23,8 +25,10 @@ export default function Skeleton({ width, height = 20, style }: SkeletonProps) {
 }
 
 export function SkeletonCard({ style }: { style?: ViewStyle }) {
+  const { colors } = useTheme();
+  
   return (
-    <View style={[styles.card, style]}>
+    <View style={[styles.card, { backgroundColor: colors.cardBackground }, style]}>
       <View style={styles.cardContent}>
         <Skeleton width={48} height={48} style={styles.cardIcon} />
         <View style={styles.cardText}>
@@ -38,11 +42,9 @@ export function SkeletonCard({ style }: { style?: ViewStyle }) {
 
 const styles = StyleSheet.create({
   skeleton: {
-    backgroundColor: Colors.lightGray,
     borderRadius: BorderRadius.sm,
   },
   card: {
-    backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     marginBottom: Spacing.md,

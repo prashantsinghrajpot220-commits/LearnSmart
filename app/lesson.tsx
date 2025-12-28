@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,10 @@ import {
   Platform,
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import LessonView from '@/components/LessonView';
 import { getChapterLessons } from '@/constants/curriculum';
+import { useTheme, ThemeColors } from '@/components/ThemeContext';
 
 interface LessonContent {
   title: string;
@@ -19,6 +20,7 @@ interface LessonContent {
 }
 
 export default function Lesson() {
+  const { colors } = useTheme();
   const { chapter, subject, class: className, lesson } = useLocalSearchParams<{
     chapter: string;
     subject: string;
@@ -30,7 +32,7 @@ export default function Lesson() {
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const loadLessons = () => {
+  const loadLessons = useCallback(() => {
     setLoading(true);
     const allLessons = getChapterLessons(className, subject, chapter);
     setLessons(allLessons);
@@ -42,16 +44,16 @@ export default function Lesson() {
       setCurrentLessonIndex(0);
     }
     setLoading(false);
-  };
+  }, [chapter, className, lesson, subject]);
 
   useEffect(() => {
     if (chapter && subject && className) {
-      const loadData = () => {
+      const timer = setTimeout(() => {
         loadLessons();
-      };
-      loadData();
+      }, 0);
+      return () => clearTimeout(timer);
     }
-  }, [chapter, subject, className, lesson]);
+  }, [chapter, subject, className, loadLessons]);
 
   const handleNext = () => {
     if (currentLessonIndex < lessons.length - 1) {
@@ -65,10 +67,12 @@ export default function Lesson() {
     }
   };
 
+  const styles = getStyles(colors);
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.loadingText}>Loading lesson...</Text>
       </View>
     );
@@ -105,20 +109,20 @@ export default function Lesson() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingText: {
     fontSize: 16,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     marginTop: Spacing.md,
   },
   content: {
@@ -129,23 +133,28 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '700',
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.sm,
   },
   subtitle: {
     fontSize: 18,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     marginBottom: Spacing.xxl,
   },
   placeholderContainer: {
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     borderRadius: 16,
     padding: 32,
     alignItems: 'center',
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   placeholderText: {
     fontSize: 16,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
 });

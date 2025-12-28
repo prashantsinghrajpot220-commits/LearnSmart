@@ -10,7 +10,8 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
 } from 'react-native';
-import { Colors, Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
+import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
+import { useTheme, ThemeColors } from './ThemeContext';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -30,11 +31,14 @@ export default function Dropdown({
   placeholder = 'Select an option',
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { colors } = useTheme();
 
   const handleSelect = (option: string) => {
     onSelect(option);
     setIsOpen(false);
   };
+
+  const styles = getStyles(colors);
 
   return (
     <View style={styles.container}>
@@ -91,7 +95,7 @@ export default function Dropdown({
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     marginBottom: Spacing.lg,
     width: '100%',
@@ -99,11 +103,11 @@ const styles = StyleSheet.create({
   label: {
     fontSize: FontSizes.md,
     fontWeight: FontWeights.medium,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.sm,
   },
   dropdown: {
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     borderRadius: BorderRadius.lg,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
@@ -111,20 +115,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: Colors.lightGray,
+    borderColor: colors.lightGray,
     minHeight: 52,
   },
   text: {
     fontSize: FontSizes.md,
-    color: Colors.text,
+    color: colors.text,
     flex: 1,
   },
   placeholder: {
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   arrow: {
     fontSize: FontSizes.sm,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   modalOverlay: {
     flex: 1,
@@ -134,10 +138,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
   },
   modalContent: {
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     borderRadius: BorderRadius.lg,
     maxHeight: 400,
-    shadowColor: Colors.text,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -150,17 +154,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.lightGray,
+    borderBottomColor: colors.lightGray,
   },
   selectedOption: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
   },
   optionText: {
     fontSize: FontSizes.md,
-    color: Colors.text,
+    color: colors.text,
   },
   selectedOptionText: {
-    color: Colors.white,
+    color: colors.white,
     fontWeight: FontWeights.semibold,
   },
 });
