@@ -8,7 +8,8 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Colors, Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
+import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
+import { useTheme, ThemeColors } from './ThemeContext';
 
 interface LessonContent {
   title: string;
@@ -40,6 +41,7 @@ export default function LessonView({
   showNavigation = true,
 }: LessonViewProps) {
   const router = useRouter();
+  const { colors, isDark } = useTheme();
   const scrollViewRef = useRef<ScrollView>(null);
 
   const handleBack = () => {
@@ -48,6 +50,8 @@ export default function LessonView({
 
   const hasPrevious = currentLessonIndex > 0;
   const hasNext = currentLessonIndex < totalLessons - 1;
+
+  const styles = getStyles(colors, isDark);
 
   return (
     <View style={styles.container}>
@@ -127,6 +131,7 @@ export default function LessonView({
               <Text
                 style={[
                   styles.navButtonText,
+                  styles.prevButtonText,
                   !hasPrevious && styles.navButtonTextDisabled,
                 ]}
               >
@@ -153,6 +158,7 @@ export default function LessonView({
               <Text
                 style={[
                   styles.navButtonText,
+                  styles.nextButtonText,
                   !hasNext && styles.navButtonTextDisabled,
                 ]}
               >
@@ -166,16 +172,16 @@ export default function LessonView({
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   header: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Platform.select({ web: Spacing.lg, default: Spacing.lg + 20 }),
     paddingBottom: Spacing.md,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   headerTop: {
     flexDirection: 'row',
@@ -187,11 +193,11 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: FontSizes.lg,
-    color: Colors.primary,
+    color: colors.primary,
     fontWeight: FontWeights.semibold,
   },
   chapterBadge: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.xl,
@@ -199,7 +205,7 @@ const styles = StyleSheet.create({
   chapterBadgeText: {
     fontSize: FontSizes.sm,
     fontWeight: FontWeights.medium,
-    color: Colors.white,
+    color: colors.white,
   },
   scrollView: {
     flex: 1,
@@ -210,10 +216,10 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xl,
   },
   lessonCard: {
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     borderRadius: BorderRadius.lg,
     padding: Spacing.xl,
-    shadowColor: Colors.text,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -233,13 +239,13 @@ const styles = StyleSheet.create({
   lessonTitle: {
     fontSize: FontSizes.xl,
     fontWeight: FontWeights.bold,
-    color: Colors.charcoal,
+    color: isDark ? colors.text : colors.charcoal,
     textAlign: 'center',
     marginBottom: Spacing.lg,
   },
   divider: {
     height: 2,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     borderRadius: 1,
     marginBottom: Spacing.xl,
     width: 60,
@@ -256,13 +262,13 @@ const styles = StyleSheet.create({
   },
   bulletPoint: {
     fontSize: FontSizes.lg,
-    color: Colors.primary,
+    color: colors.primary,
     marginRight: Spacing.sm,
     lineHeight: FontSizes.lg * 1.4,
   },
   bulletPointText: {
     fontSize: FontSizes.md,
-    color: Colors.text,
+    color: colors.text,
     flex: 1,
     lineHeight: FontSizes.md * 1.5,
   },
@@ -271,7 +277,7 @@ const styles = StyleSheet.create({
   },
   paragraphText: {
     fontSize: FontSizes.md,
-    color: Colors.text,
+    color: colors.text,
     lineHeight: FontSizes.md * 1.6,
     textAlign: 'justify',
   },
@@ -281,18 +287,18 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: FontSizes.md,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   navigationSpacer: {
     height: Spacing.xl,
   },
   navigationContainer: {
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderTopWidth: 1,
-    borderTopColor: Colors.lightGray,
+    borderTopColor: colors.lightGray,
   },
   navigationRow: {
     flexDirection: 'row',
@@ -308,31 +314,37 @@ const styles = StyleSheet.create({
     minWidth: 100,
   },
   prevButton: {
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     borderWidth: 2,
-    borderColor: Colors.primary,
+    borderColor: colors.primary,
   },
   nextButton: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
   },
   navButtonDisabled: {
-    backgroundColor: Colors.white,
-    borderColor: Colors.lightGray,
+    backgroundColor: colors.cardBackground,
+    borderColor: colors.lightGray,
     opacity: 0.6,
   },
   navButtonText: {
     fontSize: FontSizes.md,
     fontWeight: FontWeights.semibold,
   },
+  prevButtonText: {
+    color: colors.primary,
+  },
+  nextButtonText: {
+    color: colors.white,
+  },
   navButtonTextDisabled: {
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   lessonIndicator: {
     paddingHorizontal: Spacing.md,
   },
   lessonIndicatorText: {
     fontSize: FontSizes.sm,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     fontWeight: FontWeights.medium,
   },
 });

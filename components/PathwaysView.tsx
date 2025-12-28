@@ -8,8 +8,9 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Colors, Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
+import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { getPathwayCategories } from '@/constants/curriculum';
+import { useTheme, ThemeColors } from './ThemeContext';
 
 interface Pathway {
   id: string;
@@ -19,6 +20,7 @@ interface Pathway {
 
 export default function PathwaysView() {
   const router = useRouter();
+  const { colors, isDark } = useTheme();
   const { class: className } = useLocalSearchParams<{ class: string }>();
 
   const categories = getPathwayCategories();
@@ -29,6 +31,8 @@ export default function PathwaysView() {
       params: { subject: category.name, class: className, isPathway: 'true' },
     });
   };
+
+  const styles = getStyles(colors, isDark);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
@@ -68,10 +72,10 @@ export default function PathwaysView() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -87,25 +91,25 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FontSizes.xxxl,
     fontWeight: FontWeights.bold,
-    color: Colors.charcoal,
+    color: isDark ? colors.text : colors.charcoal,
     marginBottom: Spacing.sm,
   },
   subtitle: {
     fontSize: FontSizes.md,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 22,
   },
   categoriesContainer: {
     marginBottom: Spacing.xl,
   },
   categoryCard: {
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     marginBottom: Spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: Colors.text,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -118,7 +122,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 16,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.md,
@@ -130,29 +134,34 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: FontSizes.lg,
     fontWeight: FontWeights.semibold,
-    color: Colors.charcoal,
+    color: isDark ? colors.text : colors.charcoal,
   },
   categoryArrow: {
     fontSize: FontSizes.lg,
-    color: Colors.primary,
+    color: colors.primary,
     fontWeight: FontWeights.semibold,
   },
   infoCard: {
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     borderLeftWidth: 4,
-    borderLeftColor: Colors.primary,
+    borderLeftColor: colors.primary,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   infoTitle: {
     fontSize: FontSizes.md,
     fontWeight: FontWeights.semibold,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.sm,
   },
   infoText: {
     fontSize: FontSizes.sm,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 20,
   },
 });

@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import LottieView, { AnimationObject } from 'lottie-react-native';
 import { useRouter } from 'expo-router';
-import { Colors, Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
+import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
+import { useTheme, ThemeColors } from './ThemeContext';
 
 interface SlideData {
   id: string;
@@ -43,6 +44,7 @@ export default function WelcomeSlider() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
   const router = useRouter();
+  const { colors } = useTheme();
 
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
@@ -81,6 +83,8 @@ export default function WelcomeSlider() {
   const handleGetStarted = () => {
     router.push('/auth');
   };
+
+  const styles = getStyles(colors);
 
   const renderSlide = ({ item }: { item: SlideData }) => {
     return (
@@ -168,10 +172,10 @@ export default function WelcomeSlider() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   slide: {
     flex: 1,
@@ -193,7 +197,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FontSizes.xxl,
     fontWeight: FontWeights.bold,
-    color: Colors.text,
+    color: colors.text,
     textAlign: 'center',
     marginTop: Spacing.lg,
   },
@@ -212,21 +216,21 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.lightGray,
+    backgroundColor: colors.lightGray,
     marginHorizontal: 4,
   },
   activeDot: {
     width: 24,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
   },
   getStartedButton: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.xl,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.text,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -238,7 +242,7 @@ const styles = StyleSheet.create({
   getStartedText: {
     fontSize: FontSizes.lg,
     fontWeight: FontWeights.semibold,
-    color: Colors.white,
+    color: colors.white,
   },
   navigationButtons: {
     flexDirection: 'row',
@@ -247,25 +251,25 @@ const styles = StyleSheet.create({
   },
   navButton: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: colors.cardBackground,
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: Colors.primary,
+    borderColor: colors.primary,
   },
   navButtonDisabled: {
-    borderColor: Colors.lightGray,
+    borderColor: colors.lightGray,
     opacity: 0.5,
   },
   navButtonText: {
     fontSize: FontSizes.md,
     fontWeight: FontWeights.semibold,
-    color: Colors.primary,
+    color: colors.primary,
   },
   navButtonTextDisabled: {
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
 });
