@@ -5,13 +5,17 @@ import {
   StyleSheet,
   ActivityIndicator,
   Platform,
+  TouchableOpacity,
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { Spacing } from '@/constants/theme';
+import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import LessonView from '@/components/LessonView';
 import { getChapterLessons } from '@/constants/curriculum';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
 import { useSmartyContext } from '@/context/ChatContext';
+import QuizModal from '@/components/QuizModal';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import { Feather } from '@expo/vector-icons';
 
 interface LessonContent {
   title: string;
@@ -33,6 +37,7 @@ export default function Lesson() {
   const [lessons, setLessons] = useState<LessonContent[]>([]);
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [quizModalVisible, setQuizModalVisible] = useState(false);
 
   const loadLessons = useCallback(() => {
     setLoading(true);
@@ -52,7 +57,6 @@ export default function Lesson() {
     if (chapter && subject && className) {
       const timer = setTimeout(() => {
         loadLessons();
-        // Set chat context for lesson screen
         setCurrentContext(subject, chapter, lesson);
       }, 0);
       return () => clearTimeout(timer);
@@ -70,6 +74,14 @@ export default function Lesson() {
       setCurrentLessonIndex(currentLessonIndex - 1);
     }
   };
+
+  const handleTestYourself = useCallback(() => {
+    setQuizModalVisible(true);
+  }, []);
+
+  const handleCloseQuiz = useCallback(() => {
+    setQuizModalVisible(false);
+  }, []);
 
   const styles = getStyles(colors);
 
@@ -99,17 +111,48 @@ export default function Lesson() {
   const currentLesson = lessons[currentLessonIndex];
 
   return (
-    <LessonView
-      chapter={chapter}
-      subject={subject}
-      className={className}
-      lessonContent={currentLesson}
-      currentLessonIndex={currentLessonIndex}
-      totalLessons={lessons.length}
-      onNext={handleNext}
-      onPrevious={handlePrevious}
-      showNavigation={lessons.length > 1}
-    />
+    <ErrorBoundary>
+      <View style={styles.container}>
+        <LessonView
+          chapter={chapter}
+          subject={subject}
+          className={className}
+          lessonContent={currentLesson}
+          currentLessonIndex={currentLessonIndex}
+          totalLessons={lessons.length}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          showNavigation={lessons.length > 1}
+        />
+        
+        {/* Test Yourself Button */}
+        <View style={styles.testButtonContainer}>
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={handleTestYourself}
+            activeOpacity={0.8}
+          >
+            <View style={styles.testButtonIcon}>
+              <Feather name="zap" size={24} color="#FFFFFF" />
+            </View>
+            <View style={styles.testButtonContent}>
+              <Text style={styles.testButtonTitle}>Test Yourself</Text>
+              <Text style={styles.testButtonSubtitle}>Take a quick quiz on this chapter</Text>
+            </View>
+            <Feather name="chevron-right" size={24} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
+
+        {/* Quiz Modal */}
+        <QuizModal
+          visible={quizModalVisible}
+          onClose={handleCloseQuiz}
+          className={className}
+          subject={subject}
+          chapter={chapter}
+        />
+      </View>
+    </ErrorBoundary>
   );
 }
 
@@ -125,7 +168,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    fontSize: 16,
+    fontSize: FontSizes.md,
     color: colors.textSecondary,
     marginTop: Spacing.md,
   },
@@ -136,7 +179,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: '700',
+    fontWeight: FontWeights.bold,
     color: colors.text,
     marginBottom: Spacing.sm,
   },
@@ -147,7 +190,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   placeholderContainer: {
     backgroundColor: colors.cardBackground,
-    borderRadius: 16,
+    borderRadius: BorderRadius.lg,
     padding: 32,
     alignItems: 'center',
     shadowColor: colors.shadow,
@@ -160,5 +203,48 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
     fontSize: 16,
     color: colors.textSecondary,
     textAlign: 'center',
+  },
+  testButtonContainer: {
+    position: 'absolute',
+    bottom: Spacing.xxl,
+    left: Spacing.lg,
+    right: Spacing.lg,
+    zIndex: 10,
+  },
+  testButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.cardBackground,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.md,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
+    borderWidth: 2,
+    borderColor: colors.primary,
+  },
+  testButtonIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  testButtonContent: {
+    flex: 1,
+  },
+  testButtonTitle: {
+    fontSize: FontSizes.lg,
+    fontWeight: FontWeights.semibold,
+    color: colors.text,
+    marginBottom: 2,
+  },
+  testButtonSubtitle: {
+    fontSize: FontSizes.sm,
+    color: colors.textSecondary,
   },
 });

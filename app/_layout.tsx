@@ -6,6 +6,7 @@ import { SmartyChatProvider } from '../context/ChatContext';
 import SmartyFloatingButton from '../components/SmartyFloatingButton';
 import SmartyChat from '../components/SmartyChat';
 import { useChatStore } from '../store/chatStore';
+import { initializeNetworkListener, cleanupNetworkListener } from '../services/networkService';
 
 function RootLayoutContent() {
   const { colors, isDark } = useTheme();
@@ -13,11 +14,18 @@ function RootLayoutContent() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    // Initialize network listener
+    initializeNetworkListener();
+
     // Delay setting loaded state to avoid sync setState in effect
     const timer = setTimeout(() => {
       setIsLoaded(true);
     }, 100);
-    return () => clearTimeout(timer);
+
+    return () => {
+      clearTimeout(timer);
+      cleanupNetworkListener();
+    };
   }, []);
 
   if (!isLoaded) {
