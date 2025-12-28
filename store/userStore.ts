@@ -4,9 +4,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 interface UserState {
   userName: string;
   selectedClass: string;
+  selectedStream: string;
   isOnboarded: boolean;
   setUserName: (name: string) => void;
   setSelectedClass: (className: string) => void;
+  setSelectedStream: (stream: string) => void;
   completeOnboarding: () => void;
   logout: () => void;
   loadUserData: () => Promise<void>;
@@ -15,12 +17,14 @@ interface UserState {
 const STORAGE_KEYS = {
   USER_NAME: '@learnsmart_user_name',
   SELECTED_CLASS: '@learnsmart_selected_class',
+  SELECTED_STREAM: '@learnsmart_selected_stream',
   IS_ONBOARDED: '@learnsmart_is_onboarded',
 };
 
 export const useUserStore = create<UserState>((set) => ({
   userName: '',
   selectedClass: '',
+  selectedStream: '',
   isOnboarded: false,
 
   setUserName: (name: string) => {
@@ -33,6 +37,11 @@ export const useUserStore = create<UserState>((set) => ({
     AsyncStorage.setItem(STORAGE_KEYS.SELECTED_CLASS, className);
   },
 
+  setSelectedStream: (stream: string) => {
+    set({ selectedStream: stream });
+    AsyncStorage.setItem(STORAGE_KEYS.SELECTED_STREAM, stream);
+  },
+
   completeOnboarding: () => {
     set({ isOnboarded: true });
     AsyncStorage.setItem(STORAGE_KEYS.IS_ONBOARDED, 'true');
@@ -42,26 +51,30 @@ export const useUserStore = create<UserState>((set) => ({
     set({
       userName: '',
       selectedClass: '',
+      selectedStream: '',
       isOnboarded: false,
     });
     await AsyncStorage.multiRemove([
       STORAGE_KEYS.USER_NAME,
       STORAGE_KEYS.SELECTED_CLASS,
+      STORAGE_KEYS.SELECTED_STREAM,
       STORAGE_KEYS.IS_ONBOARDED,
     ]);
   },
 
   loadUserData: async () => {
     try {
-      const [name, className, onboarded] = await Promise.all([
+      const [name, className, stream, onboarded] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.USER_NAME),
         AsyncStorage.getItem(STORAGE_KEYS.SELECTED_CLASS),
+        AsyncStorage.getItem(STORAGE_KEYS.SELECTED_STREAM),
         AsyncStorage.getItem(STORAGE_KEYS.IS_ONBOARDED),
       ]);
 
       set({
         userName: name || '',
         selectedClass: className || '',
+        selectedStream: stream || '',
         isOnboarded: onboarded === 'true',
       });
     } catch (error) {
