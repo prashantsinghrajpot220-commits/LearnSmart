@@ -16,6 +16,8 @@ import { useSmartyContext } from '@/context/ChatContext';
 import QuizModal from '@/components/QuizModal';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { Feather } from '@expo/vector-icons';
+import { useXPStore } from '@/store/xpStore';
+import { useAchievementStore } from '@/store/achievementStore';
 
 interface LessonContent {
   title: string;
@@ -33,11 +35,14 @@ export default function Lesson() {
     lesson?: string;
   }>();
   const { setCurrentContext } = useSmartyContext();
+  const { addXP, incrementLessonsRead } = useXPStore();
+  const { checkAndUnlock } = useAchievementStore();
 
   const [lessons, setLessons] = useState<LessonContent[]>([]);
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [quizModalVisible, setQuizModalVisible] = useState(false);
+  const [hasAwardedXP, setHasAwardedXP] = useState(false);
 
   const loadLessons = useCallback(() => {
     setLoading(true);
@@ -51,6 +56,7 @@ export default function Lesson() {
       setCurrentLessonIndex(0);
     }
     setLoading(false);
+    setHasAwardedXP(false);
   }, [chapter, className, lesson, subject]);
 
   useEffect(() => {
@@ -63,15 +69,40 @@ export default function Lesson() {
     }
   }, [chapter, subject, className, loadLessons, lesson, setCurrentContext]);
 
+  // Award XP when lesson is displayed
+  useEffect(() => {
+    if (lessons.length > 0 && !hasAwardedXP) {
+      const awardXP = async () => {
+        // Award 10 XP for reading a lesson
+        await addXP(10);
+        incrementLessonsRead();
+        setHasAwardedXP(true);
+
+        // Check for learning achievements
+        const { totalLessonsRead, getXP } = useXPStore.getState();
+        checkAndUnlock({
+          currentStreak: 0, // Will be updated from streak service
+          totalQuizzesCompleted: 0,
+          totalLessonsRead,
+          currentXP: getXP(),
+          rank: useXPStore.getState().getRank().name,
+        });
+      };
+      awardXP();
+    }
+  }, [lessons.length, hasAwardedXP, addXP, incrementLessonsRead, checkAndUnlock]);
+
   const handleNext = () => {
     if (currentLessonIndex < lessons.length - 1) {
       setCurrentLessonIndex(currentLessonIndex + 1);
+      setHasAwardedXP(false); // Reset XP flag for new lesson
     }
   };
 
   const handlePrevious = () => {
     if (currentLessonIndex > 0) {
       setCurrentLessonIndex(currentLessonIndex - 1);
+      setHasAwardedXP(false); // Reset XP flag for previous lesson
     }
   };
 
@@ -124,6 +155,14 @@ export default function Lesson() {
           onPrevious={handlePrevious}
           showNavigation={lessons.length > 1}
         />
+        
+        {/* XP Notification Banner */}
+        {hasAwardedXP && (
+          <View style={styles.xpBanner}>
+            <Feather name="plus-circle" size={16} color="#FFFFFF" />
+            <Text style={styles.xpBannerText}>+10 XP earned!</Text>
+          </View>
+        )}
         
         {/* Test Yourself Button */}
         <View style={styles.testButtonContainer}>
@@ -203,6 +242,30 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
     fontSize: 16,
     color: colors.textSecondary,
     textAlign: 'center',
+  },
+  xpBanner: {
+    position: 'absolute',
+    top: Platform.select({ web: 80, default: 100 }),
+    left: '50%',
+    transform: [{ translateX: -75 }],
+    backgroundColor: colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.xl,
+    zIndex: 100,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  xpBannerText: {
+    color: '#FFFFFF',
+    fontSize: FontSizes.sm,
+    fontWeight: FontWeights.semibold,
+    marginLeft: Spacing.xs,
   },
   testButtonContainer: {
     position: 'absolute',

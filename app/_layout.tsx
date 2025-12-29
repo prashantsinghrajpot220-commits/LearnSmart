@@ -7,26 +7,67 @@ import SmartyFloatingButton from '../components/SmartyFloatingButton';
 import SmartyChat from '../components/SmartyChat';
 import { useChatStore } from '../store/chatStore';
 import { initializeNetworkListener, cleanupNetworkListener } from '../services/networkService';
+import { streakService } from '../services/streakService';
+import { useXPStore } from '../store/xpStore';
+import { useAchievementStore } from '../store/achievementStore';
 
 function RootLayoutContent() {
   const { colors, isDark } = useTheme();
   const { isChatOpen, closeChat } = useChatStore();
   const [isLoaded, setIsLoaded] = useState(false);
+  const { loadXP } = useXPStore();
+  const { loadAchievements } = useAchievementStore();
+  const [streakChecked, setStreakChecked] = useState(false);
 
   useEffect(() => {
     // Initialize network listener
     initializeNetworkListener();
 
-    // Delay setting loaded state to avoid sync setState in effect
-    const timer = setTimeout(() => {
-      setIsLoaded(true);
-    }, 100);
+    // Initialize gamification services
+    const initializeGamification = async () => {
+      try {
+        // Load XP and achievements
+        await loadXP();
+        await loadAchievements();
+        
+        // Initialize and check streak
+        await streakService.initialize();
+        const streakResult = await streakService.checkAndUpdateStreak();
+        
+        // Check streak achievements
+        const { checkAndUnlock } = useAchievementStore.getState();
+        const { getXP, totalLessonsRead, totalQuizzesCompleted } = useXPStore.getState();
+        
+        checkAndUnlock({
+          currentStreak: streakResult.streak,
+          totalQuizzesCompleted,
+          totalLessonsRead,
+          currentXP: getXP(),
+          rank: useXPStore.getState().getRank().name,
+        });
+        
+        setStreakChecked(true);
+      } catch (error) {
+        console.error('Failed to initialize gamification:', error);
+        setStreakChecked(true);
+      }
+      
+      // Delay setting loaded state to avoid sync setState in effect
+      const timer = setTimeout(() => {
+        setIsLoaded(true);
+      }, 100);
+      
+      return () => {
+        clearTimeout(timer);
+      };
+    };
+
+    initializeGamification();
 
     return () => {
-      clearTimeout(timer);
       cleanupNetworkListener();
     };
-  }, []);
+  }, [loadXP, loadAchievements]);
 
   if (!isLoaded) {
     return (
@@ -43,6 +84,7 @@ function RootLayoutContent() {
           <Stack.Screen name="home" />
           <Stack.Screen name="chapters" />
           <Stack.Screen name="lesson" />
+          <Stack.Screen name="trophy-room" />
         </Stack>
       </>
     );
@@ -62,6 +104,7 @@ function RootLayoutContent() {
         <Stack.Screen name="home" />
         <Stack.Screen name="chapters" />
         <Stack.Screen name="lesson" />
+        <Stack.Screen name="trophy-room" />
       </Stack>
       <SmartyFloatingButton onPress={() => {}} />
       {isChatOpen && <SmartyChat onClose={closeChat} />}

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Platform,
   ScrollView,
+  Animated,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
@@ -14,18 +15,35 @@ import { getSubjectsForClass } from '@/constants/curriculum';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
 import { useSmartyContext } from '@/context/ChatContext';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
+import ProgressBar from '@/components/ProgressBar';
+import StreakBadge from '@/components/StreakBadge';
+import { streakService } from '@/services/streakService';
+import { useXPStore } from '@/store/xpStore';
+import { useAchievementStore } from '@/store/achievementStore';
+import { Feather } from '@expo/vector-icons';
 
 export default function Home() {
   const router = useRouter();
   const { userName, selectedClass, logout, loadUserData } = useUserStore();
   const { colors } = useTheme();
   const { setCurrentContext } = useSmartyContext();
+  const { loadXP } = useXPStore();
+  const { loadAchievements } = useAchievementStore();
+  const [streak, setStreak] = useState(0);
 
   useEffect(() => {
     loadUserData();
-    // Set chat context for home screen
+    loadXP();
+    loadAchievements();
     setCurrentContext(undefined, undefined, undefined);
-  }, [loadUserData, setCurrentContext]);
+
+    // Load streak
+    const loadStreak = async () => {
+      const currentStreak = await streakService.getStreak();
+      setStreak(currentStreak);
+    };
+    loadStreak();
+  }, [loadUserData, setCurrentContext, loadXP, loadAchievements]);
 
   const subjects = selectedClass ? getSubjectsForClass(selectedClass) : [];
   const classNum = selectedClass ? parseInt(selectedClass.replace('Class ', '')) : 0;
@@ -60,6 +78,31 @@ export default function Home() {
           <View style={styles.classBadge}>
             <Text style={styles.classText}>{selectedClass || 'No Class Selected'}</Text>
           </View>
+        </View>
+
+        {/* Gamification Section */}
+        <View style={styles.gamificationSection}>
+          <View style={styles.gamificationRow}>
+            <View style={styles.progressBarContainer}>
+              <ProgressBar showText={true} />
+            </View>
+            <View style={styles.streakContainer}>
+              <StreakBadge streak={streak} showDetails={false} />
+            </View>
+          </View>
+          
+          {/* Trophy Room Link */}
+          <TouchableOpacity
+            style={styles.trophyButton}
+            onPress={() => router.push('/trophy-room')}
+            activeOpacity={0.8}
+          >
+            <View style={styles.trophyIcon}>
+              <Feather name="award" size={20} color="#FFFFFF" />
+            </View>
+            <Text style={styles.trophyButtonText}>View Achievements</Text>
+            <Feather name="chevron-right" size={20} color={colors.primary} />
+          </TouchableOpacity>
         </View>
 
         {selectedClass ? (
@@ -155,7 +198,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
     paddingBottom: Spacing.xxl,
   },
   header: {
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
   },
   headerTop: {
     flexDirection: 'row',
@@ -180,6 +223,45 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
     fontSize: FontSizes.md,
     fontWeight: FontWeights.semibold,
     color: colors.white,
+  },
+  gamificationSection: {
+    marginBottom: Spacing.xl,
+  },
+  gamificationRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: Spacing.md,
+  },
+  progressBarContainer: {
+    flex: 1,
+    marginRight: Spacing.md,
+  },
+  streakContainer: {
+    width: 100,
+  },
+  trophyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.cardBackground,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+  trophyIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  trophyButtonText: {
+    flex: 1,
+    fontSize: FontSizes.md,
+    fontWeight: FontWeights.semibold,
+    color: colors.text,
   },
   sectionTitle: {
     fontSize: FontSizes.xl,
