@@ -39,6 +39,7 @@ export default [
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-require-imports': 'off',
       'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/refs': 'off',
     },
   },
   {
