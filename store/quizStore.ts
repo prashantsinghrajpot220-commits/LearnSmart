@@ -1,4 +1,7 @@
 import { create } from 'zustand';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useXPStore } from './xpStore';
+import { useAchievementStore } from './achievementStore';
 
 export interface QuizQuestion {
   id: string;
@@ -23,7 +26,7 @@ interface QuizState {
   nextQuestion: () => void;
   previousQuestion: () => void;
   startQuiz: () => void;
-  endQuiz: () => void;
+  endQuiz: () => Promise<void>;
   resetQuiz: () => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -31,6 +34,8 @@ interface QuizState {
 }
 
 const MAX_QUESTIONS = 5;
+
+const QUIZ_XP_AMOUNT = 50;
 
 export const useQuizStore = create<QuizState>((set, get) => ({
   questions: [],
@@ -84,12 +89,35 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     });
   },
 
-  endQuiz: () => {
+  endQuiz: async () => {
     const { calculateScore } = get();
+    const score = calculateScore();
+    
     set({
       isQuizActive: false,
-      score: calculateScore(),
+      score,
     });
+
+    // Award XP for completing a quiz
+    try {
+      const { addXP, incrementQuizzesCompleted, getXP } = useXPStore.getState();
+      const { checkAndUnlock } = useAchievementStore.getState();
+      
+      await addXP(QUIZ_XP_AMOUNT);
+      incrementQuizzesCompleted();
+      
+      // Check for quiz and XP achievements
+      const { totalQuizzesCompleted, totalLessonsRead } = useXPStore.getState();
+      checkAndUnlock({
+        currentStreak: 0, // Will be updated from streak service
+        totalQuizzesCompleted,
+        totalLessonsRead,
+        currentXP: getXP(),
+        rank: useXPStore.getState().getRank().name,
+      });
+    } catch (error) {
+      console.error('Failed to award XP for quiz:', error);
+    }
   },
 
   resetQuiz: () => {
@@ -109,7 +137,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   },
 
   setError: (error) => {
-    set({ error });
+    set({ error: error });
   },
 
   calculateScore: () => {
@@ -147,3 +175,7 @@ export const useIsQuestionAnswered = (questionIndex: number) => {
   const selectedAnswers = useQuizStore((state) => state.selectedAnswers);
   return selectedAnswers[questionIndex] !== undefined;
 };
+
+// XP constants
+export const QUIZ_COMPLETE_XP = QUIZ_XP_AMOUNT;
+export const LESSON_READ_XP = 10;
