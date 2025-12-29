@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useTheme, ThemeColors } from './ThemeContext';
@@ -12,7 +12,7 @@ export default function ProgressBar({ showText = true }: ProgressBarProps) {
   const { colors, isDark } = useTheme();
   const { rank, progress, currentXP, xpToNext } = useCurrentRank();
 
-  const animatedProgress = React.useRef(new Animated.Value(0)).current;
+  const animatedProgress = useMemo(() => new Animated.Value(0), []);
 
   useEffect(() => {
     Animated.timing(animatedProgress, {
@@ -21,7 +21,7 @@ export default function ProgressBar({ showText = true }: ProgressBarProps) {
       useNativeDriver: false,
       easing: Easing.out(Easing.cubic),
     }).start();
-  }, [progress]);
+  }, [progress, animatedProgress]);
 
   const barWidth = animatedProgress.interpolate({
     inputRange: [0, 1],

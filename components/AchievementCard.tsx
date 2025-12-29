@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useTheme, ThemeColors } from './ThemeContext';
@@ -18,8 +18,8 @@ export default function AchievementCard({
   animateOnUnlock = false,
 }: AchievementCardProps) {
   const { colors, isDark } = useTheme();
-  const scaleAnim = useRef(new Animated.Value(achievement.unlocked ? 1 : 0.8)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useMemo(() => new Animated.Value(achievement.unlocked ? 1 : 0.8), [achievement.id]);
+  const glowAnim = useMemo(() => new Animated.Value(0), [achievement.id]);
 
   useEffect(() => {
     if (achievement.unlocked && animateOnUnlock) {

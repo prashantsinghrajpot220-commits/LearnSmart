@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useTheme, ThemeColors } from './ThemeContext';
@@ -18,12 +18,12 @@ export default function QuizResultsScreen({
   const { colors, isDark } = useTheme();
   const { questions, score, selectedAnswers } = useQuizStore();
 
-  const animationProgress = useRef(new Animated.Value(0)).current;
-  const scaleValue = useRef(new Animated.Value(0.8)).current;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const confettiAnimations = useRef(
-    Array.from({ length: 12 }, () => new Animated.Value(0))
-  ).current;
+  const animationProgress = useMemo(() => new Animated.Value(0), []);
+  const scaleValue = useMemo(() => new Animated.Value(0.8), []);
+  const confettiAnimations = useMemo(
+    () => Array.from({ length: 12 }, () => new Animated.Value(0)),
+    []
+  );
 
   const correctCount = questions.filter(
     (q, i) => selectedAnswers[i] === q.correctAnswer
