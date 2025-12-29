@@ -82,6 +82,7 @@ function RootLayoutContent() {
           <Stack.Screen name="index" />
           <Stack.Screen name="auth" />
           <Stack.Screen name="home" />
+          <Stack.Screen name="home-12plus" />
           <Stack.Screen name="chapters" />
           <Stack.Screen name="lesson" />
           <Stack.Screen name="trophy-room" />
@@ -102,6 +103,7 @@ function RootLayoutContent() {
         <Stack.Screen name="index" />
         <Stack.Screen name="auth" />
         <Stack.Screen name="home" />
+        <Stack.Screen name="home-12plus" />
         <Stack.Screen name="chapters" />
         <Stack.Screen name="lesson" />
         <Stack.Screen name="trophy-room" />

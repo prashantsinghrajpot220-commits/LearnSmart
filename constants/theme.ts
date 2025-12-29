@@ -12,6 +12,8 @@ export const Colors = {
     charcoal: '#36454F',
     shadow: '#2C2C2C',
     error: '#DC2626',
+    maturePrimary: '#7A9970',
+    matureText: '#1A1A1A',
   },
   dark: {
     primary: '#A8D5BA',
@@ -26,6 +28,8 @@ export const Colors = {
     charcoal: '#F0F0F0',
     shadow: '#000000',
     error: '#EF4444',
+    maturePrimary: '#8BBD9D',
+    matureText: '#F0F0F0',
   },
 };
 

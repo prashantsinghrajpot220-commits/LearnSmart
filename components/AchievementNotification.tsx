@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableOpacity, Platform } from 'react-native';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useTheme, ThemeColors } from './ThemeContext';
@@ -18,9 +18,26 @@ export default function AchievementNotification({
   onHide,
 }: AchievementNotificationProps) {
   const { colors, isDark } = useTheme();
-  const translateY = useRef(new Animated.Value(-100)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
-  const scale = useRef(new Animated.Value(0.8)).current;
+  const translateY = useMemo(() => new Animated.Value(-100), []);
+  const opacity = useMemo(() => new Animated.Value(0), []);
+  const scale = useMemo(() => new Animated.Value(0.8), []);
+
+  const hideNotification = useCallback(() => {
+    Animated.parallel([
+      Animated.timing(translateY, {
+        toValue: -100,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      onHide();
+    });
+  }, [opacity, onHide, translateY]);
 
   useEffect(() => {
     if (visible) {
@@ -50,24 +67,7 @@ export default function AchievementNotification({
 
       return () => clearTimeout(timer);
     }
-  }, [visible, translateY, opacity, scale]);
-
-  const hideNotification = () => {
-    Animated.parallel([
-      Animated.timing(translateY, {
-        toValue: -100,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      onHide();
-    });
-  };
+  }, [hideNotification, opacity, scale, translateY, visible]);
 
   const styles = getStyles(colors, isDark);
 

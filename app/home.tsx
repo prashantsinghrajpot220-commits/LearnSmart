@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -24,12 +24,13 @@ import { Feather } from '@expo/vector-icons';
 
 export default function Home() {
   const router = useRouter();
-  const { userName, selectedClass, logout, loadUserData } = useUserStore();
+  const { userName, selectedClass, ageGroup, logout, loadUserData } = useUserStore();
   const { colors } = useTheme();
   const { setCurrentContext } = useSmartyContext();
   const { loadXP } = useXPStore();
   const { loadAchievements } = useAchievementStore();
   const [streak, setStreak] = useState(0);
+  const opacity = useMemo(() => new Animated.Value(0), []);
 
   useEffect(() => {
     loadUserData();
@@ -43,7 +44,20 @@ export default function Home() {
       setStreak(currentStreak);
     };
     loadStreak();
-  }, [loadUserData, setCurrentContext, loadXP, loadAchievements]);
+
+    // Fade in animation
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 350,
+      useNativeDriver: true,
+    }).start();
+  }, [loadUserData, setCurrentContext, loadXP, loadAchievements, opacity]);
+
+  useEffect(() => {
+    if (ageGroup === '12plus') {
+      router.replace('/home-12plus');
+    }
+  }, [ageGroup, router]);
 
   const subjects = selectedClass ? getSubjectsForClass(selectedClass) : [];
   const classNum = selectedClass ? parseInt(selectedClass.replace('Class ', '')) : 0;
@@ -69,7 +83,7 @@ export default function Home() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
-      <View style={styles.content}>
+      <Animated.View style={[styles.content, { opacity }]}> 
         <View style={styles.header}>
           <View style={styles.headerTop}>
             <Text style={styles.title}>Welcome, {displayName}!</Text>
@@ -164,7 +178,7 @@ export default function Home() {
             <Text style={styles.logoutButtonText}>Sign Out</Text>
           </TouchableOpacity>
         )}
-      </View>
+      </Animated.View>
     </ScrollView>
   );
 }
