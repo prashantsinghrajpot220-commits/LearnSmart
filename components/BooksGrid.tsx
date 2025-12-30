@@ -6,11 +6,18 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
-  Linking,
+  Alert,
 } from 'react-native';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useTheme, ThemeColors } from './ThemeContext';
 import { Feather } from '@expo/vector-icons';
+import { 
+  generateAffiliateLink, 
+  convertToAffiliateUrl,
+  openAffiliateLink,
+  getAffiliateDisclosure 
+} from '@/utils/affiliateLinks';
+import { isUsingTestAffiliateTag } from '@/config/affiliateConfig';
 
 interface Book {
   id: string;
@@ -22,6 +29,7 @@ interface Book {
   thumbnail: string;
   amazonUrl: string;
   isbn: string;
+  asin?: string;
 }
 
 interface BooksGridProps {
@@ -32,9 +40,43 @@ interface BooksGridProps {
 export default function BooksGrid({ pathwayName, books }: BooksGridProps) {
   const { colors } = useTheme();
 
-  const handleBuyPress = (amazonUrl: string) => {
-    Linking.openURL(amazonUrl).catch((err) => {
-      console.error('Failed to open URL:', err);
+  const handleBuyPress = (book: Book) => {
+    let affiliateLink;
+    
+    // Try to generate affiliate link using ASIN first (most reliable)
+    if (book.asin) {
+      affiliateLink = generateAffiliateLink({
+        asin: book.asin,
+        keywords: book.title,
+        useFallback: true
+      });
+    } 
+    // Fallback to ISBN if ASIN not available
+    else if (book.isbn) {
+      affiliateLink = generateAffiliateLink({
+        isbn: book.isbn,
+        keywords: book.title,
+        useFallback: true
+      });
+    }
+    // Final fallback: convert existing Amazon URL
+    else {
+      affiliateLink = convertToAffiliateUrl(book.amazonUrl);
+    }
+    
+    if (!affiliateLink.isValid) {
+      console.error('Invalid affiliate link generated for book:', book.title);
+      Alert.alert('Error', 'Invalid product link. Please try again later.');
+      return;
+    }
+    
+    // Open the affiliate link with tracking
+    openAffiliateLink(affiliateLink.url, {
+      bookTitle: book.title,
+      bookId: book.id,
+      pathwayName: pathwayName
+    }).catch((err) => {
+      console.error('Failed to open affiliate link:', err);
     });
   };
 
@@ -74,14 +116,20 @@ export default function BooksGrid({ pathwayName, books }: BooksGridProps) {
 
             <TouchableOpacity
               style={styles.buyButton}
-              onPress={() => handleBuyPress(book.amazonUrl)}
+              onPress={() => handleBuyPress(book)}
               activeOpacity={0.8}
             >
               <Feather name="shopping-cart" size={16} color="#333333" />
               <Text style={styles.buyButtonText}>Buy on Amazon</Text>
             </TouchableOpacity>
+            {isUsingTestAffiliateTag() && (
+              <Text style={styles.testModeText}>Test affiliate links - no real commissions</Text>
+            )}
           </View>
         ))}
+      </View>
+      <View style={styles.disclaimerContainer}>
+        <Text style={styles.disclaimerText}>{getAffiliateDisclosure()}</Text>
       </View>
     </ScrollView>
   );
@@ -170,19 +218,37 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
     borderColor: '#E6C200',
   },
   buyButtonText: {
-    fontSize: FontSizes.sm,
-    fontWeight: FontWeights.semibold,
-    color: '#333333',
-    marginLeft: Spacing.xs,
+   fontSize: FontSizes.sm,
+   fontWeight: FontWeights.semibold,
+   color: '#333333',
+   marginLeft: Spacing.xs,
+  },
+  testModeText: {
+   fontSize: FontSizes.xs,
+   color: colors.textSecondary,
+   textAlign: 'center',
+   marginTop: Spacing.xs,
+   fontStyle: 'italic',
+  },
+  disclaimerContainer: {
+   padding: Spacing.md,
+   paddingBottom: Spacing.xl,
+   alignItems: 'center',
+  },
+  disclaimerText: {
+   fontSize: FontSizes.xs,
+   color: colors.textSecondary,
+   textAlign: 'center',
+   lineHeight: 16,
   },
   emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.xxxl,
+   alignItems: 'center',
+   justifyContent: 'center',
+   paddingVertical: Spacing.xxxl,
   },
   emptyText: {
-    fontSize: FontSizes.md,
-    color: colors.textSecondary,
-    marginTop: Spacing.md,
+   fontSize: FontSizes.md,
+   color: colors.textSecondary,
+   marginTop: Spacing.md,
   },
-});
+  });

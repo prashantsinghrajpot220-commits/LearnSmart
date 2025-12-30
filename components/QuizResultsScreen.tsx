@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+ 
 import React, { useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
