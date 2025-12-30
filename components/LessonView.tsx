@@ -10,6 +10,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useTheme, ThemeColors } from './ThemeContext';
+import AdContainer from './AdContainer';
 
 interface LessonContent {
   title: string;
@@ -109,6 +110,9 @@ export default function LessonView({
             </View>
           )}
         </View>
+
+        {/* Advertisement Banner */}
+        <AdContainer />
 
         {showNavigation && (
           <View style={styles.navigationSpacer} />

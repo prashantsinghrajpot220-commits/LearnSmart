@@ -17,6 +17,8 @@ import {
 } from '@/constants/curriculum';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
 import { useSmartyContext } from '@/context/ChatContext';
+import BooksGrid from '@/components/BooksGrid';
+import { getBooksByPathwayName } from '@/data/booksData';
 
 export default function Chapters() {
   const router = useRouter();
@@ -30,6 +32,9 @@ export default function Chapters() {
 
   const [chapters, setChapters] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'chapters' | 'books'>('chapters');
+
+  const books = getBooksByPathwayName(subject);
 
   const loadChapters = useCallback(() => {
     setLoading(true);
@@ -83,80 +88,112 @@ export default function Chapters() {
   const isClass12Plus = className === 'Class 12+';
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
-      <View style={styles.content}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.backButtonText}>← Back</Text>
-        </TouchableOpacity>
+    <View style={styles.container}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.content}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
 
-        <Text style={isClass12Plus ? styles.titleDark : styles.title}>{subject}</Text>
-        <Text style={styles.subtitle}>{className || ''}</Text>
+          <Text style={isClass12Plus ? styles.titleDark : styles.title}>{subject}</Text>
+          <Text style={styles.subtitle}>{className || ''}</Text>
 
-        {isClass12Plus && (
-          <View style={styles.pathwayBadge}>
-            <Text style={styles.pathwayBadgeText}>Pathway</Text>
-          </View>
-        )}
+          {isClass12Plus && (
+            <View style={styles.pathwayBadge}>
+              <Text style={styles.pathwayBadgeText}>Pathway</Text>
+            </View>
+          )}
 
-        <Text style={styles.sectionTitle}>
-          {isClass12Plus ? 'Topics & Chapters' : 'Chapters'}
-        </Text>
-
-        <View style={styles.chapterList}>
-          {chapters.map((chapter, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.chapterCard,
-                isClass12Plus && styles.chapterCardDark,
-                (chapter.includes('Coming Soon') || chapter.includes('Select')) && styles.disabledCard,
-              ]}
-              onPress={() => handleChapterPress(chapter)}
-              activeOpacity={chapter.includes('Coming Soon') || chapter.includes('Select') ? 1 : 0.7}
-              disabled={chapter.includes('Coming Soon') || chapter.includes('Select')}
-            >
-              <View
-                style={[
-                  styles.chapterNumber,
-                  isClass12Plus && styles.chapterNumberDark,
-                ]}
+          {/* Tab Navigation for 12+ Pathways */}
+          {isClass12Plus && (
+            <View style={styles.tabContainer}>
+              <TouchableOpacity
+                style={[styles.tab, activeTab === 'chapters' && styles.tabActive]}
+                onPress={() => setActiveTab('chapters')}
+                activeOpacity={0.7}
               >
-                <Text style={styles.chapterNumberText}>{index + 1}</Text>
+                <Text style={[styles.tabText, activeTab === 'chapters' && styles.tabTextActive]}>
+                  Chapters
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tab, activeTab === 'books' && styles.tabActive]}
+                onPress={() => setActiveTab('books')}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.tabText, activeTab === 'books' && styles.tabTextActive]}>
+                  Books/Resources
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {activeTab === 'chapters' ? (
+            <>
+              <Text style={styles.sectionTitle}>
+                {isClass12Plus ? 'Topics & Chapters' : 'Chapters'}
+              </Text>
+
+              <View style={styles.chapterList}>
+                {chapters.map((chapter, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.chapterCard,
+                      isClass12Plus && styles.chapterCardDark,
+                      (chapter.includes('Coming Soon') || chapter.includes('Select')) && styles.disabledCard,
+                    ]}
+                    onPress={() => handleChapterPress(chapter)}
+                    activeOpacity={chapter.includes('Coming Soon') || chapter.includes('Select') ? 1 : 0.7}
+                    disabled={chapter.includes('Coming Soon') || chapter.includes('Select')}
+                  >
+                    <View
+                      style={[
+                        styles.chapterNumber,
+                        isClass12Plus && styles.chapterNumberDark,
+                      ]}
+                    >
+                      <Text style={styles.chapterNumberText}>{index + 1}</Text>
+                    </View>
+                    <Text
+                      style={[
+                        styles.chapterName,
+                        isClass12Plus && styles.chapterNameDark,
+                      ]}
+                    >
+                      {chapter}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.chapterArrow,
+                        isClass12Plus && styles.chapterArrowDark,
+                      ]}
+                    >
+                      →
+                    </Text>
+                  </TouchableOpacity>
+                ))}
               </View>
-              <Text
-                style={[
-                  styles.chapterName,
-                  isClass12Plus && styles.chapterNameDark,
-                ]}
-              >
-                {chapter}
-              </Text>
-              <Text
-                style={[
-                  styles.chapterArrow,
-                  isClass12Plus && styles.chapterArrowDark,
-                ]}
-              >
-                →
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
 
-        {chapters.length > 0 && (chapters[0].includes('Coming Soon') || chapters[0].includes('Select')) && (
-          <View style={styles.placeholderCard}>
-            <Text style={styles.placeholderTitle}>🚧 Coming Soon</Text>
-            <Text style={styles.placeholderText}>
-              Full curriculum content will be added soon
-            </Text>
-          </View>
-        )}
-      </View>
-    </ScrollView>
+              {chapters.length > 0 && (chapters[0].includes('Coming Soon') || chapters[0].includes('Select')) && (
+                <View style={styles.placeholderCard}>
+                  <Text style={styles.placeholderTitle}>🚧 Coming Soon</Text>
+                  <Text style={styles.placeholderText}>
+                    Full curriculum content will be added soon
+                  </Text>
+                </View>
+              )}
+            </>
+          ) : (
+            <BooksGrid pathwayName={subject} books={books} />
+          )}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -164,6 +201,9 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  scrollView: {
+    flex: 1,
   },
   loadingContent: {
     flexGrow: 1,
@@ -217,6 +257,36 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
     color: colors.white,
     textTransform: 'uppercase',
     letterSpacing: 1,
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    marginBottom: Spacing.lg,
+    backgroundColor: colors.lightGray,
+    borderRadius: BorderRadius.md,
+    padding: 4,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: Spacing.sm,
+    alignItems: 'center',
+    borderRadius: BorderRadius.sm,
+  },
+  tabActive: {
+    backgroundColor: colors.cardBackground,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  tabText: {
+    fontSize: FontSizes.sm,
+    fontWeight: FontWeights.medium,
+    color: colors.textSecondary,
+  },
+  tabTextActive: {
+    color: colors.text,
+    fontWeight: FontWeights.semibold,
   },
   sectionTitle: {
     fontSize: FontSizes.xl,
