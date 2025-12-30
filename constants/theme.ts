@@ -12,8 +12,10 @@ export const Colors = {
     charcoal: '#36454F',
     shadow: '#2C2C2C',
     error: '#DC2626',
-    maturePrimary: '#7A9970',
+    // 12+ Corporate theme - darker, more serious
+    maturePrimary: '#4A6741',
     matureText: '#1A1A1A',
+    matureCardBackground: '#F8F8F8',
   },
   dark: {
     primary: '#A8D5BA',
@@ -28,8 +30,10 @@ export const Colors = {
     charcoal: '#F0F0F0',
     shadow: '#000000',
     error: '#EF4444',
-    maturePrimary: '#8BBD9D',
+    // 12+ Corporate theme - darker, more serious
+    maturePrimary: '#3D5A35',
     matureText: '#F0F0F0',
+    matureCardBackground: '#252525',
   },
 };
 
