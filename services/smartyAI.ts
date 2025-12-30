@@ -1,5 +1,8 @@
 import { useChatStore } from '@/store/chatStore';
 import { useUserStore } from '@/store/userStore';
+import { ContentValidator } from '@/services/ContentValidator';
+import { ContentType } from '@/types/content';
+import { sanitizeText } from '@/utils/sanitizer';
 import {
   getStudyTip,
   getExamPrepTip,
@@ -196,6 +199,9 @@ export async function sendMessageToSmarty(
   setTyping(true);
 
   try {
+    const ageGroup = useUserStore.getState().ageGroup ?? 'under12';
+    const sanitizedUserMessage = sanitizeText(message, { maxLength: 500 });
+
     // Build context-aware system message enhancement
     let contextInfo = '';
     if (selectedClass) {
@@ -215,25 +221,67 @@ export async function sendMessageToSmarty(
     }
 
     // Check for safety violations in user message
-    const safetyCheck = checkSafetyViolations(message);
+    const safetyCheck = checkSafetyViolations(sanitizedUserMessage);
     if (safetyCheck.blocked) {
       setTyping(false);
+      addMessage('assistant', safetyCheck.response);
       return safetyCheck.response;
+    }
+
+    const userValidationContext = {
+      contentId: `chat:user:${Date.now()}`,
+      contentType: ContentType.UserGeneratedText,
+      ageGroup,
+      source: 'smartyAI',
+    };
+
+    const userValidation = ContentValidator.validateTextSync({
+      text: sanitizedUserMessage,
+      context: userValidationContext,
+    });
+
+    if (userValidation.result.decision !== 'allow') {
+      setTyping(false);
+
+      const blockedReply =
+        userValidation.result.decision === 'filter'
+          ? "That topic isn't available right now. But I can help you with your studies! 📚 What subject are you working on?"
+          : "I can't help with that. But I'm here to help you learn safely. 📚 What topic are you studying?";
+
+      addMessage('assistant', blockedReply);
+      ContentValidator.validateText({ text: sanitizedUserMessage, context: userValidationContext }).catch(() => {});
+      return blockedReply;
     }
 
     // Prepare messages for API
     const messages = [
       { role: 'system', content: SMARTY_SYSTEM_PROMPT + contextInfo },
       // In production, we'd include recent chat history here
-      { role: 'user', content: message },
+      { role: 'user', content: sanitizedUserMessage },
     ];
 
     // If no API key, use fallback response system
     if (!OPENAI_API_KEY) {
-      const response = getFallbackResponse(message, context);
+      const response = getFallbackResponse(sanitizedUserMessage, context);
+
+      const validated = await ContentValidator.validateText({
+        text: response,
+        context: {
+          contentId: `chat:assistant:${Date.now()}`,
+          contentType: ContentType.AIResponseText,
+          ageGroup,
+          source: 'smartyAI',
+        },
+      });
+
+      const finalResponse =
+        validated.result.decision === 'allow'
+          ? validated.sanitizedText
+          : "I'm here to help you learn safely. 📚 What topic are you studying right now?";
+
       setTyping(false);
-      addMessage('assistant', response);
-      return response;
+      addMessage('assistant', finalResponse);
+      return finalResponse;
     }
 
     // Make API call to OpenAI
@@ -256,11 +304,26 @@ export async function sendMessageToSmarty(
     }
 
     const data = await response.json();
-    const aiResponse = data.choices[0]?.message?.content || getFallbackResponse(message, context);
+    const aiResponse = data.choices[0]?.message?.content || getFallbackResponse(sanitizedUserMessage, context);
+
+    const validated = await ContentValidator.validateText({
+      text: aiResponse,
+      context: {
+        contentId: `chat:assistant:${Date.now()}`,
+        contentType: ContentType.AIResponseText,
+        ageGroup,
+        source: 'smartyAI',
+      },
+    });
+
+    const finalResponse =
+      validated.result.decision === 'allow'
+        ? validated.sanitizedText
+        : "I'm here to help you learn safely. 📚 Want help with your current lesson?";
 
     setTyping(false);
-    addMessage('assistant', aiResponse);
-    return aiResponse;
+    addMessage('assistant', finalResponse);
+    return finalResponse;
   } catch (error) {
     console.error('Smarty AI Error:', error);
     setTyping(false);

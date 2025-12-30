@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useTheme, ThemeColors } from './ThemeContext';
+import { useUserStore } from '@/store/userStore';
+import { ContentValidator } from '@/services/ContentValidator';
 import { Feather } from '@expo/vector-icons';
 import { 
   generateAffiliateLink, 
@@ -39,6 +41,17 @@ interface BooksGridProps {
 
 export default function BooksGrid({ pathwayName, books }: BooksGridProps) {
   const { colors } = useTheme();
+  const ageGroup = useUserStore((s) => s.ageGroup) ?? 'under12';
+
+  const displayBooks = useMemo(
+    () =>
+      ContentValidator.validateBooksSync<Book>(books ?? [], {
+        contentId: `books:${pathwayName}`,
+        ageGroup,
+        source: 'BooksGrid',
+      }),
+    [books, pathwayName, ageGroup]
+  );
 
   const handleBuyPress = (book: Book) => {
     let affiliateLink;
@@ -79,8 +92,6 @@ export default function BooksGrid({ pathwayName, books }: BooksGridProps) {
       console.error('Failed to open affiliate link:', err);
     });
   };
-
-  const displayBooks = books || [];
 
   const styles = getStyles(colors);
 

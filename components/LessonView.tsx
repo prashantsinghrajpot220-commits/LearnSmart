@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,9 @@ import {
 import { useRouter } from 'expo-router';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useTheme, ThemeColors } from './ThemeContext';
+import { useUserStore } from '@/store/userStore';
+import { ContentValidator } from '@/services/ContentValidator';
+import { ContentType } from '@/types/content';
 import AdContainer from './AdContainer';
 
 interface LessonContent {
@@ -43,7 +46,66 @@ export default function LessonView({
 }: LessonViewProps) {
   const router = useRouter();
   const { colors, isDark } = useTheme();
+  const ageGroup = useUserStore((s) => s.ageGroup) ?? 'under12';
   const scrollViewRef = useRef<ScrollView>(null);
+
+  const contentId = useMemo(
+    () => `lesson:${subject}:${chapter}:${lessonContent.title}`,
+    [subject, chapter, lessonContent.title]
+  );
+
+  const syncValidated = useMemo(
+    () =>
+      ContentValidator.validateLessonContentSync(lessonContent, {
+        contentId,
+        ageGroup,
+        source: 'LessonView',
+      }),
+    [lessonContent, contentId, ageGroup]
+  );
+
+  const [isQuarantined, setIsQuarantined] = useState(false);
+  const [contentBlockedMessage, setContentBlockedMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const run = async () => {
+      setIsQuarantined(false);
+      setContentBlockedMessage(null);
+
+      const combinedText = [
+        lessonContent.title,
+        ...(lessonContent.bulletPoints || []),
+        ...(lessonContent.paragraphs || []),
+      ].join('\n');
+
+      const { result } = await ContentValidator.validateText({
+        text: combinedText,
+        context: {
+          contentId,
+          contentType: ContentType.Lesson,
+          ageGroup,
+          source: 'LessonView',
+        },
+      });
+
+      if (cancelled) return;
+
+      if (result.decision === 'quarantine' || result.decision === 'block') {
+        setIsQuarantined(true);
+        setContentBlockedMessage(result.fallbackText ?? 'This lesson is temporarily unavailable.');
+      }
+    };
+
+    run().catch((err) => {
+      console.warn('Lesson safety check failed:', err);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [lessonContent, contentId, ageGroup]);
 
   const handleBack = () => {
     router.back();
@@ -53,6 +115,17 @@ export default function LessonView({
   const hasNext = currentLessonIndex < totalLessons - 1;
 
   const styles = getStyles(colors, isDark);
+
+  const isOriginalEmpty =
+    (lessonContent.paragraphs?.length ?? 0) === 0 && (lessonContent.bulletPoints?.length ?? 0) === 0;
+
+  const displayLessonContent = isQuarantined ? null : syncValidated.content;
+
+  const emptyMessage =
+    contentBlockedMessage ??
+    (!isOriginalEmpty && syncValidated.decision === 'filter'
+      ? 'This lesson is not available for your age group.'
+      : 'Lesson content coming soon');
 
   return (
     <View style={styles.container}>
@@ -82,31 +155,39 @@ export default function LessonView({
       >
         <View style={styles.lessonCard}>
           <View style={styles.iconContainer}>
-            <Text style={styles.icon}>{lessonContent.icon || '📖'}</Text>
+            <Text style={styles.icon}>{displayLessonContent?.icon || '📖'}</Text>
           </View>
 
-          <Text style={styles.lessonTitle}>{lessonContent.title}</Text>
+          <Text style={styles.lessonTitle}>{displayLessonContent?.title || lessonContent.title}</Text>
 
           <View style={styles.divider} />
 
-          <View style={styles.contentSection}>
-            {lessonContent.bulletPoints.map((point, index) => (
-              <View key={index} style={styles.bulletPointContainer}>
-                <Text style={styles.bulletPoint}>•</Text>
-                <Text style={styles.bulletPointText}>{point}</Text>
+          {displayLessonContent ? (
+            <>
+              <View style={styles.contentSection}>
+                {displayLessonContent.bulletPoints.map((point, index) => (
+                  <View key={index} style={styles.bulletPointContainer}>
+                    <Text style={styles.bulletPoint}>•</Text>
+                    <Text style={styles.bulletPointText}>{point}</Text>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
 
-          {lessonContent.paragraphs.map((paragraph, index) => (
-            <View key={`para-${index}`} style={styles.paragraphContainer}>
-              <Text style={styles.paragraphText}>{paragraph}</Text>
-            </View>
-          ))}
+              {displayLessonContent.paragraphs.map((paragraph, index) => (
+                <View key={`para-${index}`} style={styles.paragraphContainer}>
+                  <Text style={styles.paragraphText}>{paragraph}</Text>
+                </View>
+              ))}
 
-          {lessonContent.paragraphs.length === 0 && lessonContent.bulletPoints.length === 0 && (
+              {displayLessonContent.paragraphs.length === 0 && displayLessonContent.bulletPoints.length === 0 && (
+                <View style={styles.emptyContent}>
+                  <Text style={styles.emptyText}>{emptyMessage}</Text>
+                </View>
+              )}
+            </>
+          ) : (
             <View style={styles.emptyContent}>
-              <Text style={styles.emptyText}>Lesson content coming soon</Text>
+              <Text style={styles.emptyText}>{emptyMessage}</Text>
             </View>
           )}
         </View>
