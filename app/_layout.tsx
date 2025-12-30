@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { Platform } from 'react-native';
+import mobileAds from 'react-native-google-mobile-ads';
 import { ThemeProvider, useTheme } from '../components/ThemeContext';
 import { SmartyChatProvider } from '../context/ChatContext';
 import SmartyFloatingButton from '../components/SmartyFloatingButton';
@@ -20,6 +22,18 @@ function RootLayoutContent() {
   const [streakChecked, setStreakChecked] = useState(false);
 
   useEffect(() => {
+    // Initialize AdMob
+    if (Platform.OS !== 'web') {
+      mobileAds()
+        .initialize()
+        .then(adapterStatuses => {
+          console.log('AdMob initialized');
+        })
+        .catch(err => {
+          console.warn('AdMob initialization failed:', err);
+        });
+    }
+
     // Initialize network listener
     initializeNetworkListener();
 

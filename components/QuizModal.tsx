@@ -20,6 +20,7 @@ import { QuestionSkeleton } from './SkeletonLoader';
 import NoConnectionScreen from './NoConnectionScreen';
 import { Feather } from '@expo/vector-icons';
 import AdContainer from './AdContainer';
+import { AD_UNIT_IDS } from '@/config/adConfig';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const MODAL_HEIGHT = SCREEN_HEIGHT * 0.85;
@@ -210,7 +211,7 @@ export default function QuizModal({
                       onRetry={handleRetry}
                       onBackToLesson={handleBackToLesson}
                     />
-                    <AdContainer />
+                    <AdContainer unitId={AD_UNIT_IDS.BANNER_QUIZ} />
                   </>
                 ) : null}
               </View>
