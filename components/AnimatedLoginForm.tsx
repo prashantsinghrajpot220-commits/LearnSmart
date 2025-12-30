@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -32,9 +32,9 @@ export default function AnimatedLoginForm() {
 
   const setUserName = useUserStore((state) => state.setUserName);
 
-  const buttonScale = useRef(new Animated.Value(1)).current;
-  const buttonOpacity = useRef(new Animated.Value(1)).current;
-  const cardOffset = useRef(new Animated.Value(0)).current;
+  const buttonScale = useMemo(() => new Animated.Value(1), []);
+  const buttonOpacity = useMemo(() => new Animated.Value(1), []);
+  const cardOffset = useMemo(() => new Animated.Value(0), []);
 
   const passwordInputRef = useRef<TextInput>(null);
 
@@ -59,7 +59,7 @@ export default function AnimatedLoginForm() {
       keyboardWillShow.remove();
       keyboardWillHide.remove();
     };
-  }, []);
+  }, [cardOffset]);
 
   useEffect(() => {
     if (password.length > 0 && !passwordVisible) {

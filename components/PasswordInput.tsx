@@ -1,4 +1,4 @@
-import React, { useState, useRef, forwardRef } from 'react';
+import React, { useState, useRef, forwardRef, useMemo } from 'react';
 import {
   View,
   TextInput,
@@ -26,8 +26,8 @@ export const PasswordInput = forwardRef<TextInput, PasswordInputProps>(
     const { colors } = useTheme();
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
-    const eyeAnim = useRef(new Animated.Value(0)).current;
-    const dotAnim = useRef(new Animated.Value(1)).current;
+    const eyeAnim = useMemo(() => new Animated.Value(0), []);
+    const dotAnim = useMemo(() => new Animated.Value(1), []);
 
     const handleFocus = () => {
       setIsFocused(true);
