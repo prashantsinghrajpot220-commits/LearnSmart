@@ -19,6 +19,7 @@ import QuizResultsScreen from './QuizResultsScreen';
 import { QuestionSkeleton } from './SkeletonLoader';
 import NoConnectionScreen from './NoConnectionScreen';
 import { Feather } from '@expo/vector-icons';
+import AdContainer from './AdContainer';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const MODAL_HEIGHT = SCREEN_HEIGHT * 0.85;
@@ -204,10 +205,13 @@ export default function QuizModal({
                     onPrevious={handlePrevious}
                   />
                 ) : questions.length > 0 && !isQuizActive ? (
-                  <QuizResultsScreen
-                    onRetry={handleRetry}
-                    onBackToLesson={handleBackToLesson}
-                  />
+                  <>
+                    <QuizResultsScreen
+                      onRetry={handleRetry}
+                      onBackToLesson={handleBackToLesson}
+                    />
+                    <AdContainer />
+                  </>
                 ) : null}
               </View>
             </Animated.View>
