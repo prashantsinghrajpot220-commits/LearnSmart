@@ -14,6 +14,7 @@ import { useTheme, ThemeColors } from '@/components/ThemeContext';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
 import { Feather } from '@expo/vector-icons';
 import { useUserStore } from '@/store/userStore';
+import PathwaysTab from '@/components/PathwaysTab';
 
 export default function Home12Plus() {
   const router = useRouter();
@@ -58,27 +59,7 @@ export default function Home12Plus() {
           <Text style={styles.subtitle}>Your learning dashboard</Text>
         </View>
 
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Pathways</Text>
-          <Text style={styles.sectionHint}>Coming Soon</Text>
-        </View>
-
-        <View style={styles.pathwaysGrid}>
-          {[
-            { title: 'Exam Prep', icon: 'target' as const },
-            { title: 'Career Skills', icon: 'briefcase' as const },
-            { title: 'Deep Practice', icon: 'book-open' as const },
-            { title: 'Projects', icon: 'layers' as const },
-          ].map((item) => (
-            <View key={item.title} style={styles.pathwayCard}>
-              <View style={styles.pathwayIconWrap}>
-                <Feather name={item.icon} size={20} color={colors.white} />
-              </View>
-              <Text style={styles.pathwayTitle}>{item.title}</Text>
-              <Text style={styles.pathwaySubtitle}>Coming Soon</Text>
-            </View>
-          ))}
-        </View>
+        <PathwaysTab />
 
         <View style={styles.infoCard}>
           <Text style={styles.infoTitle}>Age Group</Text>
@@ -146,58 +127,6 @@ const getStyles = (colors: ThemeColors) => {
     },
     subtitle: {
       fontSize: FontSizes.md,
-      color: colors.textSecondary,
-    },
-    sectionHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'flex-end',
-      marginBottom: Spacing.lg,
-    },
-    sectionTitle: {
-      fontSize: FontSizes.xl,
-      fontWeight: FontWeights.semibold,
-      color: matureText,
-    },
-    sectionHint: {
-      fontSize: FontSizes.sm,
-      fontWeight: FontWeights.medium,
-      color: colors.textSecondary,
-    },
-    pathwaysGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      marginHorizontal: -Spacing.sm,
-      marginBottom: Spacing.xl,
-    },
-    pathwayCard: {
-      backgroundColor: colors.cardBackground,
-      flexBasis: Platform.select({ web: '31%', default: '46%' }),
-      margin: Spacing.sm,
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
-      borderWidth: 1,
-      borderColor: colors.lightGray,
-      minHeight: 120,
-      justifyContent: 'center',
-    },
-    pathwayIconWrap: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      backgroundColor: maturePrimary,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: Spacing.md,
-    },
-    pathwayTitle: {
-      fontSize: FontSizes.md,
-      fontWeight: FontWeights.semibold,
-      color: matureText,
-      marginBottom: Spacing.xs,
-    },
-    pathwaySubtitle: {
-      fontSize: FontSizes.sm,
       color: colors.textSecondary,
     },
     infoCard: {

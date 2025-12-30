@@ -5,7 +5,9 @@ import { Colors } from '@/constants/theme';
 
 type ThemeMode = 'light' | 'dark';
 
-export type ThemeColors = typeof Colors.light;
+export type ThemeColors = typeof Colors.light & {
+  matureCardBackground?: string;
+};
 
 interface ThemeContextType {
   theme: ThemeMode;
