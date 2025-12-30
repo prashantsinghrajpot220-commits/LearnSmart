@@ -16,6 +16,7 @@ import { useChatStore } from '@/store/chatStore';
 import { sendMessageToSmarty, getQuickReplies } from '@/services/smartyAI';
 import { useSmartyContext } from '@/context/ChatContext';
 import { useUserStore } from '@/store/userStore';
+import { sanitizeText } from '@/utils/sanitizer';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const MAX_CHAT_HEIGHT = SCREEN_HEIGHT * 0.7;
@@ -45,9 +46,9 @@ export default function SmartyChat({ onClose }: SmartyChatProps) {
   }, [messages, isTyping, scrollToBottom]);
 
   const handleSend = async () => {
-    if (!inputText.trim()) return;
+    const userMessage = sanitizeText(inputText, { maxLength: 500 });
+    if (!userMessage.trim()) return;
 
-    const userMessage = inputText.trim();
     setInputText('');
     addMessage('user', userMessage);
 
@@ -61,12 +62,13 @@ export default function SmartyChat({ onClose }: SmartyChatProps) {
   };
 
   const handleQuickReply = async (reply: string) => {
-    setInputText(reply);
-    addMessage('user', reply);
+    const safeReply = sanitizeText(reply, { maxLength: 500 });
+
     setInputText('');
+    addMessage('user', safeReply);
 
     const context = getContextInfo();
-    await sendMessageToSmarty(reply, {
+    await sendMessageToSmarty(safeReply, {
       userName: userName || 'Student',
       selectedClass: useUserStore.getState().selectedClass || '',
       selectedStream: useUserStore.getState().selectedStream || '',
@@ -75,13 +77,14 @@ export default function SmartyChat({ onClose }: SmartyChatProps) {
   };
 
   const handleSearch = () => {
-    if (searchQuery.trim()) {
-      const results = useChatStore.getState().searchMessages(searchQuery);
+    const query = sanitizeText(searchQuery, { maxLength: 80, preserveNewlines: false });
+    if (query.trim()) {
+      const results = useChatStore.getState().searchMessages(query);
       // Display search results in chat
       if (results.length === 0) {
-        addMessage('assistant', `No previous messages found for "${searchQuery}". Try a different search term!`);
+        addMessage('assistant', `No previous messages found for "${query}". Try a different search term!`);
       } else {
-        addMessage('assistant', `Found ${results.length} previous message(s) about "${searchQuery}". Keep learning and you'll remember more! 💪`);
+        addMessage('assistant', `Found ${results.length} previous message(s) about "${query}". Keep learning and you'll remember more! 💪`);
       }
       setSearchQuery('');
       setShowSearch(false);

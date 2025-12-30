@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import { runOnJS } from 'react-native-reanimated';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useTheme, ThemeColors } from './ThemeContext';
 import { QuizQuestion, useQuizStore, useQuizProgress, useIsQuestionAnswered } from '@/store/quizStore';
+import { sanitizeTextForDisplay } from '@/utils/sanitizer';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.3;
@@ -42,6 +43,21 @@ export default function QuizCard({
   const { selectAnswer, selectedAnswers } = useQuizStore();
   const { isLastQuestion } = useQuizProgress();
   const isAnswered = useIsQuestionAnswered(questionNumber - 1);
+
+  const safeQuestionText = useMemo(
+    () => sanitizeTextForDisplay(question.question, { maxLength: 500 }),
+    [question.question]
+  );
+
+  const safeOptions = useMemo(
+    () => question.options.map((opt) => sanitizeTextForDisplay(opt, { maxLength: 200 })),
+    [question.options]
+  );
+
+  const safeExplanationText = useMemo(
+    () => sanitizeTextForDisplay(question.explanation, { maxLength: 800 }),
+    [question.explanation]
+  );
   
   const [animationState] = useState({
     scale: new Animated.Value(1),
@@ -202,12 +218,12 @@ export default function QuizCard({
 
         {/* Question */}
         <View style={styles.questionContainer}>
-          <Text style={styles.questionText}>{question.question}</Text>
+          <Text style={styles.questionText}>{safeQuestionText}</Text>
         </View>
 
         {/* Options */}
         <View style={styles.optionsContainer}>
-          {question.options.map((option, index) => {
+          {safeOptions.map((option, index) => {
             const optionStyle = getOptionStyle(index);
             return (
               <TouchableOpacity
@@ -271,7 +287,7 @@ export default function QuizCard({
                 ? '✓ Correct!'
                 : '✗ Not quite right'}
             </Text>
-            <Text style={styles.explanationText}>{question.explanation}</Text>
+            <Text style={styles.explanationText}>{safeExplanationText}</Text>
           </Animated.View>
         )}
 

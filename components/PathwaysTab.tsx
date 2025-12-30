@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,8 @@ import {
 import { useRouter } from 'expo-router';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useTheme, ThemeColors } from './ThemeContext';
+import { useUserStore } from '@/store/userStore';
+import { ContentValidator } from '@/services/ContentValidator';
 import { Feather } from '@expo/vector-icons';
 import { SENIOR_PATHWAYS } from '@/data/seniorData';
 
@@ -24,6 +26,17 @@ interface Pathway {
 export default function PathwaysTab() {
   const router = useRouter();
   const { colors } = useTheme();
+  const ageGroup = useUserStore((s) => s.ageGroup) ?? 'under12';
+
+  const pathways = useMemo(
+    () =>
+      ContentValidator.validatePathwaysSync<Pathway>(SENIOR_PATHWAYS as Pathway[], {
+        contentId: 'pathways:senior',
+        ageGroup,
+        source: 'PathwaysTab',
+      }),
+    [ageGroup]
+  );
 
   const handlePathwayPress = (pathway: Pathway) => {
     // Navigate to chapters screen with pathway details
@@ -52,7 +65,7 @@ export default function PathwaysTab() {
             <Text style={styles.categoryTitle}>Competitive Exams</Text>
           </View>
           <View style={styles.pathwaysGrid}>
-            {SENIOR_PATHWAYS.filter(p => p.category === 'Competitive Exams').map((pathway) => (
+            {pathways.filter((p) => p.category === 'Competitive Exams').map((pathway) => (
               <TouchableOpacity
                 key={pathway.id}
                 style={styles.pathwayCard}
@@ -85,7 +98,7 @@ export default function PathwaysTab() {
             <Text style={styles.categoryTitle}>Skill Building</Text>
           </View>
           <View style={styles.pathwaysGrid}>
-            {SENIOR_PATHWAYS.filter(p => p.category === 'Skill Building').map((pathway) => (
+            {pathways.filter((p) => p.category === 'Skill Building').map((pathway) => (
               <TouchableOpacity
                 key={pathway.id}
                 style={styles.pathwayCard}

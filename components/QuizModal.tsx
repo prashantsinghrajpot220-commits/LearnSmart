@@ -12,8 +12,10 @@ import {
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useTheme, ThemeColors } from './ThemeContext';
 import { useQuizStore } from '@/store/quizStore';
+import { useUserStore } from '@/store/userStore';
 import { generateQuizQuestions } from '@/services/quizGenerator';
 import { checkNetworkConnectivity } from '@/services/networkService';
+import { ContentValidator } from '@/services/ContentValidator';
 import QuizCard from './QuizCard';
 import QuizResultsScreen from './QuizResultsScreen';
 import { QuestionSkeleton } from './SkeletonLoader';
@@ -41,6 +43,7 @@ export default function QuizModal({
   chapter,
 }: QuizModalProps) {
   const { colors } = useTheme();
+  const ageGroup = useUserStore((s) => s.ageGroup) ?? 'under12';
   const {
     questions,
     isQuizActive,
@@ -81,14 +84,25 @@ export default function QuizModal({
     setLoading(true);
     try {
       const quizQuestions = await generateQuizQuestions(className, subject, chapter);
-      setQuestions(quizQuestions);
+
+      const safeQuestions = await ContentValidator.validateQuizQuestions(quizQuestions, {
+        contentId: `quiz:${className}:${subject}:${chapter}`,
+        ageGroup,
+        source: 'QuizModal',
+      });
+
+      if (safeQuestions.length === 0) {
+        throw new Error('Quiz content is unavailable right now.');
+      }
+
+      setQuestions(safeQuestions);
     } catch (err) {
       console.error('Failed to load quiz:', err);
       setError(err instanceof Error ? err.message : 'Failed to load quiz');
     } finally {
       setLoading(false);
     }
-  }, [className, subject, chapter, setQuestions, setLoading, setError]);
+  }, [className, subject, chapter, ageGroup, setQuestions, setLoading, setError]);
 
   useEffect(() => {
     if (visible && questions.length === 0 && !error) {
