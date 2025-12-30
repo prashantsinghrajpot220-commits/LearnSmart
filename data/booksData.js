@@ -12,7 +12,8 @@ export const BOOKS_RECOMMENDATIONS = [
     description: 'Comprehensive physics textbook covering mechanics, waves, and optics for JEE preparation',
     thumbnail: '📚',
     amazonUrl: 'https://www.amazon.com/dp/8177091875',
-    isbn: '9788177091875'
+    isbn: '9788177091875',
+    asin: '8177091875'
   },
   {
     id: 'jee-2',
@@ -23,7 +24,8 @@ export const BOOKS_RECOMMENDATIONS = [
     description: 'Essential calculus problem book for JEE Main and Advanced aspirants',
     thumbnail: '📘',
     amazonUrl: 'https://www.amazon.com/dp/9351762563',
-    isbn: '9789351762569'
+    isbn: '9789351762569',
+    asin: '9351762563'
   },
   {
     id: 'jee-3',
@@ -34,7 +36,8 @@ export const BOOKS_RECOMMENDATIONS = [
     description: 'Classic organic chemistry reference book with detailed mechanisms and reactions',
     thumbnail: '📗',
     amazonUrl: 'https://www.amazon.com/dp/9353502198',
-    isbn: '9789353502191'
+    isbn: '9789353502191',
+    asin: '9353502198'
   },
   {
     id: 'jee-4',
@@ -80,7 +83,8 @@ export const BOOKS_RECOMMENDATIONS = [
     description: 'Complete biology reference covering botany and zoology for NEET preparation',
     thumbnail: '🧬',
     amazonUrl: 'https://www.amazon.com/dp/9386873215',
-    isbn: '9789386873210'
+    isbn: '9789386873210',
+    asin: '9386873215'
   },
   {
     id: 'neet-2',
@@ -148,7 +152,8 @@ export const BOOKS_RECOMMENDATIONS = [
     description: 'Comprehensive guide to Indian Constitution and political system for UPSC',
     thumbnail: '🏛️',
     amazonUrl: 'https://www.amazon.com/dp/938742649X',
-    isbn: '9789387426499'
+    isbn: '9789387426499',
+    asin: '938742649X'
   },
   {
     id: 'upsc-2',
@@ -216,7 +221,8 @@ export const BOOKS_RECOMMENDATIONS = [
     description: 'Modern introduction to JavaScript programming with practical examples',
     thumbnail: '💻',
     amazonUrl: 'https://www.amazon.com/dp/1593279507',
-    isbn: '9781593279509'
+    isbn: '9781593279509',
+    asin: '1593279507'
   },
   {
     id: 'web-2',
@@ -352,7 +358,8 @@ export const BOOKS_RECOMMENDATIONS = [
     description: 'Essential reading on user-centered design and usability',
     thumbnail: '📐',
     amazonUrl: 'https://www.amazon.com/dp/0465050654',
-    isbn: '9780465050659'
+    isbn: '9780465050659',
+    asin: '0465050654'
   },
   {
     id: 'design-2',
