@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { View, StyleSheet, Animated, Easing, Platform } from 'react-native';
 import LottieView from 'lottie-react-native';
 
@@ -11,8 +11,8 @@ interface CartoonCharacterProps {
 
 export default function CartoonCharacter({ state, size = 180 }: CartoonCharacterProps) {
   const animationRef = useRef<LottieView>(null);
-  const bounceAnim = useRef(new Animated.Value(0)).current;
-  const wiggleAnim = useRef(new Animated.Value(0)).current;
+  const bounceAnim = useMemo(() => new Animated.Value(0), []);
+  const wiggleAnim = useMemo(() => new Animated.Value(0), []);
 
   const startBounce = () => {
     Animated.sequence([
