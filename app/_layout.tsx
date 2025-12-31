@@ -5,7 +5,6 @@ import { Platform } from 'react-native';
 import mobileAds from 'react-native-google-mobile-ads';
 import { ThemeProvider, useTheme } from '../components/ThemeContext';
 import { SmartyChatProvider } from '../context/ChatContext';
-import SmartyFloatingButton from '../components/SmartyFloatingButton';
 import SmartyChat from '../components/SmartyChat';
 import { useChatStore } from '../store/chatStore';
 import { initializeNetworkListener, cleanupNetworkListener } from '../services/networkService';
@@ -13,12 +12,14 @@ import { streakService } from '../services/streakService';
 import { useXPStore } from '../store/xpStore';
 import { useAchievementStore } from '../store/achievementStore';
 import { BottomTabNavigator } from '../components/BottomTabNavigator';
+import { HeaderComponent } from '../components/HeaderComponent';
+import { FloatingActionButton } from '../components/FloatingActionButton';
 import { usePathname } from 'expo-router';
 import ErrorBoundary from '../components/ErrorBoundary';
 
 function RootLayoutContent() {
   const { colors, isDark } = useTheme();
-  const { isChatOpen, closeChat } = useChatStore();
+  const { isChatOpen, closeChat, toggleChat } = useChatStore();
   const [isLoaded, setIsLoaded] = useState(false);
   const pathname = usePathname();
   const { loadXP } = useXPStore();
@@ -113,6 +114,7 @@ function RootLayoutContent() {
   return (
     <>
       <StatusBar style={isDark ? 'light' : 'dark'} backgroundColor={colors.background} />
+      <HeaderComponent />
       <Stack
         screenOptions={{
           headerShown: false,
@@ -134,7 +136,7 @@ function RootLayoutContent() {
         <Stack.Screen name="about" />
       </Stack>
       <BottomTabNavigator />
-      {showFloatingChat && <SmartyFloatingButton onPress={() => {}} />}
+      {showFloatingChat && <FloatingActionButton onPress={toggleChat} />}
       {isChatOpen && <SmartyChat onClose={closeChat} />}
     </>
   );

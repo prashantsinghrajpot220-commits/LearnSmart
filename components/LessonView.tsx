@@ -264,7 +264,7 @@ const getStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create({
   },
   header: {
     paddingHorizontal: Spacing.lg,
-    paddingTop: Platform.select({ web: Spacing.lg, default: Spacing.lg + 20 }),
+    paddingTop: Platform.select({ ios: 110, default: 70 }), // Adjust for global header
     paddingBottom: Spacing.md,
     backgroundColor: colors.background,
   },

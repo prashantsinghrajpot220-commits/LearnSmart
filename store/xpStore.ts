@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface Rank {
   name: string;
+  level: number;
   icon: string;
   minXP: number;
   maxXP: number;
@@ -13,6 +14,7 @@ export interface Rank {
 export const RANKS: Rank[] = [
   {
     name: 'Novice',
+    level: 1,
     icon: '🌱',
     minXP: 0,
     maxXP: 199,
@@ -21,6 +23,7 @@ export const RANKS: Rank[] = [
   },
   {
     name: 'Seeker',
+    level: 2,
     icon: '🔍',
     minXP: 200,
     maxXP: 499,
@@ -29,6 +32,7 @@ export const RANKS: Rank[] = [
   },
   {
     name: 'Scholar',
+    level: 3,
     icon: '📚',
     minXP: 500,
     maxXP: 999,
@@ -37,6 +41,7 @@ export const RANKS: Rank[] = [
   },
   {
     name: 'Sage',
+    level: 4,
     icon: '🧙',
     minXP: 1000,
     maxXP: Infinity,

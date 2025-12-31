@@ -17,6 +17,7 @@ import {
 } from '@/constants/curriculum';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
 import { useSmartyContext } from '@/context/ChatContext';
+import { BreadcrumbNav } from '@/components/BreadcrumbNav';
 import BooksGrid from '@/components/BooksGrid';
 import { getBooksByPathwayName } from '@/data/booksData';
 
@@ -91,6 +92,12 @@ export default function Chapters() {
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
+          <BreadcrumbNav 
+            paths={[
+              { label: 'Home', path: '/home' },
+              { label: subject || 'Chapters', path: '' }
+            ]} 
+          />
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => router.back()}
@@ -215,8 +222,8 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   content: {
     paddingHorizontal: Spacing.xl,
-    paddingTop: Platform.select({ web: Spacing.xxl, default: Spacing.xxl + 20 }),
-    paddingBottom: Spacing.xxl,
+    paddingTop: Platform.select({ ios: 110, default: 70 }),
+    paddingBottom: Spacing.xxl + 80,
   },
   backButton: {
     marginBottom: Spacing.md,
