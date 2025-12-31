@@ -20,6 +20,8 @@ import { useRouter } from 'expo-router';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { AvatarDisplay, AvatarSelector } from '../components/AvatarSelector';
 import Dropdown from '../components/Dropdown';
+import CoinDisplay from '../components/CoinDisplay';
+import RankBadge from '../components/RankBadge';
 
 export default function ProfileScreen() {
   const { colors, isDark, toggleTheme } = useTheme();
@@ -30,9 +32,10 @@ export default function ProfileScreen() {
     setSelectedClass,
     selectedAvatar,
     logout,
+    gamificationData,
   } = useUserStore();
   
-  const { rank, currentXP } = useCurrentRank();
+  const { currentXP } = useCurrentRank();
   const { totalLessonsRead, totalQuizzesCompleted } = useXPStore();
   const [streak, setStreak] = React.useState(0);
   
@@ -97,9 +100,36 @@ export default function ProfileScreen() {
             <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total XP</Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.cardBackground }]}>
-            <Text style={styles.statEmoji}>{rank.icon}</Text>
-            <Text style={[styles.statValue, { color: colors.text }]}>{rank.name}</Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Current Rank</Text>
+            <Text style={styles.statEmoji}>💰</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>{gamificationData.smartCoins}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>SmartCoins</Text>
+          </View>
+        </View>
+
+        {/* Weekly Progress & Rank */}
+        <View style={styles.weeklySection}>
+          <View style={[styles.weeklyCard, { backgroundColor: colors.cardBackground }]}>
+            <View style={styles.weeklyHeader}>
+              <Text style={[styles.weeklyTitle, { color: colors.text }]}>
+                Weekly Progress
+              </Text>
+              <Text style={[styles.weeklySubtitle, { color: colors.textSecondary }]}>
+                Resets Sunday at 12 AM
+              </Text>
+            </View>
+            <View style={styles.weeklyStats}>
+              <View style={styles.weeklyStat}>
+                <Text style={[styles.weeklyStatValue, { color: '#B2AC88' }]}>
+                  {gamificationData.weeklyXP}
+                </Text>
+                <Text style={[styles.weeklyStatLabel, { color: colors.textSecondary }]}>
+                  Weekly XP
+                </Text>
+              </View>
+              <View style={styles.weeklyStat}>
+                <RankBadge size="small" />
+              </View>
+            </View>
           </View>
         </View>
 
@@ -112,6 +142,46 @@ export default function ProfileScreen() {
               <MaterialCommunityIcons name="help-circle-outline" size={20} color={colors.primary} />
               <Text style={[styles.miniStatText, { color: colors.text }]}>{totalQuizzesCompleted} Quizzes</Text>
            </View>
+        </View>
+
+        {/* Gamification Actions */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Gamification</Text>
+          
+          <TouchableOpacity 
+            style={[styles.actionItem, { borderBottomColor: colors.lightGray }]}
+            onPress={() => router.push('/leaderboard')}
+          >
+            <View style={styles.actionLabelGroup}>
+              <MaterialCommunityIcons name="trophy" size={24} color={colors.primary} />
+              <View style={styles.actionTextContainer}>
+                <Text style={[styles.actionLabel, { color: colors.text }]}>Leaderboard</Text>
+                <Text style={[styles.actionSublabel, { color: colors.textSecondary }]}>
+                  See how you rank against others
+                </Text>
+              </View>
+            </View>
+            <Feather name="chevron-right" size={20} color={colors.textSecondary} />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.actionItem, { borderBottomColor: colors.lightGray }]}
+            onPress={() => router.push('/avatar-store')}
+          >
+            <View style={styles.actionLabelGroup}>
+              <MaterialCommunityIcons name="store" size={24} color={colors.primary} />
+              <View style={styles.actionTextContainer}>
+                <Text style={[styles.actionLabel, { color: colors.text }]}>Avatar Store</Text>
+                <Text style={[styles.actionSublabel, { color: colors.textSecondary }]}>
+                  Unlock new avatars with SmartCoins
+                </Text>
+              </View>
+            </View>
+            <View style={styles.actionRightContainer}>
+              <CoinDisplay size="small" showLabel={false} />
+              <Feather name="chevron-right" size={20} color={colors.textSecondary} />
+            </View>
+          </TouchableOpacity>
         </View>
 
         {/* Edit Profile Section */}
@@ -256,6 +326,40 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginTop: 2,
     textAlign: 'center',
   },
+  weeklySection: {
+    marginBottom: Spacing.lg,
+  },
+  weeklyCard: {
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+  },
+  weeklyHeader: {
+    marginBottom: Spacing.md,
+  },
+  weeklyTitle: {
+    fontSize: FontSizes.lg,
+    fontWeight: FontWeights.bold,
+  },
+  weeklySubtitle: {
+    fontSize: FontSizes.sm,
+    marginTop: 2,
+  },
+  weeklyStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  weeklyStat: {
+    alignItems: 'center',
+  },
+  weeklyStatValue: {
+    fontSize: FontSizes.xl,
+    fontWeight: FontWeights.bold,
+    marginBottom: 4,
+  },
+  weeklyStatLabel: {
+    fontSize: FontSizes.sm,
+  },
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -272,6 +376,32 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginLeft: Spacing.xs,
     fontSize: FontSizes.sm,
     fontWeight: FontWeights.medium,
+  },
+  actionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+  },
+  actionLabelGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionTextContainer: {
+    marginLeft: Spacing.md,
+  },
+  actionLabel: {
+    fontSize: FontSizes.md,
+    fontWeight: FontWeights.medium,
+  },
+  actionSublabel: {
+    fontSize: FontSizes.sm,
+    marginTop: 2,
+  },
+  actionRightContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   section: {
     marginBottom: Spacing.xxl,

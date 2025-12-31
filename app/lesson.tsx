@@ -19,6 +19,8 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import { Feather } from '@expo/vector-icons';
 import { useXPStore } from '@/store/xpStore';
 import { useAchievementStore } from '@/store/achievementStore';
+import { coinRewardService } from '@/services/CoinRewardService';
+import { streakService } from '@/services/streakService';
 
 interface LessonContent {
   title: string;
@@ -73,23 +75,33 @@ export default function Lesson() {
   // Award XP when lesson is displayed
   useEffect(() => {
     if (lessons.length > 0 && !hasAwardedXP) {
-      const awardXP = async () => {
+      const awardRewards = async () => {
         // Award 10 XP for reading a lesson
         await addXP(10);
         incrementLessonsRead();
+        
+        // Award SmartCoins for lesson completion
+        await coinRewardService.rewardLessonCompletion();
+        
+        // Check and update streak, award streak bonuses
+        const streakResult = await streakService.checkAndUpdateStreak();
+        if (streakResult.streakChanged && coinRewardService.shouldReceiveStreakBonus(streakResult.streak)) {
+          await coinRewardService.rewardStreakMilestone(streakResult.streak);
+        }
+        
         setHasAwardedXP(true);
 
         // Check for learning achievements
         const { totalLessonsRead, getXP } = useXPStore.getState();
         checkAndUnlock({
-          currentStreak: 0, // Will be updated from streak service
+          currentStreak: streakResult.streak,
           totalQuizzesCompleted: 0,
           totalLessonsRead,
           currentXP: getXP(),
           rank: useXPStore.getState().getRank().name,
         });
       };
-      awardXP();
+      awardRewards();
     }
   }, [lessons.length, hasAwardedXP, addXP, incrementLessonsRead, checkAndUnlock]);
 

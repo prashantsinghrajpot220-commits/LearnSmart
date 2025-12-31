@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { coinRewardService } from '@/services/CoinRewardService';
+import { rankSystem } from '@/utils/rankSystem';
 
 export interface Rank {
   name: string;
@@ -17,36 +19,45 @@ export const RANKS: Rank[] = [
     level: 1,
     icon: '🌱',
     minXP: 0,
-    maxXP: 199,
+    maxXP: 500,
     color: '#9CAF88',
     message: 'Welcome, Novice! Your learning journey begins now.',
   },
   {
-    name: 'Seeker',
-    level: 2,
-    icon: '🔍',
-    minXP: 200,
-    maxXP: 499,
-    color: '#7EB5A6',
-    message: 'You\'re a Seeker! Knowledge awaits your discovery.',
-  },
-  {
     name: 'Scholar',
-    level: 3,
+    level: 2,
     icon: '📚',
     minXP: 500,
-    maxXP: 999,
+    maxXP: 1500,
     color: '#5D8AA8',
     message: 'Welcome to Scholar rank! Your dedication is showing.',
   },
   {
     name: 'Sage',
-    level: 4,
+    level: 3,
     icon: '🧙',
-    minXP: 1000,
-    maxXP: Infinity,
+    minXP: 1500,
+    maxXP: 3000,
     color: '#9B7EBD',
     message: 'You\'ve achieved Sage status! Wisdom is yours.',
+  },
+  {
+    name: 'Master',
+    level: 4,
+    icon: '🎓',
+    minXP: 3000,
+    maxXP: 5000,
+    color: '#FF6B35',
+    message: 'You\'ve reached Master level! Excellence achieved.',
+  },
+  {
+    name: 'Guru',
+    level: 5,
+    icon: '🧠',
+    minXP: 5000,
+    maxXP: Infinity,
+    color: '#FFD700',
+    message: 'You\'re a Guru! Ultimate wisdom attained.',
   },
 ];
 
@@ -77,7 +88,7 @@ export const useXPStore = create<XPState>((set, get) => ({
   lastXPUpdate: null,
 
   addXP: async (amount: number) => {
-    const { currentXP, getRank, loadXP } = get();
+    const { currentXP, getRank } = get();
     const oldRank = getRank();
     const newXP = currentXP + amount;
     const newRank = getRank();
@@ -89,6 +100,9 @@ export const useXPStore = create<XPState>((set, get) => ({
     if (newXP >= newRank.minXP && oldRank.name !== newRank.name) {
       rankUp = true;
       milestone = newRank.message;
+      
+      // Award SmartCoins for rank up
+      coinRewardService.rewardRankUp(newRank.name);
     }
 
     set({
