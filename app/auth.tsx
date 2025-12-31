@@ -8,6 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useUserStore, AgeGroup } from '@/store/userStore';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
@@ -53,6 +54,31 @@ export default function Auth() {
       setIsLoading(false);
     }
   };
+
+  // Play Store Test Account - Skip age selection and go directly to home
+  const checkForTestAccountAndBypass = async () => {
+    try {
+      // Get stored user data to check if it's test account
+      const userData = await AsyncStorage.getItem('@learnsmart_user_name');
+      // If user name is "Test User", bypass age selection
+      if (userData === 'Test User') {
+        await setAgeGroup('12plus'); // Default to 12+ for test account
+        completeOnboarding();
+        router.replace('/home-12plus');
+        return true;
+      }
+    } catch (error) {
+      console.error('Error checking for test account:', error);
+    }
+    return false;
+  };
+
+  // Check for test account when component mounts
+  React.useEffect(() => {
+    if (isSignup && signupStep === 'age') {
+      checkForTestAccountAndBypass();
+    }
+  }, [signupStep, isSignup, checkForTestAccountAndBypass]);
 
   const styles = getStyles(colors);
 
