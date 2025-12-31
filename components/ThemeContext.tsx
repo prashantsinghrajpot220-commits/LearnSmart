@@ -3,11 +3,9 @@ import { useColorScheme } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '@/constants/theme';
 
-type ThemeMode = 'light' | 'dark';
+export type ThemeMode = 'light' | 'dark' | 'mature';
 
-export type ThemeColors = typeof Colors.light & {
-  matureCardBackground?: string;
-};
+export type ThemeColors = typeof Colors.light;
 
 interface ThemeContextType {
   theme: ThemeMode;
@@ -15,6 +13,7 @@ interface ThemeContextType {
   setTheme: (mode: ThemeMode) => void;
   toggleTheme: () => void;
   isDark: boolean;
+  isMature: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -29,10 +28,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const loadTheme = async () => {
       try {
         const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
-        if (savedTheme === 'light' || savedTheme === 'dark') {
-          setThemeState(savedTheme);
+        if (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'mature') {
+          setThemeState(savedTheme as ThemeMode);
         } else if (systemColorScheme) {
-          setThemeState(systemColorScheme);
+          setThemeState(systemColorScheme as ThemeMode);
         }
       } catch (error) {
         console.error('Failed to load theme', error);
@@ -51,8 +50,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   const toggleTheme = useCallback(() => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
+    const nextTheme: Record<ThemeMode, ThemeMode> = {
+      light: 'dark',
+      dark: 'mature',
+      mature: 'light',
+    };
+    setTheme(nextTheme[theme]);
   }, [theme, setTheme]);
 
   const value = {
@@ -61,6 +64,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setTheme,
     toggleTheme,
     isDark: theme === 'dark',
+    isMature: theme === 'mature',
   };
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

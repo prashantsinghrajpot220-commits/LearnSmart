@@ -13,6 +13,7 @@ import LessonView from '@/components/LessonView';
 import { getChapterLessons } from '@/constants/curriculum';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
 import { useSmartyContext } from '@/context/ChatContext';
+import { BreadcrumbNav } from '@/components/BreadcrumbNav';
 import QuizModal from '@/components/QuizModal';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { Feather } from '@expo/vector-icons';
@@ -213,8 +214,8 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   content: {
     paddingHorizontal: Spacing.xl,
-    paddingTop: Platform.select({ web: Spacing.xxl, default: Spacing.xxl + 20 }),
-    paddingBottom: Spacing.xxl,
+    paddingTop: Platform.select({ ios: 110, default: 70 }),
+    paddingBottom: Spacing.xxl + 80,
   },
   title: {
     fontSize: 32,

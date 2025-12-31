@@ -110,7 +110,7 @@ export default function AchievementCard({
           style={[
             styles.iconContainer,
             achievement.unlocked && {
-              backgroundColor: isDark ? '#2A2A2A' : '#F5F1E8',
+              backgroundColor: colors.border,
             },
           ]}
         >
@@ -189,7 +189,7 @@ const getStyles = (colors: ThemeColors, isDark: boolean, isUnlocked: boolean) =>
       width: 56,
       height: 56,
       borderRadius: 28,
-      backgroundColor: isDark ? '#2A2A2A' : '#F5F1E8',
+      backgroundColor: colors.border,
       alignItems: 'center',
       justifyContent: 'center',
       marginBottom: Spacing.sm,

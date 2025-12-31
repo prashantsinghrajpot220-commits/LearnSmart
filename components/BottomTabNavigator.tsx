@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, TouchableOpacity, StyleSheet, Platform, Dimensions, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from './ThemeContext';
 import { useRouter, usePathname } from 'expo-router';
-import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withSpring,
+  interpolate
+} from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
+const TAB_BAR_WIDTH = width - 32;
+const TAB_WIDTH = TAB_BAR_WIDTH / 4;
 
 const TABS = [
   { name: 'Home', icon: 'home-variant', path: '/home' },
@@ -19,13 +26,32 @@ export const BottomTabNavigator = () => {
   const router = useRouter();
   const pathname = usePathname();
 
+  const translateX = useSharedValue(0);
+
+  useEffect(() => {
+    const activeIndex = TABS.findIndex(tab => 
+      pathname === tab.path || (tab.path === '/home' && pathname === '/home-12plus')
+    );
+    if (activeIndex !== -1) {
+      translateX.value = withSpring(activeIndex * TAB_WIDTH, {
+        damping: 15,
+        stiffness: 100
+      });
+    }
+  }, [pathname, translateX]);
+
+  const indicatorStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }],
+    };
+  });
+
   const handlePress = (path: string) => {
     router.push(path as any);
   };
 
-  // Determine if we should show the tab bar
-  const hideOnScreens = ['/', '/auth', '/lesson', '/chapters'];
-  if (hideOnScreens.some(screen => pathname === screen || pathname.startsWith('/lesson/'))) {
+  const hideOnScreens = ['/', '/auth', '/lesson', '/chapters', '/welcome', '/login', '/signup'];
+  if (hideOnScreens.some(screen => pathname === screen || pathname.startsWith('/lesson/') || pathname.startsWith('/auth/'))) {
     return null;
   }
 
@@ -35,11 +61,21 @@ export const BottomTabNavigator = () => {
         style={[
           styles.tabBar,
           {
-            backgroundColor: isDark ? 'rgba(45, 45, 45, 0.95)' : 'rgba(245, 241, 232, 0.95)',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+            backgroundColor: colors.glass,
+            borderColor: colors.border,
           }
         ]}
       >
+        <Animated.View style={[
+          styles.activeIndicator, 
+          { 
+            backgroundColor: colors.primary,
+            width: TAB_WIDTH - 20,
+            left: 10,
+          }, 
+          indicatorStyle
+        ]} />
+        
         {TABS.map((tab) => {
           const isActive = pathname === tab.path || (tab.path === '/home' && pathname === '/home-12plus');
           return (
@@ -52,15 +88,14 @@ export const BottomTabNavigator = () => {
               <MaterialCommunityIcons
                 name={tab.icon as any}
                 size={24}
-                color={isActive ? colors.primary : colors.textSecondary}
+                color={isActive ? colors.white : colors.textSecondary}
               />
               <Text style={[
                 styles.tabLabel,
-                { color: isActive ? colors.primary : colors.textSecondary }
+                { color: isActive ? colors.white : colors.textSecondary }
               ]}>
                 {tab.name}
               </Text>
-              {isActive && <View style={[styles.activeIndicator, { backgroundColor: colors.primary }]} />}
             </TouchableOpacity>
           );
         })}
@@ -84,7 +119,7 @@ const styles = StyleSheet.create({
     height: 70,
     borderRadius: 35,
     overflow: 'hidden',
-    paddingHorizontal: 10,
+    paddingHorizontal: 0,
     borderWidth: 1,
     ...Platform.select({
       ios: {
@@ -98,6 +133,7 @@ const styles = StyleSheet.create({
       },
       web: {
         boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
+        backdropFilter: 'blur(10px)',
       }
     }),
   },
@@ -105,17 +141,20 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 8,
+    zIndex: 1,
   },
   tabLabel: {
     fontSize: 10,
-    fontWeight: '600',
+    fontWeight: '700',
     marginTop: 4,
   },
   activeIndicator: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    marginTop: 4,
+    position: 'absolute',
+    height: 50,
+    top: 10,
+    borderRadius: 25,
+    zIndex: 0,
   }
 });
+
+export default BottomTabNavigator;

@@ -16,6 +16,8 @@ import { getSubjectsForClass } from '@/constants/curriculum';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
 import { useSmartyContext } from '@/context/ChatContext';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
+import { XPBar } from '@/components/XPBar';
+import { ProgressRing } from '@/components/ProgressRing';
 import ProgressBar from '@/components/ProgressBar';
 import StreakBadge from '@/components/StreakBadge';
 import { streakService } from '@/services/streakService';
@@ -106,11 +108,22 @@ export default function Home() {
         {/* Gamification Section */}
         <View style={styles.gamificationSection}>
           <View style={styles.gamificationRow}>
-            <View style={styles.progressBarContainer}>
-              <ProgressBar showText={true} />
+            <View style={styles.xpBarContainer}>
+              <XPBar currentXP={useXPStore.getState().getXP()} maxXP={useXPStore.getState().getRank().maxXP} level={useXPStore.getState().getRank().level} />
             </View>
             <View style={styles.streakContainer}>
               <StreakBadge streak={streak} showDetails={false} />
+            </View>
+          </View>
+          
+          <View style={styles.progressRow}>
+            <View style={styles.progressCard}>
+              <ProgressRing progress={65} size={80} />
+              <Text style={styles.progressLabel}>Course Progress</Text>
+            </View>
+            <View style={styles.progressCard}>
+              <ProgressRing progress={streak > 0 ? 100 : 0} size={80} />
+              <Text style={styles.progressLabel}>Daily Goal</Text>
             </View>
           </View>
           
@@ -217,8 +230,8 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   content: {
     paddingHorizontal: Spacing.xl,
-    paddingTop: Platform.select({ web: Spacing.xxl, default: Spacing.xxl + 20 }),
-    paddingBottom: Spacing.xxl,
+    paddingTop: Platform.select({ ios: 110, default: 70 }),
+    paddingBottom: Spacing.xxl + 80, // Extra space for tab bar
   },
   header: {
     marginBottom: Spacing.lg,
@@ -253,14 +266,37 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   gamificationRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
-  progressBarContainer: {
+  xpBarContainer: {
     flex: 1,
     marginRight: Spacing.md,
   },
   streakContainer: {
-    width: 100,
+    width: 80,
+  },
+  progressRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: Spacing.xl,
+  },
+  progressCard: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    alignItems: 'center',
+    width: '45%',
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  progressLabel: {
+    marginTop: Spacing.sm,
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.textSecondary,
   },
   trophyButton: {
     flexDirection: 'row',

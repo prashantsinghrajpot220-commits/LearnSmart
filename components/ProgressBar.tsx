@@ -110,11 +110,11 @@ const getStyles = (colors: ThemeColors, isDark: boolean) =>
     },
     progressBackground: {
       height: 12,
-      backgroundColor: '#F5F1E8',
+      backgroundColor: colors.border,
       borderRadius: 6,
       overflow: 'hidden',
       borderWidth: 1,
-      borderColor: colors.lightGray,
+      borderColor: colors.border,
     },
     progressFill: {
       height: '100%',

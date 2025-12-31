@@ -103,9 +103,6 @@ export default function Home12Plus() {
 }
 
 const getStyles = (colors: ThemeColors) => {
-  const maturePrimary = colors.maturePrimary ?? '#7A9970';
-  const matureText = colors.matureText ?? '#1A1A1A';
-
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -116,8 +113,8 @@ const getStyles = (colors: ThemeColors) => {
     },
     content: {
       paddingHorizontal: Spacing.xl,
-      paddingTop: Platform.select({ web: Spacing.xxl, default: Spacing.xxl + 20 }),
-      paddingBottom: Spacing.xxl,
+      paddingTop: Platform.select({ ios: 110, default: 70 }),
+      paddingBottom: Spacing.xxl + 80,
     },
     header: {
       marginBottom: Spacing.xl,
@@ -131,7 +128,7 @@ const getStyles = (colors: ThemeColors) => {
     title: {
       fontSize: FontSizes.xxl,
       fontWeight: FontWeights.bold,
-      color: matureText,
+      color: colors.text,
       flex: 1,
     },
     subtitle: {
@@ -143,13 +140,13 @@ const getStyles = (colors: ThemeColors) => {
       borderRadius: BorderRadius.lg,
       padding: Spacing.lg,
       borderLeftWidth: 4,
-      borderLeftColor: maturePrimary,
+      borderLeftColor: colors.primary,
       marginBottom: Spacing.lg,
     },
     infoTitle: {
       fontSize: FontSizes.md,
       fontWeight: FontWeights.semibold,
-      color: matureText,
+      color: colors.text,
       marginBottom: Spacing.sm,
     },
     infoRow: {
@@ -161,19 +158,19 @@ const getStyles = (colors: ThemeColors) => {
     infoValue: {
       fontSize: FontSizes.lg,
       fontWeight: FontWeights.bold,
-      color: matureText,
+      color: colors.text,
     },
     infoButton: {
       paddingHorizontal: Spacing.md,
       paddingVertical: Spacing.sm,
       borderRadius: BorderRadius.md,
       borderWidth: 1,
-      borderColor: maturePrimary,
+      borderColor: colors.primary,
     },
     infoButtonText: {
       fontSize: FontSizes.sm,
       fontWeight: FontWeights.semibold,
-      color: maturePrimary,
+      color: colors.primary,
     },
     infoNote: {
       fontSize: FontSizes.sm,
@@ -188,17 +185,17 @@ const getStyles = (colors: ThemeColors) => {
       borderRadius: BorderRadius.lg,
       padding: Spacing.md,
       borderWidth: 1,
-      borderColor: colors.lightGray,
+      borderColor: colors.border,
     },
     goToSubjectsText: {
       fontSize: FontSizes.sm,
       fontWeight: FontWeights.semibold,
-      color: matureText,
+      color: colors.text,
       flex: 1,
       marginRight: Spacing.md,
     },
     logoutButton: {
-      backgroundColor: colors.lightGray,
+      backgroundColor: colors.border,
       paddingVertical: Spacing.md,
       borderRadius: BorderRadius.lg,
       alignItems: 'center',

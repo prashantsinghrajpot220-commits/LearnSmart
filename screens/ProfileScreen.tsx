@@ -72,6 +72,8 @@ export default function ProfileScreen() {
 
   const classes = Array.from({ length: 12 }, (_, i) => `Class ${i + 1}`).concat(['12+']);
 
+  const styles = getStyles(colors);
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -195,12 +197,13 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
   },
   scrollContent: {
     padding: Spacing.lg,
+    paddingTop: Platform.select({ ios: 60, default: 20 }), // Combined with SafeAreaView
     paddingBottom: 120,
   },
   header: {
@@ -337,7 +340,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.lg,
   },
   logoutText: {
-    color: '#DC2626',
+    color: colors.error,
     fontSize: FontSizes.md,
     fontWeight: FontWeights.bold,
     marginLeft: Spacing.sm,

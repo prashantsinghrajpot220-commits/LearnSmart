@@ -299,7 +299,7 @@ const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
       width: fullScreen ? '100%' : 360,
       height: fullScreen ? '100%' : 'auto',
       maxHeight: fullScreen ? '100%' : MAX_CHAT_HEIGHT,
-      backgroundColor: isDark ? '#2A2A2A' : '#FFFFFF',
+      backgroundColor: colors.cardBackground,
       borderRadius: fullScreen ? 0 : BorderRadius.xl,
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 4 },
@@ -307,7 +307,7 @@ const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
       shadowRadius: 12,
       elevation: 8,
       borderWidth: fullScreen ? 0 : 1,
-      borderColor: isDark ? '#3A3A3A' : '#E8E8E8',
+      borderColor: colors.border,
       overflow: 'hidden',
       zIndex: 1000,
     },
@@ -373,13 +373,13 @@ const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
     searchContainer: {
       flexDirection: 'row',
       padding: Spacing.sm,
-      backgroundColor: isDark ? '#1A1A1A' : '#F5F1E8',
+      backgroundColor: colors.background,
       borderBottomWidth: 1,
-      borderBottomColor: isDark ? '#3A3A3A' : '#E8E8E8',
+      borderBottomColor: colors.border,
     },
     searchInput: {
       flex: 1,
-      backgroundColor: isDark ? '#333' : '#FFF',
+      backgroundColor: colors.cardBackground,
       borderRadius: BorderRadius.md,
       paddingHorizontal: Spacing.md,
       paddingVertical: Spacing.sm,
@@ -441,7 +441,7 @@ const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
       paddingHorizontal: Spacing.md,
     },
     quickReplyChip: {
-      backgroundColor: isDark ? '#3A3A3A' : '#F5F1E8',
+      backgroundColor: colors.border,
       borderRadius: BorderRadius.xl,
       paddingHorizontal: Spacing.md,
       paddingVertical: Spacing.xs,
@@ -485,7 +485,7 @@ const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
       borderBottomRightRadius: BorderRadius.sm,
     },
     assistantBubble: {
-      backgroundColor: isDark ? '#3A3A3A' : '#F5F1E8',
+      backgroundColor: colors.border,
       borderBottomLeftRadius: BorderRadius.sm,
     },
     messageText: {
