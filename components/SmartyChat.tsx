@@ -23,9 +23,10 @@ const MAX_CHAT_HEIGHT = SCREEN_HEIGHT * 0.7;
 
 interface SmartyChatProps {
   onClose: () => void;
+  fullScreen?: boolean;
 }
 
-export default function SmartyChat({ onClose }: SmartyChatProps) {
+export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatProps) {
   const { colors, isDark } = useTheme();
   const { userName } = useUserStore();
   const { getContextInfo } = useSmartyContext();
@@ -98,7 +99,7 @@ export default function SmartyChat({ onClose }: SmartyChatProps) {
       )
     : messages;
 
-  const styles = getStyles(colors, isDark);
+  const styles = getStyles(colors, isDark, fullScreen);
 
   return (
     <View style={styles.container}>
@@ -289,22 +290,23 @@ export default function SmartyChat({ onClose }: SmartyChatProps) {
   );
 }
 
-const getStyles = (colors: ThemeColors, isDark: boolean) =>
+const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
   StyleSheet.create({
     container: {
-      position: 'absolute',
-      bottom: 80,
-      right: 16,
-      width: 360,
-      maxHeight: MAX_CHAT_HEIGHT,
+      position: fullScreen ? 'relative' : 'absolute',
+      bottom: fullScreen ? 0 : 80,
+      right: fullScreen ? 0 : 16,
+      width: fullScreen ? '100%' : 360,
+      height: fullScreen ? '100%' : 'auto',
+      maxHeight: fullScreen ? '100%' : MAX_CHAT_HEIGHT,
       backgroundColor: isDark ? '#2A2A2A' : '#FFFFFF',
-      borderRadius: BorderRadius.xl,
+      borderRadius: fullScreen ? 0 : BorderRadius.xl,
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.2,
       shadowRadius: 12,
       elevation: 8,
-      borderWidth: 1,
+      borderWidth: fullScreen ? 0 : 1,
       borderColor: isDark ? '#3A3A3A' : '#E8E8E8',
       overflow: 'hidden',
       zIndex: 1000,
@@ -315,8 +317,8 @@ const getStyles = (colors: ThemeColors, isDark: boolean) =>
       justifyContent: 'space-between',
       padding: Spacing.md,
       backgroundColor: colors.primary,
-      borderTopLeftRadius: BorderRadius.xl,
-      borderTopRightRadius: BorderRadius.xl,
+      borderTopLeftRadius: fullScreen ? 0 : BorderRadius.xl,
+      borderTopRightRadius: fullScreen ? 0 : BorderRadius.xl,
     },
     headerLeft: {
       flexDirection: 'row',
@@ -361,6 +363,7 @@ const getStyles = (colors: ThemeColors, isDark: boolean) =>
       backgroundColor: colors.white + '33',
       alignItems: 'center',
       justifyContent: 'center',
+      display: fullScreen ? 'none' : 'flex',
     },
     closeButtonText: {
       fontSize: 18,
@@ -397,7 +400,7 @@ const getStyles = (colors: ThemeColors, isDark: boolean) =>
     },
     messagesContainer: {
       flex: 1,
-      maxHeight: MAX_CHAT_HEIGHT - 200,
+      maxHeight: fullScreen ? undefined : MAX_CHAT_HEIGHT - 200,
     },
     messagesContent: {
       padding: Spacing.md,

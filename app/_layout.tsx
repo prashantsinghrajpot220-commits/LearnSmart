@@ -12,11 +12,14 @@ import { initializeNetworkListener, cleanupNetworkListener } from '../services/n
 import { streakService } from '../services/streakService';
 import { useXPStore } from '../store/xpStore';
 import { useAchievementStore } from '../store/achievementStore';
+import { BottomTabNavigator } from '../components/BottomTabNavigator';
+import { usePathname } from 'expo-router';
 
 function RootLayoutContent() {
   const { colors, isDark } = useTheme();
   const { isChatOpen, closeChat } = useChatStore();
   const [isLoaded, setIsLoaded] = useState(false);
+  const pathname = usePathname();
   const { loadXP } = useXPStore();
   const { loadAchievements } = useAchievementStore();
   const [streakChecked, setStreakChecked] = useState(false);
@@ -83,6 +86,8 @@ function RootLayoutContent() {
     };
   }, [loadXP, loadAchievements]);
 
+  const showFloatingChat = !['/chat', '/auth', '/'].includes(pathname);
+
   if (!isLoaded) {
     return (
       <>
@@ -100,6 +105,9 @@ function RootLayoutContent() {
           <Stack.Screen name="chapters" />
           <Stack.Screen name="lesson" />
           <Stack.Screen name="trophy-room" />
+          <Stack.Screen name="profile" />
+          <Stack.Screen name="explore" />
+          <Stack.Screen name="chat" />
         </Stack>
       </>
     );
@@ -121,8 +129,15 @@ function RootLayoutContent() {
         <Stack.Screen name="chapters" />
         <Stack.Screen name="lesson" />
         <Stack.Screen name="trophy-room" />
+        <Stack.Screen name="profile" />
+        <Stack.Screen name="explore" />
+        <Stack.Screen name="chat" />
+        <Stack.Screen name="privacy-policy" />
+        <Stack.Screen name="terms" />
+        <Stack.Screen name="about" />
       </Stack>
-      <SmartyFloatingButton onPress={() => {}} />
+      <BottomTabNavigator />
+      {showFloatingChat && <SmartyFloatingButton onPress={() => {}} />}
       {isChatOpen && <SmartyChat onClose={closeChat} />}
     </>
   );

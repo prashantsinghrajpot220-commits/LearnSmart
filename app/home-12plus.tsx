@@ -14,12 +14,13 @@ import { useTheme, ThemeColors } from '@/components/ThemeContext';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
 import { Feather } from '@expo/vector-icons';
 import { useUserStore } from '@/store/userStore';
+import { AvatarDisplay } from '@/components/AvatarSelector';
 import PathwaysTab from '@/components/PathwaysTab';
 
 export default function Home12Plus() {
   const router = useRouter();
   const { colors } = useTheme();
-  const { userName, ageGroup, loadUserData, logout } = useUserStore();
+  const { userName, ageGroup, loadUserData, logout, selectedAvatar } = useUserStore();
 
   const opacity = useMemo(() => new Animated.Value(0), []);
 
@@ -48,15 +49,23 @@ export default function Home12Plus() {
     router.replace('/');
   };
 
+  const handleProfilePress = () => {
+    router.push('/profile');
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <Animated.View style={[styles.content, { opacity }]}>
         <View style={styles.header}>
           <View style={styles.headerTop}>
-            <Text style={styles.title}>Welcome, {displayName}</Text>
-            <DarkModeToggle />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.title}>Welcome, {displayName}</Text>
+              <Text style={styles.subtitle}>Your learning dashboard</Text>
+            </View>
+            <TouchableOpacity onPress={handleProfilePress} activeOpacity={0.7}>
+              <AvatarDisplay id={selectedAvatar} size={60} />
+            </TouchableOpacity>
           </View>
-          <Text style={styles.subtitle}>Your learning dashboard</Text>
         </View>
 
         <PathwaysTab />

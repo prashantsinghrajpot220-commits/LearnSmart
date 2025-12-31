@@ -12,6 +12,8 @@ interface UserState {
 
   selectedClass: string;
   selectedStream: string;
+  selectedAvatar: string;
+  themePreference: 'light' | 'dark' | 'system';
   isOnboarded: boolean;
 
   setAgeGroup: (age: AgeGroup) => Promise<void>;
@@ -22,6 +24,8 @@ interface UserState {
   setUserName: (name: string) => void;
   setSelectedClass: (className: string) => void;
   setSelectedStream: (stream: string) => void;
+  setSelectedAvatar: (avatar: string) => void;
+  setThemePreference: (theme: 'light' | 'dark' | 'system') => void;
   completeOnboarding: () => void;
   logout: () => void;
   loadUserData: () => Promise<void>;
@@ -31,6 +35,8 @@ const STORAGE_KEYS = {
   USER_NAME: '@learnsmart_user_name',
   SELECTED_CLASS: '@learnsmart_selected_class',
   SELECTED_STREAM: '@learnsmart_selected_stream',
+  SELECTED_AVATAR: '@learnsmart_selected_avatar',
+  THEME_PREFERENCE: '@learnsmart_theme_preference',
   IS_ONBOARDED: '@learnsmart_is_onboarded',
   AGE_GROUP: '@learnsmart/user_age_group',
   USER_ID: '@learnsmart/user_id',
@@ -51,6 +57,8 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   selectedClass: '',
   selectedStream: '',
+  selectedAvatar: 'Robot',
+  themePreference: 'system',
   isOnboarded: false,
 
   setAgeGroup: async (age: AgeGroup) => {
@@ -97,6 +105,16 @@ export const useUserStore = create<UserState>((set, get) => ({
     AsyncStorage.setItem(STORAGE_KEYS.SELECTED_STREAM, stream);
   },
 
+  setSelectedAvatar: (avatar: string) => {
+    set({ selectedAvatar: avatar });
+    AsyncStorage.setItem(STORAGE_KEYS.SELECTED_AVATAR, avatar);
+  },
+
+  setThemePreference: (theme: 'light' | 'dark' | 'system') => {
+    set({ themePreference: theme });
+    AsyncStorage.setItem(STORAGE_KEYS.THEME_PREFERENCE, theme);
+  },
+
   completeOnboarding: () => {
     set({ isOnboarded: true });
     AsyncStorage.setItem(STORAGE_KEYS.IS_ONBOARDED, 'true');
@@ -111,12 +129,16 @@ export const useUserStore = create<UserState>((set, get) => ({
       profileComplete: false,
       selectedClass: '',
       selectedStream: '',
+      selectedAvatar: 'Robot',
+      themePreference: 'system',
       isOnboarded: false,
     });
     await AsyncStorage.multiRemove([
       STORAGE_KEYS.USER_NAME,
       STORAGE_KEYS.SELECTED_CLASS,
       STORAGE_KEYS.SELECTED_STREAM,
+      STORAGE_KEYS.SELECTED_AVATAR,
+      STORAGE_KEYS.THEME_PREFERENCE,
       STORAGE_KEYS.IS_ONBOARDED,
       STORAGE_KEYS.AGE_GROUP,
       STORAGE_KEYS.USER_ID,
@@ -127,10 +149,12 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   loadUserData: async () => {
     try {
-      const [name, className, stream, onboarded, ageGroup, userId, signupDate, profileComplete] = await Promise.all([
+      const [name, className, stream, avatar, theme, onboarded, ageGroup, userId, signupDate, profileComplete] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.USER_NAME),
         AsyncStorage.getItem(STORAGE_KEYS.SELECTED_CLASS),
         AsyncStorage.getItem(STORAGE_KEYS.SELECTED_STREAM),
+        AsyncStorage.getItem(STORAGE_KEYS.SELECTED_AVATAR),
+        AsyncStorage.getItem(STORAGE_KEYS.THEME_PREFERENCE),
         AsyncStorage.getItem(STORAGE_KEYS.IS_ONBOARDED),
         AsyncStorage.getItem(STORAGE_KEYS.AGE_GROUP),
         AsyncStorage.getItem(STORAGE_KEYS.USER_ID),
@@ -152,6 +176,8 @@ export const useUserStore = create<UserState>((set, get) => ({
         profileComplete: profileComplete === 'true',
         selectedClass: className || '',
         selectedStream: stream || '',
+        selectedAvatar: avatar || 'Robot',
+        themePreference: (theme as 'light' | 'dark' | 'system') || 'system',
         isOnboarded: onboarded === 'true',
       });
     } catch (error) {
