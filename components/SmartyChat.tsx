@@ -9,14 +9,22 @@ import {
   KeyboardAvoidingView,
   Platform,
   Dimensions,
+  Image,
+  Alert,
 } from 'react-native';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useChatStore } from '@/store/chatStore';
-import { sendMessageToSmarty, getQuickReplies } from '@/services/smartyAI';
+import { sendMessageToSmarty, getQuickReplies } from '@/services/SmartyAIService';
 import { useSmartyContext } from '@/context/ChatContext';
 import { useUserStore } from '@/store/userStore';
 import { sanitizeText } from '@/utils/sanitizer';
+import { pickImage, pickDocument, Attachment } from '@/services/FileUploadService';
+import { getRemainingImages } from '@/utils/uploadLimits';
+import { StreamingService } from '@/services/StreamingService';
+import FileUploadButton from '@/components/FileUploadButton';
+import ImagePreview from '@/components/ImagePreview';
+import FilePreview from '@/components/FilePreview';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const MAX_CHAT_HEIGHT = SCREEN_HEIGHT * 0.7;
@@ -34,6 +42,8 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
   const [inputText, setInputText] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [remainingImages, setRemainingImages] = useState(6);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -46,12 +56,68 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
     scrollToBottom();
   }, [messages, isTyping, scrollToBottom]);
 
-  const handleSend = async () => {
-    const userMessage = sanitizeText(inputText, { maxLength: 500 });
-    if (!userMessage.trim()) return;
+  useEffect(() => {
+    let isMounted = true;
+    const fetchRemaining = async () => {
+      const remaining = await getRemainingImages();
+      if (isMounted) {
+        setRemainingImages(remaining);
+      }
+    };
+    fetchRemaining();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
+  const updateRemainingImages = async () => {
+    const remaining = await getRemainingImages();
+    setRemainingImages(remaining);
+  };
+
+  const handlePickImage = async (useCamera: boolean) => {
+    try {
+      const att = await pickImage(useCamera);
+      if (att) {
+        setAttachments([...attachments, att]);
+        updateRemainingImages();
+      }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      Alert.alert('Upload Error', errorMessage);
+    }
+  };
+
+  const handlePickFile = async () => {
+    try {
+      const att = await pickDocument();
+      if (att) {
+        setAttachments([...attachments, att]);
+      }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      Alert.alert('Upload Error', errorMessage);
+    }
+  };
+
+  const removeAttachment = (index: number) => {
+    const newAtts = [...attachments];
+    newAtts.splice(index, 1);
+    setAttachments(newAtts);
+  };
+
+  const handleStop = () => {
+    StreamingService.stop('default_chat');
+  };
+
+  const handleSend = async () => {
+    const userMessage = sanitizeText(inputText, { maxLength: 1000 });
+    if (!userMessage.trim() && attachments.length === 0) return;
+
+    const currentAttachments = [...attachments];
     setInputText('');
-    addMessage('user', userMessage);
+    setAttachments([]);
+    addMessage('user', userMessage, currentAttachments);
 
     const context = getContextInfo();
     await sendMessageToSmarty(userMessage, {
@@ -59,12 +125,11 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
       selectedClass: useUserStore.getState().selectedClass || '',
       selectedStream: useUserStore.getState().selectedStream || '',
       ...context,
-    });
+    }, currentAttachments);
   };
 
   const handleQuickReply = async (reply: string) => {
     const safeReply = sanitizeText(reply, { maxLength: 500 });
-
     setInputText('');
     addMessage('user', safeReply);
 
@@ -81,11 +146,10 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
     const query = sanitizeText(searchQuery, { maxLength: 80, preserveNewlines: false });
     if (query.trim()) {
       const results = useChatStore.getState().searchMessages(query);
-      // Display search results in chat
       if (results.length === 0) {
         addMessage('assistant', `No previous messages found for "${query}". Try a different search term!`);
       } else {
-        addMessage('assistant', `Found ${results.length} previous message(s) about "${query}". Keep learning and you'll remember more! 💪`);
+        addMessage('assistant', `Found ${results.length} previous message(s) about "${query}". Keep learning! 💪`);
       }
       setSearchQuery('');
       setShowSearch(false);
@@ -162,7 +226,7 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
             <Text style={styles.welcomeEmoji}>👋</Text>
             <Text style={styles.welcomeTitle}>Hi! I'm Smarty!</Text>
             <Text style={styles.welcomeText}>
-              Your friendly study companion. I'm here to help you learn, answer questions, and make studying easier!
+              I'm here to help you learn! You can even upload images of your homework or textbook.
             </Text>
             <View style={styles.quickRepliesContainer}>
               <Text style={styles.quickRepliesLabel}>Quick starts:</Text>
@@ -186,6 +250,7 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
             style={[
               styles.messageWrapper,
               message.role === 'user' ? styles.userMessageWrapper : styles.assistantMessageWrapper,
+              message.status === 'stopped' && styles.stoppedMessageWrapper,
             ]}
           >
             {message.role === 'assistant' && (
@@ -197,16 +262,40 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
               style={[
                 styles.messageBubble,
                 message.role === 'user' ? styles.userBubble : styles.assistantBubble,
+                message.status === 'stopped' && styles.stoppedBubble,
               ]}
             >
+              {/* Render Attachments */}
+              {message.attachments && message.attachments.length > 0 && (
+                <View style={styles.messageAttachments}>
+                  {message.attachments.map((att, idx) => (
+                    <View key={idx} style={styles.messageAttachmentItem}>
+                      {att.type === 'image' ? (
+                        <Image source={{ uri: att.uri }} style={styles.attachmentImage} />
+                      ) : (
+                        <View style={styles.attachmentFile}>
+                          <Text>📄 {att.name}</Text>
+                        </View>
+                      )}
+                    </View>
+                  ))}
+                </View>
+              )}
+              
               <Text
                 style={[
                   styles.messageText,
                   message.role === 'user' ? styles.userMessageText : styles.assistantMessageText,
+                  message.status === 'stopped' && styles.stoppedMessageText,
                 ]}
               >
                 {message.content}
               </Text>
+              
+              {message.status === 'stopped' && (
+                <Text style={styles.stoppedLabel}>Response cancelled</Text>
+              )}
+
               <Text
                 style={[
                   styles.messageTime,
@@ -222,25 +311,36 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
           </View>
         ))}
 
-        {/* Typing Indicator */}
+        {/* Typing Indicator & stop button */}
         {isTyping && (
-          <View style={[styles.messageWrapper, styles.assistantMessageWrapper]}>
-            <View style={styles.messageAvatar}>
-              <Text style={styles.messageAvatarText}>🎓</Text>
-            </View>
-            <View style={[styles.messageBubble, styles.assistantBubble]}>
-              <View style={styles.typingContainer}>
-                <View style={[styles.typingDot, styles.typingDot1]} />
-                <View style={[styles.typingDot, styles.typingDot2]} />
-                <View style={[styles.typingDot, styles.typingDot3]} />
+          <View style={styles.typingWrapper}>
+            <View style={[styles.messageWrapper, styles.assistantMessageWrapper]}>
+              <View style={styles.messageAvatar}>
+                <Text style={styles.messageAvatarText}>🎓</Text>
+              </View>
+              <View style={[styles.messageBubble, styles.assistantBubble]}>
+                <View style={styles.analyzingContainer}>
+                  <Text style={[styles.analyzingText, { color: colors.textSecondary }]}>
+                    Smarty is analyzing...
+                  </Text>
+                  <View style={styles.typingContainer}>
+                    <View style={[styles.typingDot, styles.typingDot1]} />
+                    <View style={[styles.typingDot, styles.typingDot2]} />
+                    <View style={[styles.typingDot, styles.typingDot3]} />
+                  </View>
+                </View>
               </View>
             </View>
+            <TouchableOpacity style={styles.stopButton} onPress={handleStop}>
+              <View style={styles.stopIcon} />
+              <Text style={styles.stopText}>Stop Responding</Text>
+            </TouchableOpacity>
           </View>
         )}
       </ScrollView>
 
       {/* Quick Replies */}
-      {!isTyping && messages.length > 0 && (
+      {!isTyping && messages.length > 0 && attachments.length === 0 && (
         <ScrollView
           horizontal
           style={styles.quickRepliesScroll}
@@ -260,11 +360,33 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
         </ScrollView>
       )}
 
+      {/* Attachment Preview Area */}
+      {attachments.length > 0 && (
+        <View style={styles.attachmentPreviews}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {attachments.map((att, index) => (
+              att.type === 'image' ? (
+                <ImagePreview key={index} uri={att.uri} onRemove={() => removeAttachment(index)} />
+              ) : (
+                <FilePreview key={index} name={att.name} onRemove={() => removeAttachment(index)} />
+              )
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
       {/* Input Area */}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
+        <View style={styles.uploadControls}>
+          <FileUploadButton icon="📸" label="Camera" onPress={() => handlePickImage(true)} />
+          <FileUploadButton icon="🖼️" label="Gallery" onPress={() => handlePickImage(false)} />
+          <FileUploadButton icon="📁" label="File" onPress={handlePickFile} />
+          <Text style={styles.limitCounter}>{remainingImages}/6 images left</Text>
+        </View>
+
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInput}
@@ -274,12 +396,12 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
             onChangeText={setInputText}
             onSubmitEditing={handleSend}
             multiline
-            maxLength={500}
+            maxLength={1000}
           />
           <TouchableOpacity
-            style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
+            style={[styles.sendButton, (!inputText.trim() && attachments.length === 0) && styles.sendButtonDisabled]}
             onPress={handleSend}
-            disabled={!inputText.trim()}
+            disabled={!inputText.trim() && attachments.length === 0}
             activeOpacity={0.7}
           >
             <Text style={styles.sendButtonText}>Send</Text>
@@ -317,8 +439,6 @@ const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
       justifyContent: 'space-between',
       padding: Spacing.md,
       backgroundColor: colors.primary,
-      borderTopLeftRadius: fullScreen ? 0 : BorderRadius.xl,
-      borderTopRightRadius: fullScreen ? 0 : BorderRadius.xl,
     },
     headerLeft: {
       flexDirection: 'row',
@@ -333,9 +453,7 @@ const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
       justifyContent: 'center',
       marginRight: Spacing.sm,
     },
-    avatarEmoji: {
-      fontSize: 24,
-    },
+    avatarEmoji: { fontSize: 24 },
     headerTitle: {
       fontSize: FontSizes.lg,
       fontWeight: FontWeights.bold,
@@ -345,17 +463,9 @@ const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
       fontSize: FontSizes.xs,
       color: colors.white + 'CC',
     },
-    headerActions: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    headerButton: {
-      padding: Spacing.sm,
-      marginRight: Spacing.sm,
-    },
-    headerButtonText: {
-      fontSize: 18,
-    },
+    headerActions: { flexDirection: 'row', alignItems: 'center' },
+    headerButton: { padding: Spacing.sm, marginRight: Spacing.sm },
+    headerButtonText: { fontSize: 18 },
     closeButton: {
       width: 32,
       height: 32,
@@ -365,11 +475,7 @@ const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
       justifyContent: 'center',
       display: fullScreen ? 'none' : 'flex',
     },
-    closeButtonText: {
-      fontSize: 18,
-      color: colors.white,
-      fontWeight: FontWeights.bold,
-    },
+    closeButtonText: { fontSize: 18, color: colors.white, fontWeight: FontWeights.bold },
     searchContainer: {
       flexDirection: 'row',
       padding: Spacing.sm,
@@ -393,26 +499,13 @@ const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
       paddingHorizontal: Spacing.md,
       justifyContent: 'center',
     },
-    searchButtonText: {
-      color: colors.white,
-      fontSize: FontSizes.sm,
-      fontWeight: FontWeights.semibold,
-    },
+    searchButtonText: { color: colors.white, fontSize: FontSizes.sm, fontWeight: FontWeights.semibold },
     messagesContainer: {
       flex: 1,
-      maxHeight: fullScreen ? undefined : MAX_CHAT_HEIGHT - 200,
     },
-    messagesContent: {
-      padding: Spacing.md,
-    },
-    welcomeContainer: {
-      alignItems: 'center',
-      paddingVertical: Spacing.xl,
-    },
-    welcomeEmoji: {
-      fontSize: 48,
-      marginBottom: Spacing.md,
-    },
+    messagesContent: { padding: Spacing.md },
+    welcomeContainer: { alignItems: 'center', paddingVertical: Spacing.xl },
+    welcomeEmoji: { fontSize: 48, marginBottom: Spacing.md },
     welcomeTitle: {
       fontSize: FontSizes.xl,
       fontWeight: FontWeights.bold,
@@ -426,20 +519,10 @@ const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
       marginBottom: Spacing.lg,
       paddingHorizontal: Spacing.md,
     },
-    quickRepliesContainer: {
-      alignItems: 'center',
-    },
-    quickRepliesLabel: {
-      fontSize: FontSizes.xs,
-      color: colors.textSecondary,
-      marginBottom: Spacing.sm,
-    },
-    quickRepliesScroll: {
-      maxHeight: 40,
-    },
-    quickRepliesContent: {
-      paddingHorizontal: Spacing.md,
-    },
+    quickRepliesContainer: { alignItems: 'center' },
+    quickRepliesLabel: { fontSize: FontSizes.xs, color: colors.textSecondary, marginBottom: Spacing.sm },
+    quickRepliesScroll: { maxHeight: 40, marginBottom: Spacing.sm },
+    quickRepliesContent: { paddingHorizontal: Spacing.md },
     quickReplyChip: {
       backgroundColor: colors.border,
       borderRadius: BorderRadius.xl,
@@ -447,22 +530,11 @@ const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
       paddingVertical: Spacing.xs,
       marginHorizontal: Spacing.xs,
     },
-    quickReplyText: {
-      fontSize: FontSizes.xs,
-      color: colors.primary,
-      fontWeight: FontWeights.medium,
-    },
-    messageWrapper: {
-      flexDirection: 'row',
-      marginBottom: Spacing.sm,
-      alignItems: 'flex-end',
-    },
-    userMessageWrapper: {
-      justifyContent: 'flex-end',
-    },
-    assistantMessageWrapper: {
-      justifyContent: 'flex-start',
-    },
+    quickReplyText: { fontSize: FontSizes.xs, color: colors.primary, fontWeight: FontWeights.medium },
+    messageWrapper: { flexDirection: 'row', marginBottom: Spacing.sm, alignItems: 'flex-end' },
+    userMessageWrapper: { justifyContent: 'flex-end' },
+    assistantMessageWrapper: { justifyContent: 'flex-start' },
+    stoppedMessageWrapper: { opacity: 0.7 },
     messageAvatar: {
       width: 28,
       height: 28,
@@ -472,108 +544,96 @@ const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
       justifyContent: 'center',
       marginRight: Spacing.xs,
     },
-    messageAvatarText: {
-      fontSize: 16,
-    },
-    messageBubble: {
-      maxWidth: '80%',
-      padding: Spacing.md,
-      borderRadius: BorderRadius.lg,
-    },
-    userBubble: {
-      backgroundColor: colors.primary,
-      borderBottomRightRadius: BorderRadius.sm,
-    },
-    assistantBubble: {
-      backgroundColor: colors.border,
-      borderBottomLeftRadius: BorderRadius.sm,
-    },
-    messageText: {
-      fontSize: FontSizes.md,
-      lineHeight: 22,
-    },
-    userMessageText: {
-      color: colors.white,
-    },
-    assistantMessageText: {
-      color: colors.text,
-    },
-    messageTime: {
-      fontSize: FontSizes.xs,
-      marginTop: Spacing.xs,
-    },
-    userMessageTime: {
-      color: colors.white + 'CC',
-      textAlign: 'right',
-    },
-    assistantMessageTime: {
-      color: colors.textSecondary,
-    },
-    typingContainer: {
+    messageAvatarText: { fontSize: 16 },
+    messageBubble: { maxWidth: '80%', padding: Spacing.md, borderRadius: BorderRadius.lg },
+    userBubble: { backgroundColor: colors.primary, borderBottomRightRadius: BorderRadius.sm },
+    assistantBubble: { backgroundColor: colors.border, borderBottomLeftRadius: BorderRadius.sm },
+    stoppedBubble: { backgroundColor: colors.border + '88' },
+    messageText: { fontSize: FontSizes.md, lineHeight: 22 },
+    userMessageText: { color: colors.white },
+    assistantMessageText: { color: colors.text },
+    stoppedMessageText: { color: colors.textSecondary },
+    messageTime: { fontSize: 10, color: 'rgba(0,0,0,0.3)', marginTop: 4, alignSelf: 'flex-end' },
+    userMessageTime: { color: 'rgba(255,255,255,0.6)' },
+    assistantMessageTime: { color: 'rgba(0,0,0,0.4)' },
+    typingWrapper: { marginBottom: Spacing.md },
+    analyzingContainer: { flexDirection: 'row', alignItems: 'center' },
+    analyzingText: { fontSize: 12, marginRight: 8, fontStyle: 'italic' },
+    typingContainer: { flexDirection: 'row', alignItems: 'center', height: 20 },
+    typingDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.primary, marginHorizontal: 2 },
+    typingDot1: { opacity: 0.4 },
+    typingDot2: { opacity: 0.7 },
+    typingDot3: { opacity: 1.0 },
+    stopButton: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingVertical: Spacing.xs,
-    },
-    typingDot: {
-      width: 8,
-      height: 8,
-      borderRadius: 4,
-      backgroundColor: colors.primary,
-      marginHorizontal: 2,
-    },
-    typingDot1: {
-      opacity: 0.4,
-    },
-    typingDot2: {
-      opacity: 0.7,
-    },
-    typingDot3: {
-      opacity: 1,
-    },
-    quickReplyButton: {
-      backgroundColor: colors.primary + '20',
-      borderRadius: BorderRadius.md,
+      alignSelf: 'center',
+      marginTop: Spacing.sm,
+      backgroundColor: '#FFE5E5',
       paddingHorizontal: Spacing.md,
-      paddingVertical: Spacing.sm,
-      marginRight: Spacing.sm,
+      paddingVertical: Spacing.xs,
+      borderRadius: BorderRadius.xl,
+      borderWidth: 1,
+      borderColor: '#FF4D4D',
     },
-    quickReplyButtonText: {
-      fontSize: FontSizes.sm,
-      color: colors.primary,
-      fontWeight: FontWeights.medium,
+    stopIcon: { width: 10, height: 10, backgroundColor: '#FF4D4D', marginRight: 6 },
+    stopText: { color: '#FF4D4D', fontSize: 12, fontWeight: 'bold' },
+    stoppedLabel: { fontSize: 10, color: '#FF4D4D', fontStyle: 'italic', marginTop: 4 },
+    attachmentPreviews: { padding: Spacing.sm, borderTopWidth: 1, borderTopColor: colors.border },
+    uploadControls: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: Spacing.md,
+      paddingTop: Spacing.xs,
     },
+    limitCounter: { fontSize: 10, color: colors.textSecondary, marginLeft: 'auto' },
     inputContainer: {
       flexDirection: 'row',
-      alignItems: 'flex-end',
+      alignItems: 'center',
       padding: Spacing.sm,
-      backgroundColor: isDark ? '#1A1A1A' : '#F5F1E8',
-      borderTopWidth: 1,
-      borderTopColor: isDark ? '#3A3A3A' : '#E8E8E8',
+      backgroundColor: colors.cardBackground,
     },
     textInput: {
       flex: 1,
-      backgroundColor: isDark ? '#333' : '#FFFFFF',
-      borderRadius: BorderRadius.lg,
+      backgroundColor: colors.background,
+      borderRadius: BorderRadius.xl,
       paddingHorizontal: Spacing.md,
       paddingVertical: Spacing.sm,
       fontSize: FontSizes.md,
       color: colors.text,
       maxHeight: 100,
-      marginRight: Spacing.sm,
     },
     sendButton: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
       backgroundColor: colors.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: Spacing.sm,
+    },
+    sendButtonDisabled: { backgroundColor: colors.border },
+    sendButtonText: { color: colors.white, fontWeight: 'bold' },
+    messageAttachments: { marginBottom: Spacing.xs },
+    messageAttachmentItem: { borderRadius: BorderRadius.md, overflow: 'hidden', marginBottom: Spacing.xs },
+    attachmentImage: { width: 200, height: 150, resizeMode: 'cover' },
+    attachmentFile: {
+      backgroundColor: 'rgba(255,255,255,0.2)',
+      padding: Spacing.sm,
       borderRadius: BorderRadius.md,
+    },
+    quickReplyButton: {
+      backgroundColor: colors.border,
+      borderRadius: BorderRadius.xl,
       paddingHorizontal: Spacing.md,
       paddingVertical: Spacing.sm,
+      marginHorizontal: Spacing.xs,
+      height: 36,
       justifyContent: 'center',
     },
-    sendButtonDisabled: {
-      backgroundColor: colors.lightGray,
-    },
-    sendButtonText: {
-      color: colors.white,
+    quickReplyButtonText: {
       fontSize: FontSizes.sm,
-      fontWeight: FontWeights.semibold,
+      color: colors.primary,
+      fontWeight: FontWeights.medium,
     },
   });
