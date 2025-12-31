@@ -16,7 +16,7 @@ const TAB_WIDTH = TAB_BAR_WIDTH / 4;
 
 const TABS = [
   { name: 'Home', icon: 'home-variant', path: '/home' },
-  { name: 'Explore', icon: 'compass', path: '/explore' },
+  { name: 'Leaderboard', icon: 'trophy', path: '/leaderboard' },
   { name: 'Chat', icon: 'message-bubble', path: '/chat' },
   { name: 'Profile', icon: 'account', path: '/profile' },
 ];

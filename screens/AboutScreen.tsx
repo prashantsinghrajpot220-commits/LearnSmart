@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, Image } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useTheme } from '../components/ThemeContext';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
+import { Spacing, FontSizes, FontWeights } from '@/constants/theme';
 
 export default function AboutScreen() {
   const { colors } = useTheme();

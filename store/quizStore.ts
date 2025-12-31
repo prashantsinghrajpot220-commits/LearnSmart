@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useXPStore } from './xpStore';
 import { useAchievementStore } from './achievementStore';
+import { coinRewardService } from '@/services/CoinRewardService';
 
 export interface QuizQuestion {
   id: string;
@@ -98,13 +99,19 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       score,
     });
 
-    // Award XP for completing a quiz
+    // Award XP and SmartCoins for completing a quiz
     try {
       const { addXP, incrementQuizzesCompleted, getXP } = useXPStore.getState();
       const { checkAndUnlock } = useAchievementStore.getState();
       
       await addXP(QUIZ_XP_AMOUNT);
       incrementQuizzesCompleted();
+      
+      // Award SmartCoins for quiz completion
+      const correctCount = get().questions.filter(
+        (q, i) => get().selectedAnswers[i] === q.correctAnswer
+      ).length;
+      await coinRewardService.rewardQuizCompletion(correctCount, get().questions.length);
       
       // Check for quiz and XP achievements
       const { totalQuizzesCompleted, totalLessonsRead } = useXPStore.getState();
@@ -116,7 +123,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         rank: useXPStore.getState().getRank().name,
       });
     } catch (error) {
-      console.error('Failed to award XP for quiz:', error);
+      console.error('Failed to award rewards for quiz:', error);
     }
   },
 
