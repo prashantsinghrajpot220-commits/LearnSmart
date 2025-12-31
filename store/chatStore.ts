@@ -1,18 +1,23 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { Attachment } from '@/services/FileUploadService';
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
+  attachments?: Attachment[];
+  status?: 'completed' | 'stopped';
 }
 
 interface ChatState {
   messages: ChatMessage[];
   isTyping: boolean;
   isChatOpen: boolean;
-  addMessage: (role: 'user' | 'assistant', content: string) => void;
+  addMessage: (role: 'user' | 'assistant', content: string, attachments?: Attachment[], status?: 'completed' | 'stopped') => void;
+  updateLastMessage: (updates: Partial<ChatMessage>) => void;
   clearMessages: () => void;
   toggleChat: () => void;
   closeChat: () => void;
@@ -31,16 +36,29 @@ export const useChatStore = create<ChatState>((set, get) => ({
   isTyping: false,
   isChatOpen: false,
 
-  addMessage: (role: 'user' | 'assistant', content: string) => {
+  addMessage: (role: 'user' | 'assistant', content: string, attachments?: Attachment[], status: 'completed' | 'stopped' = 'completed') => {
     const newMessage: ChatMessage = {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       role,
       content,
       timestamp: Date.now(),
+      attachments,
+      status,
     };
 
     set((state) => {
       const updatedMessages = [...state.messages, newMessage].slice(-MAX_MESSAGES);
+      AsyncStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(updatedMessages));
+      return { messages: updatedMessages };
+    });
+  },
+
+  updateLastMessage: (updates: Partial<ChatMessage>) => {
+    set((state) => {
+      if (state.messages.length === 0) return state;
+      const updatedMessages = [...state.messages];
+      const lastIndex = updatedMessages.length - 1;
+      updatedMessages[lastIndex] = { ...updatedMessages[lastIndex], ...updates };
       AsyncStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(updatedMessages));
       return { messages: updatedMessages };
     });
