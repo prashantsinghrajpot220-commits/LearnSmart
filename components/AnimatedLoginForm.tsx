@@ -121,6 +121,20 @@ export default function AnimatedLoginForm() {
   const validate = () => {
     const newErrors: { name?: string; email?: string; password?: string } = {};
 
+    // Play Store Test Account - Bypass validation
+    const TEST_EMAIL = 'test@example.com';
+    const TEST_PASSWORD = 'test1234';
+
+    // Check if using test account credentials
+    const isTestAccount = email.trim() === TEST_EMAIL && password.trim() === TEST_PASSWORD;
+
+    if (isTestAccount) {
+      // Test account - bypass validation
+      setErrors({});
+      return true;
+    }
+
+    // Normal validation for regular users
     if (isSignup && !name.trim()) {
       newErrors.name = 'Name is required';
     }
@@ -164,9 +178,27 @@ export default function AnimatedLoginForm() {
     setIsLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setUserName(name);
-      router.replace('/home');
+      // Play Store Test Account Handling
+      const TEST_EMAIL = 'test@example.com';
+      const TEST_PASSWORD = 'test1234';
+      const isTestAccount = email.trim() === TEST_EMAIL && password.trim() === TEST_PASSWORD;
+
+      // Shorter delay for test account, normal delay for regular users
+      const delay = isTestAccount ? 800 : 1500;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+
+      // Set user name (use "Test User" for test account if no name provided)
+      const userNameToSet = isTestAccount && !name.trim() ? 'Test User' : name;
+      setUserName(userNameToSet);
+
+      // Navigate to home (or auth for signup to continue flow)
+      if (isSignup) {
+        // For signup, go to auth for age selection (bypassed for test account)
+        router.replace('/auth');
+      } else {
+        // For login, go directly to home
+        router.replace('/home');
+      }
     } catch (error) {
       console.error('Auth error:', error);
     } finally {

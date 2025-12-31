@@ -47,13 +47,46 @@ export default function PrivacyPolicyScreen() {
           LearnSmart is designed for students. We comply with the Children's Online Privacy Protection Act (COPPA). We do not knowingly collect personal information from children under 13 without parental consent where required.
         </Text>
 
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>6. Contact Us</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>6. User Rights</Text>
         <Text style={[styles.content, { color: colors.textSecondary }]}>
-          If you have any questions regarding your privacy, please contact us at: support@learnsmart.app
+          You have the right to:
+          {'\n'}• Access your personal data
+          {'\n'}• Request correction of inaccurate data
+          {'\n'}• Request deletion of your data
+          {'\n'}• Opt-out of personalized advertising
+          {'\n'}• Object to data processing
+        </Text>
+
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>7. Data Security</Text>
+        <Text style={[styles.content, { color: colors.textSecondary }]}>
+          All user data is stored locally on your device. We do not use cloud storage for personal information. Your data is encrypted on your device and is only accessible by you. When you log out or uninstall the app, all your data is permanently deleted from your device.
+        </Text>
+
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>8. Data Retention</Text>
+        <Text style={[styles.content, { color: colors.textSecondary }]}>
+          Your data is retained on your device until you:
+          {'\n'}• Log out of your account
+          {'\n'}• Uninstall the app
+          {'\n'}• Request data deletion
+          {'\n'}{'\n'}All data is permanently deleted when you log out or uninstall the app.
+        </Text>
+
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>9. Changes to This Policy</Text>
+        <Text style={[styles.content, { color: colors.textSecondary }]}>
+          We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this screen and updating the effective date. We encourage you to review this policy periodically.
+        </Text>
+
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>10. Contact Us</Text>
+        <Text style={[styles.content, { color: colors.textSecondary }]}>
+          If you have any questions, concerns, or requests regarding your privacy, please contact us:
+          {'\n'}{'\n'}Email: learnsmartofficial24@gmail.com
+          {'\n'}Response Time: Within 30 days
+          {'\n'}{'\n'}For GDPR requests, COPPA inquiries, or any privacy-related questions, we are here to help.
         </Text>
 
         <View style={styles.footer}>
-          <Text style={[styles.version, { color: colors.textSecondary }]}>Last Updated: December 2024</Text>
+          <Text style={[styles.version, { color: colors.textSecondary }]}>Effective Date: January 1, 2025</Text>
+          <Text style={[styles.version, { color: colors.textSecondary }]}>Last Updated: January 1, 2025</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

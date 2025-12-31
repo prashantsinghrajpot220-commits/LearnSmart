@@ -14,6 +14,7 @@ import { useXPStore } from '../store/xpStore';
 import { useAchievementStore } from '../store/achievementStore';
 import { BottomTabNavigator } from '../components/BottomTabNavigator';
 import { usePathname } from 'expo-router';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 function RootLayoutContent() {
   const { colors, isDark } = useTheme();
@@ -22,14 +23,13 @@ function RootLayoutContent() {
   const pathname = usePathname();
   const { loadXP } = useXPStore();
   const { loadAchievements } = useAchievementStore();
-  const [streakChecked, setStreakChecked] = useState(false);
 
   useEffect(() => {
     // Initialize AdMob
     if (Platform.OS !== 'web') {
       mobileAds()
         .initialize()
-        .then(adapterStatuses => {
+        .then(() => {
           console.log('AdMob initialized');
         })
         .catch(err => {
@@ -54,7 +54,7 @@ function RootLayoutContent() {
         // Check streak achievements
         const { checkAndUnlock } = useAchievementStore.getState();
         const { getXP, totalLessonsRead, totalQuizzesCompleted } = useXPStore.getState();
-        
+
         checkAndUnlock({
           currentStreak: streakResult.streak,
           totalQuizzesCompleted,
@@ -62,11 +62,8 @@ function RootLayoutContent() {
           currentXP: getXP(),
           rank: useXPStore.getState().getRank().name,
         });
-        
-        setStreakChecked(true);
       } catch (error) {
         console.error('Failed to initialize gamification:', error);
-        setStreakChecked(true);
       }
       
       // Delay setting loaded state to avoid sync setState in effect
@@ -147,7 +144,9 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <SmartyChatProvider>
-        <RootLayoutContent />
+        <ErrorBoundary>
+          <RootLayoutContent />
+        </ErrorBoundary>
       </SmartyChatProvider>
     </ThemeProvider>
   );
