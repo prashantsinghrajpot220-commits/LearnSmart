@@ -11,6 +11,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useUserStore } from '@/store/userStore';
+import { AvatarDisplay } from '@/components/AvatarSelector';
 import { getSubjectsForClass } from '@/constants/curriculum';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
 import { useSmartyContext } from '@/context/ChatContext';
@@ -24,7 +25,7 @@ import { Feather } from '@expo/vector-icons';
 
 export default function Home() {
   const router = useRouter();
-  const { userName, selectedClass, ageGroup, logout, loadUserData } = useUserStore();
+  const { userName, selectedClass, ageGroup, logout, loadUserData, selectedAvatar } = useUserStore();
   const { colors } = useTheme();
   const { setCurrentContext } = useSmartyContext();
   const { loadXP } = useXPStore();
@@ -77,6 +78,10 @@ export default function Home() {
     router.replace('/');
   };
 
+  const handleProfilePress = () => {
+    router.push('/profile');
+  };
+
   const displayName = userName || 'Student';
 
   const styles = getStyles(colors);
@@ -86,11 +91,15 @@ export default function Home() {
       <Animated.View style={[styles.content, { opacity }]}> 
         <View style={styles.header}>
           <View style={styles.headerTop}>
-            <Text style={styles.title}>Welcome, {displayName}!</Text>
-            <DarkModeToggle />
-          </View>
-          <View style={styles.classBadge}>
-            <Text style={styles.classText}>{selectedClass || 'No Class Selected'}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.title}>Welcome, {displayName}!</Text>
+              <View style={styles.classBadge}>
+                <Text style={styles.classText}>{selectedClass || 'No Class Selected'}</Text>
+              </View>
+            </View>
+            <TouchableOpacity onPress={handleProfilePress} activeOpacity={0.7}>
+              <AvatarDisplay id={selectedAvatar} size={60} />
+            </TouchableOpacity>
           </View>
         </View>
 

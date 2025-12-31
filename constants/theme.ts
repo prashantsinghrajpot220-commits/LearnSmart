@@ -18,22 +18,22 @@ export const Colors = {
     matureCardBackground: '#F8F8F8',
   },
   dark: {
-    primary: '#A8D5BA',
-    primaryDark: '#8BBD9D',
-    background: '#1A1A1A',
-    text: '#F0F0F0',
+    primary: '#9CAF88', // Sage Green
+    primaryDark: '#7A9268',
+    background: '#2D2D2D', // Dark Charcoal
+    text: '#F5F1E8', // Light Sand text
     textSecondary: '#AAAAAA',
-    cardBackground: '#2A2A2A',
+    cardBackground: '#3D3D3D',
     secondary: '#555555',
     white: '#FFFFFF',
-    lightGray: '#333333',
-    charcoal: '#F0F0F0',
+    lightGray: '#404040',
+    charcoal: '#F5F1E8',
     shadow: '#000000',
     error: '#EF4444',
-    // 12+ Corporate theme - darker, more serious
-    maturePrimary: '#3D5A35',
-    matureText: '#F0F0F0',
-    matureCardBackground: '#252525',
+    // 12+ Corporate theme
+    maturePrimary: '#5D7A51',
+    matureText: '#F5F1E8',
+    matureCardBackground: '#353535',
   },
 };
 
