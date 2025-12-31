@@ -21,7 +21,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#F5F1E8"
+        "backgroundColor": "#2D2D2D"
       },
       "package": "com.learnsmart.app"
     },
