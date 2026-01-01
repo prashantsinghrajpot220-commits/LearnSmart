@@ -11,6 +11,7 @@ import {
   Dimensions,
   Image,
   Alert,
+  Modal,
 } from 'react-native';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
@@ -25,6 +26,8 @@ import { StreamingService } from '@/services/StreamingService';
 import FileUploadButton from '@/components/FileUploadButton';
 import ImagePreview from '@/components/ImagePreview';
 import FilePreview from '@/components/FilePreview';
+import VoiceRecorder from '@/components/VoiceRecorder';
+import { useVoiceNoteStore } from '@/store/voiceNoteStore';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const MAX_CHAT_HEIGHT = SCREEN_HEIGHT * 0.7;
@@ -39,11 +42,13 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
   const { userName } = useUserStore();
   const { getContextInfo } = useSmartyContext();
   const { messages, isTyping, addMessage } = useChatStore();
+  const { addNote } = useVoiceNoteStore();
   const [inputText, setInputText] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [remainingImages, setRemainingImages] = useState(6);
+  const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -140,6 +145,35 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
       selectedStream: useUserStore.getState().selectedStream || '',
       ...context,
     });
+  };
+
+  const handleVoiceNoteCreated = async (summarizedText: string) => {
+    // Save the voice note
+    const context = getContextInfo();
+    await addNote({
+      id: `note_${Date.now()}`,
+      title: `Note from ${context.currentSubject || 'Study'}`,
+      originalTranscript: summarizedText,
+      summarizedContent: summarizedText,
+      subject: context.currentSubject,
+      chapter: context.currentChapter,
+      tags: context.currentSubject ? [context.currentSubject] : [],
+      duration: 0,
+      language: 'en',
+      isStarred: false,
+    });
+
+    setShowVoiceRecorder(false);
+    
+    // Also send it as a message to Smarty for discussion
+    setInputText(summarizedText);
+    Alert.alert(
+      'Note Created!',
+      'Your voice note has been saved and added to the chat. You can now discuss it with Smarty!',
+      [
+        { text: 'OK', style: 'default' },
+      ]
+    );
   };
 
   const handleSearch = () => {
@@ -381,6 +415,7 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
         <View style={styles.uploadControls}>
+          <FileUploadButton icon="🎙️" label="Voice" onPress={() => setShowVoiceRecorder(true)} />
           <FileUploadButton icon="📸" label="Camera" onPress={() => handlePickImage(true)} />
           <FileUploadButton icon="🖼️" label="Gallery" onPress={() => handlePickImage(false)} />
           <FileUploadButton icon="📁" label="File" onPress={handlePickFile} />
@@ -408,6 +443,31 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
+
+      {/* Voice Recorder Modal */}
+      <Modal
+        visible={showVoiceRecorder}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowVoiceRecorder(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Create Voice Note</Text>
+            <VoiceRecorder
+              onTranscriptionComplete={handleVoiceNoteCreated}
+              subject={getContextInfo().currentSubject}
+              chapter={getContextInfo().currentChapter}
+            />
+            <TouchableOpacity
+              style={styles.modalCloseButton}
+              onPress={() => setShowVoiceRecorder(false)}
+            >
+              <Text style={styles.modalCloseButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -635,5 +695,38 @@ const getStyles = (colors: ThemeColors, isDark: boolean, fullScreen: boolean) =>
       fontSize: FontSizes.sm,
       color: colors.primary,
       fontWeight: FontWeights.medium,
+    },
+    modalContainer: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: Spacing.lg,
+    },
+    modalContent: {
+      backgroundColor: colors.cardBackground,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.xl,
+      width: '100%',
+      maxWidth: 400,
+    },
+    modalTitle: {
+      fontSize: FontSizes.xl,
+      fontWeight: FontWeights.bold,
+      color: isDark ? colors.text : colors.charcoal,
+      textAlign: 'center',
+      marginBottom: Spacing.lg,
+    },
+    modalCloseButton: {
+      marginTop: Spacing.lg,
+      paddingVertical: Spacing.md,
+      borderRadius: BorderRadius.md,
+      backgroundColor: colors.lightGray,
+      alignItems: 'center',
+    },
+    modalCloseButtonText: {
+      fontSize: FontSizes.md,
+      fontWeight: FontWeights.semibold,
+      color: colors.text,
     },
   });

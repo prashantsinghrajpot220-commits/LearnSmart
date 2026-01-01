@@ -254,6 +254,16 @@ export default function ProfileScreen() {
             <Text style={[styles.linkLabel, { color: colors.text }]}>About LearnSmart</Text>
             <Feather name="chevron-right" size={20} color={colors.textSecondary} />
           </TouchableOpacity>
+
+          <TouchableOpacity style={styles.linkItem} onPress={() => router.push('/analytics')}>
+            <Text style={[styles.linkLabel, { color: colors.text }]}>Analytics</Text>
+            <Feather name="chevron-right" size={20} color={colors.textSecondary} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.linkItem} onPress={() => router.push('/weak-areas')}>
+            <Text style={[styles.linkLabel, { color: colors.text }]}>Weak Areas</Text>
+            <Feather name="chevron-right" size={20} color={colors.textSecondary} />
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>

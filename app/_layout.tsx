@@ -16,6 +16,9 @@ import { HeaderComponent } from '../components/HeaderComponent';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { usePathname } from 'expo-router';
 import ErrorBoundary from '../components/ErrorBoundary';
+import { analyticsService } from '@/services/AnalyticsService';
+import { mistakeAnalysisService } from '@/services/MistakeAnalysisService';
+import { useVoiceNoteStore } from '@/store/voiceNoteStore';
 
 function RootLayoutContent() {
   const { colors, isDark } = useTheme();
@@ -24,6 +27,7 @@ function RootLayoutContent() {
   const pathname = usePathname();
   const { loadXP } = useXPStore();
   const { loadAchievements } = useAchievementStore();
+  const { loadNotes } = useVoiceNoteStore();
 
   useEffect(() => {
     // Initialize AdMob
@@ -47,10 +51,15 @@ function RootLayoutContent() {
         // Load XP and achievements
         await loadXP();
         await loadAchievements();
+        await loadNotes();
         
         // Initialize and check streak
         await streakService.initialize();
         const streakResult = await streakService.checkAndUpdateStreak();
+        
+        // Initialize analytics and mistake tracking
+        await analyticsService.initialize();
+        await mistakeAnalysisService.initialize();
         
         // Check streak achievements
         const { checkAndUnlock } = useAchievementStore.getState();
@@ -134,6 +143,34 @@ function RootLayoutContent() {
         <Stack.Screen name="privacy-policy" />
         <Stack.Screen name="terms" />
         <Stack.Screen name="about" />
+        <Stack.Screen
+          name="weak-areas"
+          options={{
+            headerShown: true,
+            title: 'Weak Areas',
+          }}
+        />
+        <Stack.Screen
+          name="personalized-plan"
+          options={{
+            headerShown: true,
+            title: 'Study Plan',
+          }}
+        />
+        <Stack.Screen
+          name="voice-notes"
+          options={{
+            headerShown: true,
+            title: 'Voice Notes',
+          }}
+        />
+        <Stack.Screen
+          name="analytics"
+          options={{
+            headerShown: true,
+            title: 'Analytics',
+          }}
+        />
       </Stack>
       <BottomTabNavigator />
       {showFloatingChat && <FloatingActionButton onPress={toggleChat} />}

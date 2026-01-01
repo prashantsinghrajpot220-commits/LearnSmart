@@ -12,12 +12,13 @@ import Animated, {
 
 const { width } = Dimensions.get('window');
 const TAB_BAR_WIDTH = width - 32;
-const TAB_WIDTH = TAB_BAR_WIDTH / 4;
+const TAB_WIDTH = TAB_BAR_WIDTH / 5;
 
 const TABS = [
   { name: 'Home', icon: 'home-variant', path: '/home' },
-  { name: 'Leaderboard', icon: 'trophy', path: '/leaderboard' },
+  { name: 'Plan', icon: 'book-open-variant', path: '/personalized-plan' },
   { name: 'Chat', icon: 'message-bubble', path: '/chat' },
+  { name: 'Notes', icon: 'microphone', path: '/voice-notes' },
   { name: 'Profile', icon: 'account', path: '/profile' },
 ];
 
