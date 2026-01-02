@@ -19,6 +19,7 @@ export const HeaderComponent = () => {
     if (path === '/home' || path === '/home-12plus') return 'Dashboard';
     if (path === '/explore') return 'Explore';
     if (path === '/chat') return 'Smarty AI';
+    if (path === '/community' || path.startsWith('/group/')) return 'Community';
     if (path === '/profile') return 'Profile';
     if (path.startsWith('/lesson')) return 'Lesson';
     if (path.startsWith('/chapters')) return 'Chapters';

@@ -12,15 +12,17 @@ import Animated, {
 
 const { width } = Dimensions.get('window');
 const TAB_BAR_WIDTH = width - 32;
-const TAB_WIDTH = TAB_BAR_WIDTH / 5;
 
 const TABS = [
   { name: 'Home', icon: 'home-variant', path: '/home' },
   { name: 'Plan', icon: 'book-open-variant', path: '/personalized-plan' },
   { name: 'Chat', icon: 'message-bubble', path: '/chat' },
+  { name: 'Community', icon: 'account-group', path: '/community' },
   { name: 'Notes', icon: 'microphone', path: '/voice-notes' },
   { name: 'Profile', icon: 'account', path: '/profile' },
 ];
+
+const TAB_WIDTH = TAB_BAR_WIDTH / TABS.length;
 
 export const BottomTabNavigator = () => {
   const { colors, isDark } = useTheme();
@@ -30,9 +32,11 @@ export const BottomTabNavigator = () => {
   const translateX = useSharedValue(0);
 
   useEffect(() => {
-    const activeIndex = TABS.findIndex(tab => 
-      pathname === tab.path || (tab.path === '/home' && pathname === '/home-12plus')
-    );
+    const activeIndex = TABS.findIndex((tab) => {
+      const isHome = tab.path === '/home' && (pathname === '/home' || pathname === '/home-12plus');
+      const isCommunity = tab.path === '/community' && (pathname === '/community' || pathname.startsWith('/group/'));
+      return pathname === tab.path || isHome || isCommunity;
+    });
     if (activeIndex !== -1) {
       translateX.value = withSpring(activeIndex * TAB_WIDTH, {
         damping: 15,
@@ -78,7 +82,9 @@ export const BottomTabNavigator = () => {
         ]} />
         
         {TABS.map((tab) => {
-          const isActive = pathname === tab.path || (tab.path === '/home' && pathname === '/home-12plus');
+          const isHome = tab.path === '/home' && (pathname === '/home' || pathname === '/home-12plus');
+          const isCommunity = tab.path === '/community' && (pathname === '/community' || pathname.startsWith('/group/'));
+          const isActive = pathname === tab.path || isHome || isCommunity;
           return (
             <TouchableOpacity
               key={tab.name}

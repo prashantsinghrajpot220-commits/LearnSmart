@@ -26,6 +26,19 @@ export interface GamificationData {
   lastWeekRank: number;
 }
 
+export interface StudyGroupMembership {
+  groupId: string;
+  role: 'admin' | 'member';
+  joinedAt: string;
+}
+
+export interface GroupQuizHistoryEntry {
+  groupId: string;
+  groupQuizId: string;
+  score: number;
+  completedAt: string;
+}
+
 interface UserState {
   userId: string;
   ageGroup: AgeGroup | null;
@@ -43,6 +56,10 @@ interface UserState {
   gamificationData: GamificationData;
   weeklyLeaderboard: LeaderboardEntry[];
 
+  // Study groups
+  studyGroupMemberships: StudyGroupMembership[];
+  groupQuizHistory: GroupQuizHistoryEntry[];
+
   // Actions
   setAgeGroup: (age: AgeGroup) => Promise<void>;
   getAgeGroup: () => AgeGroup | null;
@@ -57,6 +74,11 @@ interface UserState {
   completeOnboarding: () => void;
   logout: () => void;
   loadUserData: () => Promise<void>;
+
+  // Study group actions
+  addStudyGroupMembership: (membership: StudyGroupMembership) => Promise<void>;
+  removeStudyGroupMembership: (groupId: string) => Promise<void>;
+  recordGroupQuizHistory: (entry: GroupQuizHistoryEntry) => Promise<void>;
 
   // Gamification actions
   addSmartCoins: (amount: number, reason: string) => Promise<void>;
@@ -83,6 +105,8 @@ const STORAGE_KEYS = {
   PROFILE_COMPLETE: '@learnsmart/profile_complete',
   GAMIFICATION_DATA: '@learnsmart/gamification_data',
   WEEKLY_LEADERBOARD: '@learnsmart/weekly_leaderboard',
+  STUDY_GROUP_MEMBERSHIPS: '@learnsmart/study_group_memberships',
+  GROUP_QUIZ_HISTORY: '@learnsmart/group_quiz_history',
 };
 
 const generateUserId = () => {
@@ -117,6 +141,9 @@ export const useUserStore = create<UserState>((set, get) => ({
     lastWeekRank: 0,
   },
   weeklyLeaderboard: [],
+
+  studyGroupMemberships: [],
+  groupQuizHistory: [],
 
   setAgeGroup: async (age: AgeGroup) => {
     const currentSignupDate = get().signupDate;
@@ -203,6 +230,8 @@ export const useUserStore = create<UserState>((set, get) => ({
         lastWeekRank: 0,
       },
       weeklyLeaderboard: [],
+      studyGroupMemberships: [],
+      groupQuizHistory: [],
     });
     await AsyncStorage.multiRemove([
       STORAGE_KEYS.USER_NAME,
@@ -217,12 +246,29 @@ export const useUserStore = create<UserState>((set, get) => ({
       STORAGE_KEYS.PROFILE_COMPLETE,
       STORAGE_KEYS.GAMIFICATION_DATA,
       STORAGE_KEYS.WEEKLY_LEADERBOARD,
+      STORAGE_KEYS.STUDY_GROUP_MEMBERSHIPS,
+      STORAGE_KEYS.GROUP_QUIZ_HISTORY,
     ]);
   },
 
   loadUserData: async () => {
     try {
-      const [name, className, stream, avatar, theme, onboarded, ageGroup, userId, signupDate, profileComplete, gamificationData, weeklyLeaderboard] = await Promise.all([
+      const [
+        name,
+        className,
+        stream,
+        avatar,
+        theme,
+        onboarded,
+        ageGroup,
+        userId,
+        signupDate,
+        profileComplete,
+        gamificationData,
+        weeklyLeaderboard,
+        studyGroupMemberships,
+        groupQuizHistory,
+      ] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.USER_NAME),
         AsyncStorage.getItem(STORAGE_KEYS.SELECTED_CLASS),
         AsyncStorage.getItem(STORAGE_KEYS.SELECTED_STREAM),
@@ -235,6 +281,8 @@ export const useUserStore = create<UserState>((set, get) => ({
         AsyncStorage.getItem(STORAGE_KEYS.PROFILE_COMPLETE),
         AsyncStorage.getItem(STORAGE_KEYS.GAMIFICATION_DATA),
         AsyncStorage.getItem(STORAGE_KEYS.WEEKLY_LEADERBOARD),
+        AsyncStorage.getItem(STORAGE_KEYS.STUDY_GROUP_MEMBERSHIPS),
+        AsyncStorage.getItem(STORAGE_KEYS.GROUP_QUIZ_HISTORY),
       ]);
 
       let currentUserId = userId;
@@ -267,6 +315,16 @@ export const useUserStore = create<UserState>((set, get) => ({
         }
       }
 
+      const safeParse = <T,>(raw: string | null, fallback: T): T => {
+        if (!raw) return fallback;
+        try {
+          return JSON.parse(raw) as T;
+        } catch (error) {
+          console.error('Failed to parse stored JSON:', error);
+          return fallback;
+        }
+      };
+
       set({
         userId: currentUserId,
         ageGroup: ageGroup as AgeGroup | null,
@@ -279,11 +337,39 @@ export const useUserStore = create<UserState>((set, get) => ({
         themePreference: (theme as 'light' | 'dark' | 'system') || 'system',
         isOnboarded: onboarded === 'true',
         gamificationData: loadedGamificationData,
-        weeklyLeaderboard: weeklyLeaderboard ? JSON.parse(weeklyLeaderboard) : [],
+        weeklyLeaderboard: safeParse(weeklyLeaderboard, [] as LeaderboardEntry[]),
+        studyGroupMemberships: safeParse(studyGroupMemberships, [] as StudyGroupMembership[]),
+        groupQuizHistory: safeParse(groupQuizHistory, [] as GroupQuizHistoryEntry[]),
       });
     } catch (error) {
       console.error('Failed to load user data:', error);
     }
+  },
+
+  // Study group methods
+  addStudyGroupMembership: async (membership: StudyGroupMembership) => {
+    const current = get().studyGroupMemberships;
+    const without = current.filter((m) => m.groupId !== membership.groupId);
+    const next = [...without, membership];
+
+    set({ studyGroupMemberships: next });
+    await AsyncStorage.setItem(STORAGE_KEYS.STUDY_GROUP_MEMBERSHIPS, JSON.stringify(next));
+  },
+
+  removeStudyGroupMembership: async (groupId: string) => {
+    const current = get().studyGroupMemberships;
+    const next = current.filter((m) => m.groupId !== groupId);
+
+    set({ studyGroupMemberships: next });
+    await AsyncStorage.setItem(STORAGE_KEYS.STUDY_GROUP_MEMBERSHIPS, JSON.stringify(next));
+  },
+
+  recordGroupQuizHistory: async (entry: GroupQuizHistoryEntry) => {
+    const current = get().groupQuizHistory;
+    const next = [entry, ...current].slice(0, 200);
+
+    set({ groupQuizHistory: next });
+    await AsyncStorage.setItem(STORAGE_KEYS.GROUP_QUIZ_HISTORY, JSON.stringify(next));
   },
 
   // Gamification methods
