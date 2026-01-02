@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Platform } from 'react-native';
@@ -19,6 +19,8 @@ import ErrorBoundary from '../components/ErrorBoundary';
 import { analyticsService } from '@/services/AnalyticsService';
 import { mistakeAnalysisService } from '@/services/MistakeAnalysisService';
 import { useVoiceNoteStore } from '@/store/voiceNoteStore';
+import { useNotificationStore } from '@/store/notificationStore';
+import SocialNotificationBanner from '@/components/SocialNotificationBanner';
 
 function RootLayoutContent() {
   const { colors, isDark } = useTheme();
@@ -28,6 +30,15 @@ function RootLayoutContent() {
   const { loadXP } = useXPStore();
   const { loadAchievements } = useAchievementStore();
   const { loadNotes } = useVoiceNoteStore();
+
+  const notifications = useNotificationStore((s) => s.notifications);
+  const activeNotificationId = useNotificationStore((s) => s.activeNotificationId);
+  const dismissActive = useNotificationStore((s) => s.dismissActive);
+
+  const activeNotification = useMemo(
+    () => notifications.find((n) => n.id === activeNotificationId) ?? null,
+    [activeNotificationId, notifications]
+  );
 
   useEffect(() => {
     // Initialize AdMob
@@ -52,6 +63,7 @@ function RootLayoutContent() {
         await loadXP();
         await loadAchievements();
         await loadNotes();
+        await useNotificationStore.getState().loadNotifications();
         
         // Initialize and check streak
         await streakService.initialize();
@@ -115,6 +127,8 @@ function RootLayoutContent() {
           <Stack.Screen name="profile" />
           <Stack.Screen name="explore" />
           <Stack.Screen name="chat" />
+          <Stack.Screen name="community" />
+          <Stack.Screen name="group/[groupId]" />
         </Stack>
       </>
     );
@@ -123,6 +137,14 @@ function RootLayoutContent() {
   return (
     <>
       <StatusBar style={isDark ? 'light' : 'dark'} backgroundColor={colors.background} />
+      {activeNotification ? (
+        <SocialNotificationBanner
+          notification={activeNotification}
+          onDismiss={() => {
+            dismissActive();
+          }}
+        />
+      ) : null}
       <HeaderComponent />
       <Stack
         screenOptions={{
@@ -140,6 +162,8 @@ function RootLayoutContent() {
         <Stack.Screen name="profile" />
         <Stack.Screen name="explore" />
         <Stack.Screen name="chat" />
+        <Stack.Screen name="community" />
+        <Stack.Screen name="group/[groupId]" />
         <Stack.Screen name="privacy-policy" />
         <Stack.Screen name="terms" />
         <Stack.Screen name="about" />

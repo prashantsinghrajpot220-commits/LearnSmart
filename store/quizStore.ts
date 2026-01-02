@@ -3,9 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useXPStore } from './xpStore';
 import { useAchievementStore } from './achievementStore';
 import { coinRewardService } from '@/services/CoinRewardService';
-import { QuizQuestion, DifficultyLevel, QuizResult } from '@/types/quiz';
+import type { QuizQuestion, DifficultyLevel, QuizResult, MistakeRecord } from '@/types/quiz';
 import { mistakeAnalysisService } from '@/services/MistakeAnalysisService';
-import { MistakeRecord } from '@/types/quiz';
 
 interface QuizState {
   questions: QuizQuestion[];
@@ -282,3 +281,5 @@ export const useIsQuestionAnswered = (questionIndex: number) => {
 // XP constants
 export const QUIZ_COMPLETE_XP = QUIZ_XP_AMOUNT;
 export const LESSON_READ_XP = 10;
+
+export type { QuizQuestion, DifficultyLevel, QuizResult, MistakeRecord };
