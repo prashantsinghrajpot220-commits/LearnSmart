@@ -20,6 +20,7 @@ import { XPBar } from '@/components/XPBar';
 import { ProgressRing } from '@/components/ProgressRing';
 import ProgressBar from '@/components/ProgressBar';
 import StreakBadge from '@/components/StreakBadge';
+import ExamCountdownWidget from '@/components/ExamCountdownWidget';
 import { streakService } from '@/services/streakService';
 import { useXPStore } from '@/store/xpStore';
 import { useAchievementStore } from '@/store/achievementStore';
@@ -140,6 +141,9 @@ export default function Home() {
             <Feather name="chevron-right" size={20} color={colors.primary} />
           </TouchableOpacity>
         </View>
+
+        {/* Exam Countdown Widget */}
+        <ExamCountdownWidget limit={3} showTitle={true} />
 
         {selectedClass ? (
           <>
