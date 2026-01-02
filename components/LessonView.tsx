@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,11 @@ import { useUserStore } from '@/store/userStore';
 import { ContentValidator } from '@/services/ContentValidator';
 import { ContentType } from '@/types/content';
 import AdContainer from './AdContainer';
+import PomodoroTimer from './PomodoroTimer';
+import VirtualForest from './VirtualForest';
+import { timerService } from '@/services/TimerService';
+import { focusTracker } from '@/services/FocusTracker';
+import { BreakActivity } from '@/types/productivity';
 
 interface LessonContent {
   title: string;
@@ -66,6 +71,10 @@ export default function LessonView({
 
   const [isQuarantined, setIsQuarantined] = useState(false);
   const [contentBlockedMessage, setContentBlockedMessage] = useState<string | null>(null);
+  const [showTimer, setShowTimer] = useState(false);
+  const [showForest, setShowForest] = useState(false);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [showBreakActivity, setShowBreakActivity] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -107,6 +116,48 @@ export default function LessonView({
     };
   }, [lessonContent, contentId, ageGroup]);
 
+  // Load active timer and forest states
+  useEffect(() => {
+    const loadStates = async () => {
+      const activeState = await timerService.loadActiveState();
+      if (activeState) {
+        setActiveSessionId(activeState.sessionId);
+        const activeTree = await focusTracker.loadActiveTree();
+        if (activeTree) {
+          setShowForest(true);
+        }
+      }
+    };
+    loadStates();
+  }, []);
+
+  const handleStartTimer = useCallback(() => {
+    setShowTimer(true);
+  }, []);
+
+  const handleTimerClose = useCallback(() => {
+    setShowTimer(false);
+  }, []);
+
+  const handleSessionStart = useCallback(async (sessionId: string) => {
+    setActiveSessionId(sessionId);
+    await focusTracker.startGrowingTree(sessionId);
+    setShowForest(true);
+  }, []);
+
+  const handleSessionComplete = useCallback(async (sessionId: string, focusScore: number) => {
+    await timerService.updateFocusScore(sessionId, focusScore);
+    const treeSurvived = focusTracker.isTreeAlive();
+    await timerService.markTreeSurvived(sessionId, treeSurvived);
+    await focusTracker.stopGrowingTree();
+    setActiveSessionId(null);
+    setShowForest(false);
+  }, []);
+
+  const handleBreakActivitySelect = useCallback((activity: BreakActivity) => {
+    setShowBreakActivity(false);
+  }, []);
+
   const handleBack = () => {
     router.back();
   };
@@ -144,7 +195,23 @@ export default function LessonView({
             </Text>
           </View>
         </View>
+        
+        {/* Pomodoro Timer Button */}
+        {!activeSessionId && (
+          <TouchableOpacity
+            style={styles.timerButton}
+            onPress={handleStartTimer}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.timerButtonText}>⏱️</Text>
+          </TouchableOpacity>
+        )}
       </View>
+
+      {/* Virtual Forest - shown when timer is active */}
+      {showForest && activeSessionId && (
+        <VirtualForest sessionId={activeSessionId} showHistory={false} />
+      )}
 
       <ScrollView
         ref={scrollViewRef}
@@ -253,6 +320,16 @@ export default function LessonView({
           </View>
         </View>
       )}
+
+      {/* Pomodoro Timer Modal */}
+      <PomodoroTimer
+        visible={showTimer}
+        onClose={handleTimerClose}
+        subject={subject}
+        chapter={chapter}
+        onSessionStart={handleSessionStart}
+        onSessionComplete={handleSessionComplete}
+      />
     </View>
   );
 }
@@ -291,6 +368,22 @@ const getStyles = (colors: ThemeColors, isDark: boolean) => StyleSheet.create({
     fontSize: FontSizes.sm,
     fontWeight: FontWeights.medium,
     color: colors.white,
+  },
+  timerButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  timerButtonText: {
+    fontSize: 20,
   },
   scrollView: {
     flex: 1,
