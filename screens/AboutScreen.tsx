@@ -24,7 +24,7 @@ export default function AboutScreen() {
             <Text style={styles.logoText}>LS</Text>
           </View>
           <Text style={[styles.appName, { color: colors.text }]}>LearnSmart</Text>
-          <Text style={[styles.version, { color: colors.textSecondary }]}>Version 1.0.0 (Phase 7 Final)</Text>
+          <Text style={[styles.version, { color: colors.textSecondary }]}>Version 1.0.0</Text>
         </View>
 
         <Text style={[styles.missionTitle, { color: colors.text }]}>Our Mission</Text>

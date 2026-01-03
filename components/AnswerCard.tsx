@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Answer } from '@/types/qa';
@@ -11,7 +11,7 @@ interface AnswerCardProps {
   userVote?: 'upvote' | 'downvote';
 }
 
-export const AnswerCard: React.FC<AnswerCardProps> = ({ 
+export const AnswerCard: React.FC<AnswerCardProps> = memo(({ 
   answer, 
   onVote, 
   onMarkHelpful,
@@ -98,7 +98,7 @@ export const AnswerCard: React.FC<AnswerCardProps> = ({
       </View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

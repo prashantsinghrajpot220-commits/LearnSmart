@@ -15,7 +15,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Colors } from '@/constants/colors';
+import { useTheme } from '../components/ThemeContext';
 import { qaForumService } from '@/services/QAForumService';
 import { Question, Answer } from '@/types/qa';
 import { AnswerCard } from '@/components/AnswerCard';
@@ -28,6 +28,8 @@ export const QuestionDetailScreen = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { userVotes } = useUserStore();
+  const { colors, isDark } = useTheme();
+  const styles = getStyles(colors, isDark);
   
   const [question, setQuestion] = useState<Question | null>(null);
   const [answers, setAnswers] = useState<Answer[]>([]);
@@ -96,7 +98,7 @@ export const QuestionDetailScreen = () => {
   if (loading || !question) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={Colors.light.primary} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -193,22 +195,23 @@ export const QuestionDetailScreen = () => {
 
 const getDifficultyColor = (difficulty: string) => {
   switch (difficulty) {
-    case 'easy': return Colors.light.success;
-    case 'medium': return Colors.light.warning;
-    case 'hard': return Colors.light.error;
-    default: return Colors.light.textSecondary;
+    case 'easy': return colors.success;
+    case 'medium': return colors.warning;
+    case 'hard': return colors.error;
+    default: return colors.textSecondary;
   }
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, isDark: boolean) => StyleSheet.create({
   center: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.background,
   },
   listContent: {
     padding: 16,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   questionSection: {
     marginBottom: 24,
@@ -230,19 +233,19 @@ const styles = StyleSheet.create({
   },
   subjectText: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 12,
     lineHeight: 28,
   },
   description: {
     fontSize: 16,
-    color: Colors.light.text,
+    color: colors.text,
     lineHeight: 24,
     marginBottom: 16,
   },
@@ -250,20 +253,20 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 250,
     borderRadius: 12,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: isDark ? '#333' : '#f0f0f0',
     marginBottom: 16,
   },
   questionFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
+    borderBottomColor: colors.border,
     paddingBottom: 16,
     marginBottom: 24,
   },
   footerText: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
   answersHeader: {
     flexDirection: 'row',
@@ -273,7 +276,7 @@ const styles = StyleSheet.create({
   answersTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: Colors.light.text,
+    color: colors.text,
   },
   sortContainer: {
     flexDirection: 'row',
@@ -282,24 +285,24 @@ const styles = StyleSheet.create({
   },
   sortText: {
     fontSize: 13,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: '600',
   },
   sortTextActive: {
-    color: Colors.light.primary,
+    color: colors.primary,
   },
   sortDivider: {
-    color: Colors.light.border,
+    color: colors.border,
   },
   inputContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'white',
+    backgroundColor: colors.cardBackground,
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: Colors.light.border,
+    borderTopColor: colors.border,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
@@ -313,16 +316,17 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: isDark ? '#333' : '#f5f5f5',
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 8,
     paddingTop: 8,
     maxHeight: 100,
     fontSize: 15,
+    color: colors.text,
   },
   sendBtn: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -330,7 +334,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sendBtnDisabled: {
-    backgroundColor: Colors.light.textSecondary,
+    backgroundColor: colors.textSecondary,
     opacity: 0.5,
   },
 });

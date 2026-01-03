@@ -23,7 +23,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#2D2D2D"
       },
-      "package": "com.learnsmart.app"
+      "package": "com.learnsmart.app",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png",
