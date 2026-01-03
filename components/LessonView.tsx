@@ -19,12 +19,17 @@ import VirtualForest from './VirtualForest';
 import { timerService } from '@/services/TimerService';
 import { focusTracker } from '@/services/FocusTracker';
 import { BreakActivity } from '@/types/productivity';
+import { LessonImage } from './LessonImage';
+import { LabeledDiagram } from './LabeledDiagram';
+import { DiagramData } from '@/constants/curriculum';
 
 interface LessonContent {
   title: string;
   icon: string;
   bulletPoints: string[];
   paragraphs: string[];
+  imageUrl?: string;
+  diagramData?: DiagramData;
 }
 
 interface LessonViewProps {
@@ -231,6 +236,14 @@ export default function LessonView({
 
           {displayLessonContent ? (
             <>
+              {displayLessonContent.imageUrl && (
+                <LessonImage 
+                  url={displayLessonContent.imageUrl} 
+                  altText={displayLessonContent.title}
+                  animationType="slide"
+                />
+              )}
+
               <View style={styles.contentSection}>
                 {displayLessonContent.bulletPoints.map((point, index) => (
                   <View key={index} style={styles.bulletPointContainer}>
@@ -239,6 +252,10 @@ export default function LessonView({
                   </View>
                 ))}
               </View>
+
+              {displayLessonContent.diagramData && (
+                <LabeledDiagram data={displayLessonContent.diagramData} />
+              )}
 
               {displayLessonContent.paragraphs.map((paragraph, index) => (
                 <View key={`para-${index}`} style={styles.paragraphContainer}>

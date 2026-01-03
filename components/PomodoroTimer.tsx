@@ -43,21 +43,32 @@ export default function PomodoroTimer({
   const [showSettings, setShowSettings] = useState(false);
   const [selectedDuration, setSelectedDuration] = useState(25);
 
-  useEffect(() => {
-    loadSettings();
-    loadActiveTimer();
-  }, []);
-
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     const loadedSettings = await timerService.loadSettings();
     setSettings(loadedSettings);
     setSelectedDuration(loadedSettings.studyDuration);
-  };
+  }, []);
 
-  const loadActiveTimer = async () => {
+  const loadActiveTimer = useCallback(async () => {
     const state = await timerService.loadActiveState();
     setActiveState(state);
-  };
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadSettings();
+      loadActiveTimer();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [loadSettings, loadActiveTimer]);
+
+  const handleTimerComplete = useCallback(async (state: ActiveTimerState) => {
+    const session = await timerService.getSession(state.sessionId);
+    if (session && state.phase === 'study') {
+      // Session completed, transition to break
+      // In a real app, you might trigger a notification here
+    }
+  }, []);
 
   useEffect(() => {
     const unsubscribe = timerService.subscribe((state) => {
@@ -72,15 +83,7 @@ export default function PomodoroTimer({
     return () => {
       unsubscribe();
     };
-  }, []);
-
-  const handleTimerComplete = async (state: ActiveTimerState) => {
-    const session = await timerService.getSession(state.sessionId);
-    if (session && state.phase === 'study') {
-      // Session completed, transition to break
-      // In a real app, you might trigger a notification here
-    }
-  };
+  }, [handleTimerComplete]);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);

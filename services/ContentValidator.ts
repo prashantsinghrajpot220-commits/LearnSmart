@@ -85,6 +85,12 @@ export interface LessonContent {
   icon: string;
   bulletPoints: string[];
   paragraphs: string[];
+  imageUrl?: string;
+  diagramData?: {
+    type: string;
+    labels: { text: string; x: number; y: number; tooltip: string }[];
+    animationType?: string;
+  };
 }
 
 export interface QuizQuestionContent {
@@ -290,6 +296,8 @@ export class ContentValidator {
       icon: sanitizeTextForDisplay(lesson.icon, { maxLength: 8, preserveNewlines: false }),
       bulletPoints,
       paragraphs,
+      imageUrl: lesson.imageUrl,
+      diagramData: lesson.diagramData,
     };
 
     if (bulletPoints.length === 0 && paragraphs.length === 0) {

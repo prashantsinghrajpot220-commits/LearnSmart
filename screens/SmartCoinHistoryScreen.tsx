@@ -17,17 +17,13 @@ export default function SmartCoinHistoryScreen() {
   const [transactions, setTransactions] = useState<CoinTransaction[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const loadTransactions = () => {
-    setTransactions(getCoinTransactions());
-  };
-
   useEffect(() => {
-    loadTransactions();
-  }, []);
+    setTransactions(getCoinTransactions());
+  }, [getCoinTransactions]);
 
   const onRefresh = () => {
     setRefreshing(true);
-    loadTransactions();
+    setTransactions(getCoinTransactions());
     setTimeout(() => setRefreshing(false), 500);
   };
 

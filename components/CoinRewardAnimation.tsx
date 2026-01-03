@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, StyleSheet, Animated, Dimensions, Easing } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from './ThemeContext';
@@ -21,10 +21,10 @@ export default function CoinRewardAnimation({
   const { gamificationData } = useUserStore();
   const [visible, setVisible] = useState(true);
 
-  const coinAnimation = useRef(new Animated.Value(0)).current;
-  const textAnimation = useRef(new Animated.Value(0)).current;
-  const scaleAnimation = useRef(new Animated.Value(0)).current;
-  const opacityAnimation = useRef(new Animated.Value(1)).current;
+  const coinAnimation = useMemo(() => new Animated.Value(0), []);
+  const textAnimation = useMemo(() => new Animated.Value(0), []);
+  const scaleAnimation = useMemo(() => new Animated.Value(0), []);
+  const opacityAnimation = useMemo(() => new Animated.Value(1), []);
 
   useEffect(() => {
     // Initial pop animation
