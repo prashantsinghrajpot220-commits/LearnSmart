@@ -3,12 +3,13 @@ import { View, TouchableOpacity, StyleSheet, Platform, Dimensions, Text } from '
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from './ThemeContext';
 import { useRouter, usePathname } from 'expo-router';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
   withSpring,
   interpolate
 } from 'react-native-reanimated';
+import NotificationBadge from './NotificationBadge';
 
 const { width } = Dimensions.get('window');
 const TAB_BAR_WIDTH = width - 32;
@@ -20,7 +21,7 @@ const TABS = [
   { name: 'Chat', icon: 'message-bubble', path: '/chat' },
   { name: 'Community', icon: 'account-group', path: '/community' },
   { name: 'Notes', icon: 'microphone', path: '/voice-notes' },
-  { name: 'Profile', icon: 'account', path: '/profile' },
+  { name: 'Profile', icon: 'account', path: '/profile', hasBadge: true },
 ];
 
 const TAB_WIDTH = TAB_BAR_WIDTH / TABS.length;
@@ -95,11 +96,14 @@ export const BottomTabNavigator = () => {
               onPress={() => handlePress(tab.path)}
               activeOpacity={0.7}
             >
-              <MaterialCommunityIcons
-                name={tab.icon as any}
-                size={24}
-                color={isActive ? colors.white : colors.textSecondary}
-              />
+              <View style={styles.iconContainer}>
+                <MaterialCommunityIcons
+                  name={tab.icon as any}
+                  size={24}
+                  color={isActive ? colors.white : colors.textSecondary}
+                />
+                {tab.hasBadge && <NotificationBadge size={18} showCount={false} />}
+              </View>
               <Text style={[
                 styles.tabLabel,
                 { color: isActive ? colors.white : colors.textSecondary }
@@ -152,6 +156,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1,
+  },
+  iconContainer: {
+    position: 'relative',
   },
   tabLabel: {
     fontSize: 10,

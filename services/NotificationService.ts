@@ -57,9 +57,48 @@ export class NotificationService {
 
   notifyBadgeUnlocked(badge: { name: string; icon: string }): void {
     useNotificationStore.getState().pushNotification({
-      type: 'achievement',
+      type: 'qa_badge_unlock',
       title: 'Badge unlocked! 🏅',
       message: `Congratulations! You've earned the ${badge.icon} ${badge.name} badge.`,
+      data: { badgeName: badge.name, badgeIcon: badge.icon },
+    });
+  }
+
+  // Q&A Specific Notifications
+  notifyUpvote(params: { voterName?: string; answerText?: string }): void {
+    useNotificationStore.getState().pushNotification({
+      type: 'qa_upvote',
+      title: 'Someone upvoted your answer',
+      message: params.answerText
+        ? `${params.voterName || 'Someone'} upvoted: "${params.answerText.substring(0, 50)}..."`
+        : `${params.voterName || 'Someone'} upvoted your answer`,
+    });
+  }
+
+  notifyHelpfulMark(params: { coins: number }): void {
+    useNotificationStore.getState().pushNotification({
+      type: 'qa_helpful_mark',
+      title: 'Your answer was marked helpful! 🎉',
+      message: `+${params.coins} SmartCoins earned`,
+      data: { coins: params.coins },
+    });
+  }
+
+  notifyMilestone(params: { milestone: string; coins: number }): void {
+    useNotificationStore.getState().pushNotification({
+      type: 'qa_milestone',
+      title: 'Milestone reached! 🏆',
+      message: `${params.milestone} · +${params.coins} SmartCoins`,
+      data: { milestone: params.milestone, coins: params.coins },
+    });
+  }
+
+  notifyLeaderboard(params: { rank: number; message: string }): void {
+    useNotificationStore.getState().pushNotification({
+      type: 'qa_leaderboard',
+      title: `Leaderboard Update 📊`,
+      message: `${params.message} (Rank #${params.rank})`,
+      data: { rank: params.rank },
     });
   }
 }

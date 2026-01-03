@@ -22,9 +22,12 @@ import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme
 import { AvatarDisplay, AvatarSelector } from '../components/AvatarSelector';
 import Dropdown from '../components/Dropdown';
 import CoinDisplay from '../components/CoinDisplay';
+import SmartCoinDisplay from '../components/SmartCoinDisplay';
+import StreakCounter from '../components/StreakCounter';
 import RankBadge from '../components/RankBadge';
 import ReputationCard from '../components/ReputationCard';
 import BadgeProgress from '../components/BadgeProgress';
+import NotificationBadge from '../components/NotificationBadge';
 
 export default function ProfileScreen() {
   const { colors, isDark, toggleTheme } = useTheme();
@@ -38,12 +41,15 @@ export default function ProfileScreen() {
     gamificationData,
     userQuestions,
     userAnswers,
+    answerStreakCount,
+    notificationPreferences,
+    updateNotificationPreferences,
   } = useUserStore();
-  
+
   const { currentXP } = useCurrentRank();
   const { totalLessonsRead, totalQuizzesCompleted } = useXPStore();
   const [streak, setStreak] = React.useState(0);
-  
+
   const [editingName, setEditingName] = useState(userName);
   const router = useRouter();
 
@@ -89,16 +95,25 @@ export default function ProfileScreen() {
         {/* Header */}
         <View style={styles.header}>
           <AvatarDisplay id={selectedAvatar} size={100} style={styles.avatarHeader} />
-          <Text style={[styles.userName, { color: colors.text }]}>{userName || 'Student'}</Text>
-          <Text style={[styles.userClass, { color: colors.textSecondary }]}>{selectedClass}</Text>
+          <View style={styles.headerText}>
+            <Text style={[styles.userName, { color: colors.text }]}>{userName || 'Student'}</Text>
+            <Text style={[styles.userClass, { color: colors.textSecondary }]}>{selectedClass}</Text>
+          </View>
+          <View style={styles.notificationButtonWrapper}>
+            <TouchableOpacity
+              style={[styles.notificationButton, { backgroundColor: colors.cardBackground }]}
+              onPress={() => router.push('/notifications')}
+            >
+              <MaterialCommunityIcons name="bell-outline" size={24} color={colors.text} />
+            </TouchableOpacity>
+            <NotificationBadge size={14} showCount={true} />
+          </View>
         </View>
 
         {/* Stats Grid */}
         <View style={styles.statsGrid}>
           <View style={[styles.statCard, { backgroundColor: colors.cardBackground }]}>
-            <Text style={styles.statEmoji}>🔥</Text>
-            <Text style={[styles.statValue, { color: colors.text }]}>{streak}</Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Day Streak</Text>
+            <StreakCounter size="medium" showLabel={false} />
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.cardBackground }]}>
             <Text style={styles.statEmoji}>✨</Text>
@@ -106,9 +121,17 @@ export default function ProfileScreen() {
             <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total XP</Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.cardBackground }]}>
-            <Text style={styles.statEmoji}>💰</Text>
-            <Text style={[styles.statValue, { color: colors.text }]}>{gamificationData.smartCoins}</Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>SmartCoins</Text>
+            <SmartCoinDisplay size="small" showLabel={false} />
+          </View>
+        </View>
+
+        {/* Expanded Stats */}
+        <View style={styles.expandedStats}>
+          <View style={[styles.expandedStat, { backgroundColor: colors.cardBackground }]}>
+            <SmartCoinDisplay size="large" showLabel={true} />
+          </View>
+          <View style={[styles.expandedStat, { backgroundColor: colors.cardBackground }]}>
+            <StreakCounter size="large" showLabel={true} streakCount={answerStreakCount} />
           </View>
         </View>
 
@@ -198,7 +221,7 @@ export default function ProfileScreen() {
             <Feather name="chevron-right" size={20} color={colors.textSecondary} />
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.actionItem, { borderBottomColor: colors.lightGray }]}
             onPress={() => router.push('/avatar-store')}
           >
@@ -212,9 +235,25 @@ export default function ProfileScreen() {
               </View>
             </View>
             <View style={styles.actionRightContainer}>
-              <CoinDisplay size="small" showLabel={false} />
+              <SmartCoinDisplay size="small" showLabel={false} />
               <Feather name="chevron-right" size={20} color={colors.textSecondary} />
             </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.actionItem, { borderBottomColor: colors.lightGray }]}
+            onPress={() => router.push('/coin-history')}
+          >
+            <View style={styles.actionLabelGroup}>
+              <MaterialCommunityIcons name="history" size={24} color={colors.primary} />
+              <View style={styles.actionTextContainer}>
+                <Text style={[styles.actionLabel, { color: colors.text }]}>Coin History</Text>
+                <Text style={[styles.actionSublabel, { color: colors.textSecondary }]}>
+                  View your SmartCoin transactions
+                </Text>
+              </View>
+            </View>
+            <Feather name="chevron-right" size={20} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
 
@@ -295,12 +334,95 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.linkItem} onPress={() => router.push('/weak-areas')}>
-            <Text style={[styles.linkLabel, { color: colors.text }]}>Weak Areas</Text>
-            <Feather name="chevron-right" size={20} color={colors.textSecondary} />
+           <Text style={[styles.linkLabel, { color: colors.text }]}>Weak Areas</Text>
+           <Feather name="chevron-right" size={20} color={colors.textSecondary} />
           </TouchableOpacity>
-        </View>
+          </View>
 
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          {/* Notification Preferences Section */}
+          <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Notification Preferences</Text>
+
+          <View style={[styles.settingItem, { borderBottomColor: colors.lightGray }]}>
+           <View style={styles.settingLabelGroup}>
+             <Feather name="message-square" size={20} color={colors.text} />
+             <Text style={[styles.settingLabel, { color: colors.text }]}>Answers</Text>
+           </View>
+           <Switch
+             value={notificationPreferences.answers}
+             onValueChange={(value) => updateNotificationPreferences({ answers: value })}
+             trackColor={{ false: '#D1D1D1', true: colors.primary + '80' }}
+             thumbColor={notificationPreferences.answers ? colors.primary : '#F4F3F4'}
+           />
+          </View>
+
+          <View style={[styles.settingItem, { borderBottomColor: colors.lightGray }]}>
+           <View style={styles.settingLabelGroup}>
+             <Feather name="thumbs-up" size={20} color={colors.text} />
+             <Text style={[styles.settingLabel, { color: colors.text }]}>Upvotes</Text>
+           </View>
+           <Switch
+             value={notificationPreferences.upvotes}
+             onValueChange={(value) => updateNotificationPreferences({ upvotes: value })}
+             trackColor={{ false: '#D1D1D1', true: colors.primary + '80' }}
+             thumbColor={notificationPreferences.upvotes ? colors.primary : '#F4F3F4'}
+           />
+          </View>
+
+          <View style={[styles.settingItem, { borderBottomColor: colors.lightGray }]}>
+           <View style={styles.settingLabelGroup}>
+             <Feather name="star" size={20} color={colors.text} />
+             <Text style={[styles.settingLabel, { color: colors.text }]}>Helpful Marks</Text>
+           </View>
+           <Switch
+             value={notificationPreferences.helpfulMarks}
+             onValueChange={(value) => updateNotificationPreferences({ helpfulMarks: value })}
+             trackColor={{ false: '#D1D1D1', true: colors.primary + '80' }}
+             thumbColor={notificationPreferences.helpfulMarks ? colors.primary : '#F4F3F4'}
+           />
+          </View>
+
+          <View style={[styles.settingItem, { borderBottomColor: colors.lightGray }]}>
+           <View style={styles.settingLabelGroup}>
+             <Feather name="award" size={20} color={colors.text} />
+             <Text style={[styles.settingLabel, { color: colors.text }]}>Badge Unlocks</Text>
+           </View>
+           <Switch
+             value={notificationPreferences.badgeUnlocks}
+             onValueChange={(value) => updateNotificationPreferences({ badgeUnlocks: value })}
+             trackColor={{ false: '#D1D1D1', true: colors.primary + '80' }}
+             thumbColor={notificationPreferences.badgeUnlocks ? colors.primary : '#F4F3F4'}
+           />
+          </View>
+
+          <View style={[styles.settingItem, { borderBottomColor: colors.lightGray }]}>
+           <View style={styles.settingLabelGroup}>
+             <Feather name="bar-chart" size={20} color={colors.text} />
+             <Text style={[styles.settingLabel, { color: colors.text }]}>Leaderboard Updates</Text>
+           </View>
+           <Switch
+             value={notificationPreferences.leaderboardUpdates}
+             onValueChange={(value) => updateNotificationPreferences({ leaderboardUpdates: value })}
+             trackColor={{ false: '#D1D1D1', true: colors.primary + '80' }}
+             thumbColor={notificationPreferences.leaderboardUpdates ? colors.primary : '#F4F3F4'}
+           />
+          </View>
+
+          <View style={[styles.settingItem, { borderBottomColor: colors.lightGray }]}>
+           <View style={styles.settingLabelGroup}>
+             <Feather name="flag" size={20} color={colors.text} />
+             <Text style={[styles.settingLabel, { color: colors.text }]}>Milestones</Text>
+           </View>
+           <Switch
+             value={notificationPreferences.milestones}
+             onValueChange={(value) => updateNotificationPreferences({ milestones: value })}
+             trackColor={{ false: '#D1D1D1', true: colors.primary + '80' }}
+             thumbColor={notificationPreferences.milestones ? colors.primary : '#F4F3F4'}
+           />
+          </View>
+          </View>
+
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Feather name="log-out" size={20} color={colors.error} />
           <Text style={styles.logoutText}>Sign Out</Text>
         </TouchableOpacity>
@@ -324,6 +446,32 @@ const getStyles = (colors: any) => StyleSheet.create({
     alignItems: 'center',
     marginVertical: Spacing.xl,
   },
+  headerText: {
+    alignItems: 'center',
+  },
+  notificationButtonWrapper: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+  },
+  notificationButton: {
+    width: 44,
+    height: 44,
+    borderRadius: BorderRadius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
   avatarHeader: {
     marginBottom: Spacing.md,
     borderWidth: 4,
@@ -345,6 +493,22 @@ const getStyles = (colors: any) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: Spacing.lg,
+  },
+  expandedStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.lg,
+  },
+  expandedStat: {
+    flex: 1,
+    marginHorizontal: 5,
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    alignItems: 'center',
+    ...Platform.select({
+      ios: { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5 },
+      android: { elevation: 2 },
+    }),
   },
   statCard: {
     flex: 1,

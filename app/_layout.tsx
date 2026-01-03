@@ -174,6 +174,13 @@ function RootLayoutContent() {
           }}
         />
         <Stack.Screen
+          name="notifications"
+          options={{
+            headerShown: true,
+            title: 'Notifications',
+          }}
+        />
+        <Stack.Screen
           name="question-detail"
           options={{
             headerShown: true,
@@ -209,6 +216,13 @@ function RootLayoutContent() {
           options={{
             headerShown: true,
             title: 'Analytics',
+          }}
+        />
+        <Stack.Screen
+          name="coin-history"
+          options={{
+            headerShown: true,
+            title: 'SmartCoin History',
           }}
         />
       </Stack>

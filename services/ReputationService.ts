@@ -2,6 +2,7 @@ import { useUserStore, Badge, ReputationLeaderboardEntry } from '@/store/userSto
 import { qaForumService } from './QAForumService';
 import { notificationService } from './NotificationService';
 import { StudyGroupService } from './StudyGroupService';
+import { gamificationService } from './GamificationService';
 import { Answer } from '@/types/qa';
 
 const BADGE_DEFINITIONS = {
@@ -46,12 +47,36 @@ export class ReputationService {
 
   async handleHelpfulMark(answer: Answer) {
     const { userId: currentUserId, updateReputation } = useUserStore.getState();
-    
+
     // In a real app, this would be handled server-side
     if (answer.userId === currentUserId) {
         await updateReputation(5);
         await this.checkBadges();
+
+        // Award coins for helpful mark
+        await gamificationService.awardForHelpfulAnswer();
+
+        // Check helpful count milestones
+        await this.checkHelpfulMilestones();
     }
+  }
+
+  async checkHelpfulMilestones() {
+    const { userId } = useUserStore.getState();
+
+    // Get all answers by user across all questions
+    const allQuestions = await qaForumService.getQuestions();
+    let totalHelpful = 0;
+
+    for (const q of allQuestions) {
+        const answers = await qaForumService.loadAnswers(q.id);
+        const myAnswers = answers.filter((a: Answer) => a.userId === userId);
+        for (const a of myAnswers) {
+            totalHelpful += a.helpfulCount;
+        }
+    }
+
+    await gamificationService.checkHelpfulCountMilestones(totalHelpful);
   }
 
   async handleUpvote(answer: Answer) {
@@ -123,9 +148,9 @@ export class ReputationService {
 
   private async processBadge(definition: { id: string; name: string; description: string; icon: string; target: number }, currentCount: number) {
     const { addBadge, updateAchievementProgress, gamificationData } = useUserStore.getState();
-    
+
     const isUnlocked = gamificationData.badges.some(b => b.id === definition.id);
-    
+
     if (currentCount >= definition.target && !isUnlocked) {
         const newBadge: Badge = {
             id: definition.id,
@@ -136,6 +161,9 @@ export class ReputationService {
         };
         await addBadge(newBadge);
         notificationService.notifyBadgeUnlocked(newBadge);
+
+        // Award coins for badge unlock
+        await gamificationService.awardForBadgeUnlock(newBadge.name, newBadge.id);
     }
 
     await updateAchievementProgress({

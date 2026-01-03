@@ -7,6 +7,11 @@ export type AppNotificationType =
   | 'group_quiz_created'
   | 'group_quiz_result'
   | 'qa_new_answer'
+  | 'qa_upvote'
+  | 'qa_helpful_mark'
+  | 'qa_badge_unlock'
+  | 'qa_leaderboard'
+  | 'qa_milestone'
   | 'achievement';
 
 export interface AppNotification {
@@ -27,7 +32,11 @@ interface NotificationState {
   pushNotification: (notification: Omit<AppNotification, 'id' | 'createdAt' | 'read'> & { id?: string }) => Promise<void>;
   dismissActive: () => Promise<void>;
   markAsRead: (id: string) => Promise<void>;
+  markAllAsRead: () => Promise<void>;
+  clearAll: () => Promise<void>;
   getUnreadCount: () => number;
+  getNotificationsByType: (type: AppNotificationType) => AppNotification[];
+  removeNotification: (id: string) => Promise<void>;
 }
 
 const STORAGE_KEY = '@learnsmart/in_app_notifications';
@@ -111,5 +120,45 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
 
   getUnreadCount: () => {
     return get().notifications.filter((n) => !n.read).length;
+  },
+
+  markAllAsRead: async () => {
+    const notifications = get().notifications.map((n) => ({ ...n, read: true }));
+    set({ notifications, activeNotificationId: null });
+
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
+    } catch (error) {
+      console.error('Failed to persist notifications:', error);
+    }
+  },
+
+  clearAll: async () => {
+    set({ notifications: [], activeNotificationId: null });
+
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+    } catch (error) {
+      console.error('Failed to clear notifications:', error);
+    }
+  },
+
+  getNotificationsByType: (type: AppNotificationType) => {
+    return get().notifications.filter((n) => n.type === type);
+  },
+
+  removeNotification: async (id: string) => {
+    const notifications = get().notifications.filter((n) => n.id !== id);
+    const nextActive = get().activeNotificationId === id
+      ? notifications.find((n) => !n.read)?.id ?? null
+      : get().activeNotificationId;
+
+    set({ notifications, activeNotificationId: nextActive });
+
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
+    } catch (error) {
+      console.error('Failed to persist notifications:', error);
+    }
   },
 }));
