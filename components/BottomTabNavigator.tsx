@@ -16,6 +16,7 @@ const TAB_BAR_WIDTH = width - 32;
 const TABS = [
   { name: 'Home', icon: 'home-variant', path: '/home' },
   { name: 'Plan', icon: 'book-open-variant', path: '/personalized-plan' },
+  { name: 'Forum', icon: 'forum', path: '/qa-forum' },
   { name: 'Chat', icon: 'message-bubble', path: '/chat' },
   { name: 'Community', icon: 'account-group', path: '/community' },
   { name: 'Notes', icon: 'microphone', path: '/voice-notes' },
@@ -35,7 +36,8 @@ export const BottomTabNavigator = () => {
     const activeIndex = TABS.findIndex((tab) => {
       const isHome = tab.path === '/home' && (pathname === '/home' || pathname === '/home-12plus');
       const isCommunity = tab.path === '/community' && (pathname === '/community' || pathname.startsWith('/group/'));
-      return pathname === tab.path || isHome || isCommunity;
+      const isForum = tab.path === '/qa-forum' && (pathname === '/qa-forum' || pathname.startsWith('/question-detail'));
+      return pathname === tab.path || isHome || isCommunity || isForum;
     });
     if (activeIndex !== -1) {
       translateX.value = withSpring(activeIndex * TAB_WIDTH, {
@@ -84,7 +86,8 @@ export const BottomTabNavigator = () => {
         {TABS.map((tab) => {
           const isHome = tab.path === '/home' && (pathname === '/home' || pathname === '/home-12plus');
           const isCommunity = tab.path === '/community' && (pathname === '/community' || pathname.startsWith('/group/'));
-          const isActive = pathname === tab.path || isHome || isCommunity;
+          const isForum = tab.path === '/qa-forum' && (pathname === '/qa-forum' || pathname.startsWith('/question-detail'));
+          const isActive = pathname === tab.path || isHome || isCommunity || isForum;
           return (
             <TouchableOpacity
               key={tab.name}

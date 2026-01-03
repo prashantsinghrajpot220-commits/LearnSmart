@@ -11,37 +11,35 @@ import {
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useVoiceNoteStore } from '@/store/voiceNoteStore';
-import { VoiceNote } from '@/types/notes';
 import NoteCard from '@/components/NoteCard';
 
 export default function VoiceNotesScreen() {
   const { colors, isDark } = useTheme();
   const { notes, loadNotes, deleteNote, toggleStar } = useVoiceNoteStore();
-  const [filteredNotes, setFilteredNotes] = useState<VoiceNote[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'starred'>('all');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadNotes().then(() => setLoading(false));
-  }, []);
+  }, [loadNotes]);
 
-  useEffect(() => {
-    const filtered = notes;
+  const filteredNotes = useMemo(() => {
+    let filtered = notes;
     if (searchQuery.trim()) {
+      const lowerQuery = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (note) =>
-          note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          note.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          note.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+          note.title.toLowerCase().includes(lowerQuery) ||
+          note.summary.toLowerCase().includes(lowerQuery) ||
+          note.tags.some((tag) => tag.toLowerCase().includes(lowerQuery))
       );
     }
     if (filter === 'starred') {
       filtered = filtered.filter((note) => note.isStarred);
     }
-    filtered.sort((a, b) => b.updatedAt - a.updatedAt);
-    setFilteredNotes(filtered);
-  }, [notes, searchQuery, filter, loadNotes]);
+    return [...filtered].sort((a, b) => b.updatedAt - a.updatedAt);
+  }, [notes, searchQuery, filter]);
 
   const handleDelete = async (id: string) => {
     await deleteNote(id);

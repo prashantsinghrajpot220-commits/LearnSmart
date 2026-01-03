@@ -129,6 +129,8 @@ function RootLayoutContent() {
           <Stack.Screen name="chat" />
           <Stack.Screen name="community" />
           <Stack.Screen name="group/[groupId]" />
+          <Stack.Screen name="qa-forum" />
+          <Stack.Screen name="question-detail" />
         </Stack>
       </>
     );
@@ -164,6 +166,20 @@ function RootLayoutContent() {
         <Stack.Screen name="chat" />
         <Stack.Screen name="community" />
         <Stack.Screen name="group/[groupId]" />
+        <Stack.Screen
+          name="qa-forum"
+          options={{
+            headerShown: true,
+            title: 'Q&A Forum',
+          }}
+        />
+        <Stack.Screen
+          name="question-detail"
+          options={{
+            headerShown: true,
+            title: 'Question',
+          }}
+        />
         <Stack.Screen name="privacy-policy" />
         <Stack.Screen name="terms" />
         <Stack.Screen name="about" />
