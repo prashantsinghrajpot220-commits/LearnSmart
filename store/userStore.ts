@@ -64,6 +64,7 @@ interface UserState {
   userQuestions: string[];
   userAnswers: string[];
   userVotes: Record<string, 'upvote' | 'downvote'>;
+  favoriteQuestions: string[];
 
   // Actions
   setAgeGroup: (age: AgeGroup) => Promise<void>;
@@ -100,6 +101,9 @@ interface UserState {
   addUserQuestion: (questionId: string) => Promise<void>;
   addUserAnswer: (answerId: string) => Promise<void>;
   addUserVote: (answerId: string, voteType: 'upvote' | 'downvote') => Promise<void>;
+  addToFavorites: (questionId: string) => Promise<void>;
+  removeFromFavorites: (questionId: string) => Promise<void>;
+  isFavorite: (questionId: string) => boolean;
 }
 
 const STORAGE_KEYS = {
@@ -120,6 +124,7 @@ const STORAGE_KEYS = {
   USER_QUESTIONS: '@learnsmart/user_questions',
   USER_ANSWERS: '@learnsmart/user_answers',
   USER_VOTES: '@learnsmart/user_votes',
+  FAVORITE_QUESTIONS: '@learnsmart/favorite_questions',
 };
 
 const generateUserId = () => {
@@ -161,6 +166,7 @@ export const useUserStore = create<UserState>((set, get) => ({
   userQuestions: [],
   userAnswers: [],
   userVotes: {},
+  favoriteQuestions: [],
 
   setAgeGroup: async (age: AgeGroup) => {
     const currentSignupDate = get().signupDate;
@@ -252,6 +258,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       userQuestions: [],
       userAnswers: [],
       userVotes: {},
+      favoriteQuestions: [],
     });
     await AsyncStorage.multiRemove([
       STORAGE_KEYS.USER_NAME,
@@ -271,6 +278,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       STORAGE_KEYS.USER_QUESTIONS,
       STORAGE_KEYS.USER_ANSWERS,
       STORAGE_KEYS.USER_VOTES,
+      STORAGE_KEYS.FAVORITE_QUESTIONS,
     ]);
   },
 
@@ -294,6 +302,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         userQuestions,
         userAnswers,
         userVotes,
+        favoriteQuestions,
       ] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.USER_NAME),
         AsyncStorage.getItem(STORAGE_KEYS.SELECTED_CLASS),
@@ -312,6 +321,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         AsyncStorage.getItem(STORAGE_KEYS.USER_QUESTIONS),
         AsyncStorage.getItem(STORAGE_KEYS.USER_ANSWERS),
         AsyncStorage.getItem(STORAGE_KEYS.USER_VOTES),
+        AsyncStorage.getItem(STORAGE_KEYS.FAVORITE_QUESTIONS),
       ]);
 
       let currentUserId = userId;
@@ -372,6 +382,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         userQuestions: safeParse(userQuestions, [] as string[]),
         userAnswers: safeParse(userAnswers, [] as string[]),
         userVotes: safeParse(userVotes, {} as Record<string, 'upvote' | 'downvote'>),
+        favoriteQuestions: safeParse(favoriteQuestions, [] as string[]),
       });
     } catch (error) {
       console.error('Failed to load user data:', error);
@@ -554,5 +565,25 @@ export const useUserStore = create<UserState>((set, get) => ({
     const next = { ...current, [answerId]: voteType };
     set({ userVotes: next });
     await AsyncStorage.setItem(STORAGE_KEYS.USER_VOTES, JSON.stringify(next));
+  },
+
+  addToFavorites: async (questionId: string) => {
+    const current = get().favoriteQuestions;
+    if (!current.includes(questionId)) {
+      const next = [...current, questionId];
+      set({ favoriteQuestions: next });
+      await AsyncStorage.setItem(STORAGE_KEYS.FAVORITE_QUESTIONS, JSON.stringify(next));
+    }
+  },
+
+  removeFromFavorites: async (questionId: string) => {
+    const current = get().favoriteQuestions;
+    const next = current.filter(id => id !== questionId);
+    set({ favoriteQuestions: next });
+    await AsyncStorage.setItem(STORAGE_KEYS.FAVORITE_QUESTIONS, JSON.stringify(next));
+  },
+
+  isFavorite: (questionId: string) => {
+    return get().favoriteQuestions.includes(questionId);
   },
 }));
