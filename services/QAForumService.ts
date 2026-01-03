@@ -3,6 +3,7 @@ import { useUserStore } from '@/store/userStore';
 import { Question, Answer, VoteType, QuestionDifficulty } from '@/types/qa';
 import { notificationService } from './NotificationService';
 import { reputationService } from './ReputationService';
+import { gamificationService } from './GamificationService';
 
 const STORAGE_KEYS = {
   QUESTIONS: '@learnsmart/qa_questions',
@@ -133,7 +134,7 @@ export class QAForumService {
   }
 
   async postAnswer(questionId: string, text: string, photo?: string): Promise<Answer> {
-    const { userId, userName, addUserAnswer } = useUserStore.getState();
+    const { userId, userName, addUserAnswer, notificationPreferences } = useUserStore.getState();
     const answers = await this.loadAnswers(questionId);
     const newAnswer: Answer = {
       id: randomId('a'),
@@ -150,22 +151,30 @@ export class QAForumService {
     await this.persistAnswers(questionId, [...answers, newAnswer]);
     await addUserAnswer(newAnswer.id);
     await reputationService.handleNewAnswer();
-    
+
+    // Award coins for posting answer
+    await gamificationService.awardForAnswerPosted();
+
+    // Check answer count milestones
+    await gamificationService.checkAnswerCountMilestones();
+
     // Notify question owner
     const question = await this.getQuestion(questionId);
     if (question && question.userId !== userId) {
-        notificationService.notifyNewAnswer({
-            questionId,
-            questionTitle: question.title,
-            answererName: userName || 'A student',
-        });
+        if (notificationPreferences.answers) {
+            notificationService.notifyNewAnswer({
+                questionId,
+                questionTitle: question.title,
+                answererName: userName || 'A student',
+            });
+        }
     }
-    
+
     return newAnswer;
   }
 
   async voteAnswer(questionId: string, answerId: string, voteType: VoteType): Promise<void> {
-    const { userVotes, addUserVote } = useUserStore.getState();
+    const { userId: currentUserId, userVotes, addUserVote, notificationPreferences, userName } = useUserStore.getState();
     const answers = await this.loadAnswers(questionId);
     const answerIdx = answers.findIndex(a => a.id === answerId);
     if (answerIdx === -1) return;
@@ -174,7 +183,7 @@ export class QAForumService {
     if (previousVote === voteType) return; // Already voted same way
 
     const answer = { ...answers[answerIdx] };
-    
+
     // Remove previous vote
     if (previousVote === 'upvote') answer.upvoteCount = Math.max(0, answer.upvoteCount - 1);
     if (previousVote === 'downvote') answer.downvoteCount = Math.max(0, answer.downvoteCount - 1);
@@ -183,6 +192,14 @@ export class QAForumService {
     if (voteType === 'upvote') {
         answer.upvoteCount++;
         await reputationService.handleUpvote(answer);
+
+        // Send notification to answer owner
+        if (answer.userId !== currentUserId && notificationPreferences.upvotes) {
+            notificationService.notifyUpvote({
+                voterName: userName || 'Someone',
+                answerText: answer.text,
+            });
+        }
     }
     if (voteType === 'downvote') answer.downvoteCount++;
 

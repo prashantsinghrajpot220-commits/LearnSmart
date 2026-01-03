@@ -68,6 +68,24 @@ export interface GroupQuizHistoryEntry {
   completedAt: string;
 }
 
+export interface CoinTransaction {
+  id: string;
+  amount: number;
+  reason: string;
+  type: 'earned' | 'spent';
+  timestamp: string;
+}
+
+export interface NotificationPreferences {
+  answers: boolean;
+  upvotes: boolean;
+  helpfulMarks: boolean;
+  badgeUnlocks: boolean;
+  leaderboardUpdates: boolean;
+  milestones: boolean;
+  pushEnabled: boolean;
+}
+
 interface UserState {
   userId: string;
   ageGroup: AgeGroup | null;
@@ -95,6 +113,12 @@ interface UserState {
   userAnswers: string[];
   userVotes: Record<string, 'upvote' | 'downvote'>;
   favoriteQuestions: string[];
+
+  // Notifications & Gamification
+  coinTransactions: CoinTransaction[];
+  notificationPreferences: NotificationPreferences;
+  answerStreakCount: number;
+  lastAnswerDate: string | null;
 
   // Actions
   setAgeGroup: (age: AgeGroup) => Promise<void>;
@@ -141,6 +165,13 @@ interface UserState {
   addToFavorites: (questionId: string) => Promise<void>;
   removeFromFavorites: (questionId: string) => Promise<void>;
   isFavorite: (questionId: string) => boolean;
+
+  // Notification & Gamification actions
+  addCoinTransaction: (transaction: Omit<CoinTransaction, 'id' | 'timestamp'>) => Promise<void>;
+  getCoinTransactions: () => CoinTransaction[];
+  updateNotificationPreferences: (prefs: Partial<NotificationPreferences>) => Promise<void>;
+  updateAnswerStreak: () => Promise<void>;
+  resetAnswerStreak: () => Promise<void>;
 }
 
 const STORAGE_KEYS = {
@@ -163,6 +194,10 @@ const STORAGE_KEYS = {
   USER_VOTES: '@learnsmart/user_votes',
   FAVORITE_QUESTIONS: '@learnsmart/favorite_questions',
   REPUTATION_LEADERBOARD: '@learnsmart/reputation_leaderboard',
+  COIN_TRANSACTIONS: '@learnsmart/coin_transactions',
+  NOTIFICATION_PREFERENCES: '@learnsmart/notification_preferences',
+  ANSWER_STREAK_COUNT: '@learnsmart/answer_streak_count',
+  LAST_ANSWER_DATE: '@learnsmart/last_answer_date',
 };
 
 const generateUserId = () => {
@@ -210,6 +245,20 @@ export const useUserStore = create<UserState>((set, get) => ({
   userAnswers: [],
   userVotes: {},
   favoriteQuestions: [],
+
+  // Notifications & Gamification
+  coinTransactions: [],
+  notificationPreferences: {
+    answers: true,
+    upvotes: true,
+    helpfulMarks: true,
+    badgeUnlocks: true,
+    leaderboardUpdates: true,
+    milestones: true,
+    pushEnabled: false,
+  },
+  answerStreakCount: 0,
+  lastAnswerDate: null,
 
   setAgeGroup: async (age: AgeGroup) => {
     const currentSignupDate = get().signupDate;
@@ -307,6 +356,18 @@ export const useUserStore = create<UserState>((set, get) => ({
       userAnswers: [],
       userVotes: {},
       favoriteQuestions: [],
+      coinTransactions: [],
+      notificationPreferences: {
+        answers: true,
+        upvotes: true,
+        helpfulMarks: true,
+        badgeUnlocks: true,
+        leaderboardUpdates: true,
+        milestones: true,
+        pushEnabled: false,
+      },
+      answerStreakCount: 0,
+      lastAnswerDate: null,
     });
     await AsyncStorage.multiRemove([
       STORAGE_KEYS.USER_NAME,
@@ -328,6 +389,10 @@ export const useUserStore = create<UserState>((set, get) => ({
       STORAGE_KEYS.USER_ANSWERS,
       STORAGE_KEYS.USER_VOTES,
       STORAGE_KEYS.FAVORITE_QUESTIONS,
+      STORAGE_KEYS.COIN_TRANSACTIONS,
+      STORAGE_KEYS.NOTIFICATION_PREFERENCES,
+      STORAGE_KEYS.ANSWER_STREAK_COUNT,
+      STORAGE_KEYS.LAST_ANSWER_DATE,
     ]);
   },
 
@@ -353,6 +418,10 @@ export const useUserStore = create<UserState>((set, get) => ({
         userAnswers,
         userVotes,
         favoriteQuestions,
+        coinTransactions,
+        notificationPreferences,
+        answerStreakCount,
+        lastAnswerDate,
       ] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.USER_NAME),
         AsyncStorage.getItem(STORAGE_KEYS.SELECTED_CLASS),
@@ -373,6 +442,10 @@ export const useUserStore = create<UserState>((set, get) => ({
         AsyncStorage.getItem(STORAGE_KEYS.USER_ANSWERS),
         AsyncStorage.getItem(STORAGE_KEYS.USER_VOTES),
         AsyncStorage.getItem(STORAGE_KEYS.FAVORITE_QUESTIONS),
+        AsyncStorage.getItem(STORAGE_KEYS.COIN_TRANSACTIONS),
+        AsyncStorage.getItem(STORAGE_KEYS.NOTIFICATION_PREFERENCES),
+        AsyncStorage.getItem(STORAGE_KEYS.ANSWER_STREAK_COUNT),
+        AsyncStorage.getItem(STORAGE_KEYS.LAST_ANSWER_DATE),
       ]);
 
       let currentUserId = userId;
@@ -439,6 +512,18 @@ export const useUserStore = create<UserState>((set, get) => ({
         userAnswers: safeParse(userAnswers, [] as string[]),
         userVotes: safeParse(userVotes, {} as Record<string, 'upvote' | 'downvote'>),
         favoriteQuestions: safeParse(favoriteQuestions, [] as string[]),
+        coinTransactions: safeParse(coinTransactions, [] as CoinTransaction[]),
+        notificationPreferences: safeParse(notificationPreferences, {
+          answers: true,
+          upvotes: true,
+          helpfulMarks: true,
+          badgeUnlocks: true,
+          leaderboardUpdates: true,
+          milestones: true,
+          pushEnabled: false,
+        } as NotificationPreferences),
+        answerStreakCount: answerStreakCount ? parseInt(answerStreakCount, 10) : 0,
+        lastAnswerDate: lastAnswerDate || null,
       });
     } catch (error) {
       console.error('Failed to load user data:', error);
@@ -697,5 +782,70 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   isFavorite: (questionId: string) => {
     return get().favoriteQuestions.includes(questionId);
+  },
+
+  // Notification & Gamification actions
+  addCoinTransaction: async (transaction) => {
+    const current = get().coinTransactions;
+    const newTransaction: CoinTransaction = {
+      ...transaction,
+      id: `tx_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+      timestamp: new Date().toISOString(),
+    };
+    const next = [newTransaction, ...current].slice(0, 100);
+
+    set({ coinTransactions: next });
+    await AsyncStorage.setItem(STORAGE_KEYS.COIN_TRANSACTIONS, JSON.stringify(next));
+  },
+
+  getCoinTransactions: () => {
+    return get().coinTransactions;
+  },
+
+  updateNotificationPreferences: async (prefs) => {
+    const current = get().notificationPreferences;
+    const next = { ...current, ...prefs };
+
+    set({ notificationPreferences: next });
+    await AsyncStorage.setItem(STORAGE_KEYS.NOTIFICATION_PREFERENCES, JSON.stringify(next));
+  },
+
+  updateAnswerStreak: async () => {
+    const current = get().answerStreakCount;
+    const lastDate = get().lastAnswerDate;
+    const today = new Date().toISOString().split('T')[0];
+
+    if (lastDate === today) {
+      return;
+    }
+
+    const lastDateObj = lastDate ? new Date(lastDate) : null;
+    const todayObj = new Date(today);
+    const yesterday = new Date(todayObj);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    let newStreak = 1;
+    if (lastDateObj) {
+      const lastDateString = lastDateObj.toISOString().split('T')[0];
+      const yesterdayString = yesterday.toISOString().split('T')[0];
+
+      if (lastDateString === yesterdayString) {
+        newStreak = current + 1;
+      }
+    }
+
+    set({ answerStreakCount: newStreak, lastAnswerDate: today });
+    await Promise.all([
+      AsyncStorage.setItem(STORAGE_KEYS.ANSWER_STREAK_COUNT, newStreak.toString()),
+      AsyncStorage.setItem(STORAGE_KEYS.LAST_ANSWER_DATE, today),
+    ]);
+  },
+
+  resetAnswerStreak: async () => {
+    set({ answerStreakCount: 0, lastAnswerDate: null });
+    await Promise.all([
+      AsyncStorage.setItem(STORAGE_KEYS.ANSWER_STREAK_COUNT, '0'),
+      AsyncStorage.removeItem(STORAGE_KEYS.LAST_ANSWER_DATE),
+    ]);
   },
 }));
