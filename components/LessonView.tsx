@@ -21,16 +21,7 @@ import { focusTracker } from '@/services/FocusTracker';
 import { BreakActivity } from '@/types/productivity';
 import { LessonImage } from './LessonImage';
 import { LabeledDiagram } from './LabeledDiagram';
-import { DiagramData } from '@/constants/curriculum';
-
-interface LessonContent {
-  title: string;
-  icon: string;
-  bulletPoints: string[];
-  paragraphs: string[];
-  imageUrl?: string;
-  diagramData?: DiagramData;
-}
+import { LessonContent } from '@/constants/curriculum';
 
 interface LessonViewProps {
   chapter: string;

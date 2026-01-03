@@ -9,6 +9,7 @@ import { ContentRating, ContentType } from '@/types/content';
 import { isRatingAllowedForAgeGroup, maxRating } from '@/utils/contentRating';
 import { sanitizeText, sanitizeTextForDisplay, sanitizeUrl } from '@/utils/sanitizer';
 import { SafetyChecker } from '@/services/SafetyChecker';
+import { DiagramData } from '@/constants/curriculum';
 
 const STORAGE_KEYS = {
   EVENTS: '@learnsmart/moderation_events',
@@ -86,11 +87,7 @@ export interface LessonContent {
   bulletPoints: string[];
   paragraphs: string[];
   imageUrl?: string;
-  diagramData?: {
-    type: string;
-    labels: { text: string; x: number; y: number; tooltip: string }[];
-    animationType?: string;
-  };
+  diagramData?: DiagramData;
 }
 
 export interface QuizQuestionContent {
