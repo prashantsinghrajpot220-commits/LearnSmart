@@ -15,6 +15,7 @@ import { useTheme } from '../components/ThemeContext';
 import { useUserStore } from '@/store/userStore';
 import { useXPStore, useCurrentRank } from '@/store/xpStore';
 import { streakService } from '@/services/streakService';
+import { reputationService } from '@/services/ReputationService';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
@@ -22,6 +23,8 @@ import { AvatarDisplay, AvatarSelector } from '../components/AvatarSelector';
 import Dropdown from '../components/Dropdown';
 import CoinDisplay from '../components/CoinDisplay';
 import RankBadge from '../components/RankBadge';
+import ReputationCard from '../components/ReputationCard';
+import BadgeProgress from '../components/BadgeProgress';
 
 export default function ProfileScreen() {
   const { colors, isDark, toggleTheme } = useTheme();
@@ -33,6 +36,8 @@ export default function ProfileScreen() {
     selectedAvatar,
     logout,
     gamificationData,
+    userQuestions,
+    userAnswers,
   } = useUserStore();
   
   const { currentXP } = useCurrentRank();
@@ -48,6 +53,7 @@ export default function ProfileScreen() {
       setStreak(s);
     };
     getStreak();
+    reputationService.checkBadges();
   }, []);
 
   const handleSaveProfile = () => {
@@ -106,6 +112,23 @@ export default function ProfileScreen() {
           </View>
         </View>
 
+        {/* Reputation & Badges */}
+        <ReputationCard />
+
+        {/* Badge Progress */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Badge Progression</Text>
+          {gamificationData.achievementProgress.length > 0 ? (
+            gamificationData.achievementProgress.map((progress) => (
+              <BadgeProgress key={progress.id} progress={progress} />
+            ))
+          ) : (
+            <Text style={{ color: colors.textSecondary, fontSize: FontSizes.sm }}>
+              Start answering questions to see your progress!
+            </Text>
+          )}
+        </View>
+
         {/* Weekly Progress & Rank */}
         <View style={styles.weeklySection}>
           <View style={[styles.weeklyCard, { backgroundColor: colors.cardBackground }]}>
@@ -141,6 +164,17 @@ export default function ProfileScreen() {
            <View style={[styles.miniStat, { backgroundColor: colors.cardBackground }]}>
               <MaterialCommunityIcons name="help-circle-outline" size={20} color={colors.primary} />
               <Text style={[styles.miniStatText, { color: colors.text }]}>{totalQuizzesCompleted} Quizzes</Text>
+           </View>
+        </View>
+
+        <View style={styles.statsRow}>
+           <View style={[styles.miniStat, { backgroundColor: colors.cardBackground }]}>
+              <MaterialCommunityIcons name="help-box" size={20} color={colors.primary} />
+              <Text style={[styles.miniStatText, { color: colors.text }]}>{userQuestions.length} Questions</Text>
+           </View>
+           <View style={[styles.miniStat, { backgroundColor: colors.cardBackground }]}>
+              <MaterialCommunityIcons name="comment-text-outline" size={20} color={colors.primary} />
+              <Text style={[styles.miniStatText, { color: colors.text }]}>{userAnswers.length} Answers</Text>
            </View>
         </View>
 

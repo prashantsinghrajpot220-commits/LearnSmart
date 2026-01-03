@@ -12,6 +12,31 @@ export interface LeaderboardEntry {
   rank: number;
 }
 
+export interface ReputationLeaderboardEntry {
+  userId: string;
+  userName: string;
+  avatar: string;
+  reputation: number;
+  badgeCount: number;
+  helpfulAnswers: number;
+  rank: number;
+}
+
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  unlockedAt: string;
+}
+
+export interface AchievementProgress {
+  id: string;
+  name: string;
+  currentValue: number;
+  targetValue: number;
+}
+
 export interface GamificationData {
   smartCoins: number;
   totalEarnedCoins: number;
@@ -24,6 +49,10 @@ export interface GamificationData {
   rankMilestones: string[];
   weeklyRank: number;
   lastWeekRank: number;
+  reputation: number;
+  badges: Badge[];
+  achievementProgress: AchievementProgress[];
+  reputationRank: number;
 }
 
 export interface StudyGroupMembership {
@@ -55,6 +84,7 @@ interface UserState {
   // Gamification data
   gamificationData: GamificationData;
   weeklyLeaderboard: LeaderboardEntry[];
+  reputationLeaderboard: ReputationLeaderboardEntry[];
 
   // Study groups
   studyGroupMemberships: StudyGroupMembership[];
@@ -97,6 +127,13 @@ interface UserState {
   setWeeklyLeaderboard: (entries: LeaderboardEntry[]) => void;
   resetWeeklyData: () => void;
 
+  // Q&A Forum reputation actions
+  updateReputation: (amount: number) => Promise<void>;
+  addBadge: (badge: Badge) => Promise<void>;
+  updateAchievementProgress: (progress: AchievementProgress) => Promise<void>;
+  setReputationLeaderboard: (entries: ReputationLeaderboardEntry[]) => void;
+  updateReputationRank: (rank: number) => void;
+
   // Q&A Forum actions
   addUserQuestion: (questionId: string) => Promise<void>;
   addUserAnswer: (answerId: string) => Promise<void>;
@@ -125,6 +162,7 @@ const STORAGE_KEYS = {
   USER_ANSWERS: '@learnsmart/user_answers',
   USER_VOTES: '@learnsmart/user_votes',
   FAVORITE_QUESTIONS: '@learnsmart/favorite_questions',
+  REPUTATION_LEADERBOARD: '@learnsmart/reputation_leaderboard',
 };
 
 const generateUserId = () => {
@@ -157,8 +195,13 @@ export const useUserStore = create<UserState>((set, get) => ({
     rankMilestones: [],
     weeklyRank: 0,
     lastWeekRank: 0,
+    reputation: 0,
+    badges: [],
+    achievementProgress: [],
+    reputationRank: 0,
   },
   weeklyLeaderboard: [],
+  reputationLeaderboard: [],
 
   studyGroupMemberships: [],
   groupQuizHistory: [],
@@ -251,8 +294,13 @@ export const useUserStore = create<UserState>((set, get) => ({
         rankMilestones: [],
         weeklyRank: 0,
         lastWeekRank: 0,
+        reputation: 0,
+        badges: [],
+        achievementProgress: [],
+        reputationRank: 0,
       },
       weeklyLeaderboard: [],
+      reputationLeaderboard: [],
       studyGroupMemberships: [],
       groupQuizHistory: [],
       userQuestions: [],
@@ -273,6 +321,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       STORAGE_KEYS.PROFILE_COMPLETE,
       STORAGE_KEYS.GAMIFICATION_DATA,
       STORAGE_KEYS.WEEKLY_LEADERBOARD,
+      STORAGE_KEYS.REPUTATION_LEADERBOARD,
       STORAGE_KEYS.STUDY_GROUP_MEMBERSHIPS,
       STORAGE_KEYS.GROUP_QUIZ_HISTORY,
       STORAGE_KEYS.USER_QUESTIONS,
@@ -297,6 +346,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         profileComplete,
         gamificationData,
         weeklyLeaderboard,
+        reputationLeaderboard,
         studyGroupMemberships,
         groupQuizHistory,
         userQuestions,
@@ -316,6 +366,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         AsyncStorage.getItem(STORAGE_KEYS.PROFILE_COMPLETE),
         AsyncStorage.getItem(STORAGE_KEYS.GAMIFICATION_DATA),
         AsyncStorage.getItem(STORAGE_KEYS.WEEKLY_LEADERBOARD),
+        AsyncStorage.getItem(STORAGE_KEYS.REPUTATION_LEADERBOARD),
         AsyncStorage.getItem(STORAGE_KEYS.STUDY_GROUP_MEMBERSHIPS),
         AsyncStorage.getItem(STORAGE_KEYS.GROUP_QUIZ_HISTORY),
         AsyncStorage.getItem(STORAGE_KEYS.USER_QUESTIONS),
@@ -343,6 +394,10 @@ export const useUserStore = create<UserState>((set, get) => ({
         rankMilestones: [],
         weeklyRank: 0,
         lastWeekRank: 0,
+        reputation: 0,
+        badges: [],
+        achievementProgress: [],
+        reputationRank: 0,
       };
 
       if (gamificationData) {
@@ -377,6 +432,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         isOnboarded: onboarded === 'true',
         gamificationData: loadedGamificationData,
         weeklyLeaderboard: safeParse(weeklyLeaderboard, [] as LeaderboardEntry[]),
+        reputationLeaderboard: safeParse(reputationLeaderboard, [] as ReputationLeaderboardEntry[]),
         studyGroupMemberships: safeParse(studyGroupMemberships, [] as StudyGroupMembership[]),
         groupQuizHistory: safeParse(groupQuizHistory, [] as GroupQuizHistoryEntry[]),
         userQuestions: safeParse(userQuestions, [] as string[]),
@@ -539,6 +595,62 @@ export const useUserStore = create<UserState>((set, get) => ({
     });
     AsyncStorage.setItem(STORAGE_KEYS.GAMIFICATION_DATA, JSON.stringify(newData));
     AsyncStorage.setItem(STORAGE_KEYS.WEEKLY_LEADERBOARD, JSON.stringify([]));
+  },
+
+  updateReputation: async (amount: number) => {
+    const currentData = get().gamificationData;
+    const newData = {
+      ...currentData,
+      reputation: Math.max(0, currentData.reputation + amount),
+    };
+    
+    set({ gamificationData: newData });
+    await AsyncStorage.setItem(STORAGE_KEYS.GAMIFICATION_DATA, JSON.stringify(newData));
+  },
+
+  addBadge: async (badge: Badge) => {
+    const currentData = get().gamificationData;
+    if (!currentData.badges.find(b => b.id === badge.id)) {
+      const newData = {
+        ...currentData,
+        badges: [...currentData.badges, badge],
+      };
+      
+      set({ gamificationData: newData });
+      await AsyncStorage.setItem(STORAGE_KEYS.GAMIFICATION_DATA, JSON.stringify(newData));
+    }
+  },
+
+  updateAchievementProgress: async (progress: AchievementProgress) => {
+    const currentData = get().gamificationData;
+    const existingIdx = currentData.achievementProgress.findIndex(p => p.id === progress.id);
+    
+    let nextProgress = [...currentData.achievementProgress];
+    if (existingIdx !== -1) {
+      nextProgress[existingIdx] = progress;
+    } else {
+      nextProgress.push(progress);
+    }
+
+    const newData = {
+      ...currentData,
+      achievementProgress: nextProgress,
+    };
+    
+    set({ gamificationData: newData });
+    await AsyncStorage.setItem(STORAGE_KEYS.GAMIFICATION_DATA, JSON.stringify(newData));
+  },
+
+  setReputationLeaderboard: (entries: ReputationLeaderboardEntry[]) => {
+    set({ reputationLeaderboard: entries });
+    AsyncStorage.setItem(STORAGE_KEYS.REPUTATION_LEADERBOARD, JSON.stringify(entries));
+  },
+
+  updateReputationRank: (rank: number) => {
+    const currentData = get().gamificationData;
+    const newData = { ...currentData, reputationRank: rank };
+    set({ gamificationData: newData });
+    AsyncStorage.setItem(STORAGE_KEYS.GAMIFICATION_DATA, JSON.stringify(newData));
   },
 
   // Q&A Forum actions
