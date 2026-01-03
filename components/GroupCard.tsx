@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BorderRadius, FontSizes, FontWeights, Spacing } from '@/constants/theme';
 import { useTheme } from '@/components/ThemeContext';
@@ -10,7 +10,7 @@ interface GroupCardProps {
   onPress: () => void;
 }
 
-export default function GroupCard({ group, onPress }: GroupCardProps) {
+const GroupCard = memo(({ group, onPress }: GroupCardProps) => {
   const { colors, isDark } = useTheme();
 
   const memberAvatars = useMemo(() => {
@@ -56,7 +56,9 @@ export default function GroupCard({ group, onPress }: GroupCardProps) {
       </View>
     </TouchableOpacity>
   );
-}
+});
+
+export default GroupCard;
 
 const getStyles = (colors: any, isDark: boolean) =>
   StyleSheet.create({

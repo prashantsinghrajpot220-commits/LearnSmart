@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Question } from '@/types/qa';
@@ -11,7 +11,7 @@ interface QuestionCardProps {
   showFavorite?: boolean;
 }
 
-export const QuestionCard: React.FC<QuestionCardProps> = ({ 
+export const QuestionCard: React.FC<QuestionCardProps> = memo(({ 
   question, 
   onPress,
   showFavorite = true,
@@ -75,7 +75,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       </View>
     </TouchableOpacity>
   );
-};
+});
 
 const styles = StyleSheet.create({
   card: {

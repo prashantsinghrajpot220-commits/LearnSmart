@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { LeaderboardEntry } from '@/store/userStore';
 import { useTheme } from '@/components/ThemeContext';
@@ -12,13 +12,13 @@ interface LeaderboardCardProps {
   style?: any;
 }
 
-export default function LeaderboardCard({ 
+const LeaderboardCard = memo(({ 
   entry, 
   isCurrentUser = false, 
   rank,
   onPress,
   style 
-}: LeaderboardCardProps) {
+}: LeaderboardCardProps) => {
   const { colors } = useTheme();
 
   const getRankEmoji = (rank: number) => {
@@ -102,7 +102,9 @@ export default function LeaderboardCard({
   }
 
   return CardComponent;
-}
+});
+
+export default LeaderboardCard;
 
 const getStyles = (colors: any, isCurrentUser: boolean, rank: number) => StyleSheet.create({
   container: {

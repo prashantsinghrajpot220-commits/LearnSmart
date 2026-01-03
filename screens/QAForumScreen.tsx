@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/colors';
+import { useTheme } from '@/components/ThemeContext';
 import { QuestionCard } from '@/components/QuestionCard';
 import { QAPhotoUpload } from '@/components/QAPhotoUpload';
 import { SearchBar } from '@/components/SearchBar';
@@ -26,12 +27,15 @@ import { qaForumService } from '@/services/QAForumService';
 import { qaSearchService, SearchResult } from '@/services/QASearchService';
 import { Question, QuestionDifficulty } from '@/types/qa';
 import { Attachment } from '@/services/FileUploadService';
+import { logError } from '@/utils/errorLogger';
 
 type ViewMode = 'all' | 'favorites' | 'search';
 
 export const QAForumScreen = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { colors, isDark } = useTheme();
+  const styles = getStyles(colors, isDark);
   
   // Main data
   const [allQuestions, setAllQuestions] = useState<Question[]>([]);
@@ -99,7 +103,7 @@ export const QAForumScreen = () => {
           setCurrentPage(1);
           setHasMore(result.hasMore);
         } catch (error) {
-          console.error('Failed to apply filters:', error);
+          logError(error as Error, { context: 'Failed to apply filters' });
         } finally {
           setSearching(false);
         }
@@ -114,7 +118,7 @@ export const QAForumScreen = () => {
       const loadedSubjects = await qaSearchService.getAllSubjects();
       setSubjects(loadedSubjects);
     } catch (error) {
-      console.error('Failed to load subjects:', error);
+      logError(error as Error, { context: 'Failed to load subjects' });
     }
   };
 
@@ -126,7 +130,7 @@ export const QAForumScreen = () => {
           const loadedTopics = await qaSearchService.getTopicsForSubject(filters.subject);
           setTopics(loadedTopics);
         } catch (error) {
-          console.error('Failed to load topics:', error);
+          logError(error as Error, { context: 'Failed to load topics' });
         }
       } else {
         setTopics([]);
@@ -142,7 +146,7 @@ export const QAForumScreen = () => {
       setDisplayQuestions(questions.slice(0, 20));
       setHasMore(questions.length > 20);
     } catch (error) {
-      console.error('Failed to load questions:', error);
+      logError(error as Error, { context: 'Failed to load questions' });
     } finally {
       setLoading(false);
     }
@@ -171,7 +175,7 @@ export const QAForumScreen = () => {
       }
       setHasMore(result.hasMore);
     } catch (error) {
-      console.error('Failed to search:', error);
+      logError(error as Error, { context: 'Failed to search' });
     } finally {
       setSearching(false);
     }
@@ -291,7 +295,7 @@ export const QAForumScreen = () => {
 
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
-      <Ionicons name="search-outline" size={64} color={Colors.light.textSecondary} />
+      <Ionicons name="search-outline" size={64} color={colors.textSecondary} />
       <Text style={styles.emptyTitle}>
         {searchQuery ? 'No Results Found' : 'No Questions Yet'}
       </Text>
@@ -340,12 +344,12 @@ export const QAForumScreen = () => {
         style={styles.filterToggle}
         onPress={() => setShowFilters(!showFilters)}
       >
-        <Ionicons name="options-outline" size={18} color={Colors.light.primary} />
+        <Ionicons name="options-outline" size={18} color={colors.primary} />
         <Text style={styles.filterToggleText}>Filters</Text>
         <Ionicons 
           name={showFilters ? 'chevron-up' : 'chevron-down'} 
           size={16} 
-          color={Colors.light.textSecondary} 
+          color={colors.textSecondary} 
         />
       </TouchableOpacity>
 
@@ -392,7 +396,7 @@ export const QAForumScreen = () => {
           <Ionicons 
             name="bookmark-outline" 
             size={16} 
-            color={viewMode === 'favorites' ? Colors.light.primary : Colors.light.textSecondary} 
+            color={viewMode === 'favorites' ? colors.primary : colors.textSecondary} 
           />
           <Text style={[styles.viewModeTabText, viewMode === 'favorites' && styles.viewModeTabTextActive]}>
             Saved
@@ -430,7 +434,7 @@ export const QAForumScreen = () => {
         />
       ) : loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={Colors.light.primary} />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : (
         <FlatList
@@ -513,13 +517,13 @@ export const QAForumScreen = () => {
                   style={[
                     styles.difficultyBtn,
                     difficulty === d && styles.difficultyBtnActive,
-                    difficulty === d && { borderColor: d === 'easy' ? Colors.light.success : d === 'medium' ? Colors.light.warning : Colors.light.error }
+                    difficulty === d && { borderColor: d === 'easy' ? colors.success : d === 'medium' ? colors.warning : colors.error }
                   ]}
                   onPress={() => setDifficulty(d)}
                 >
                   <Text style={[
                     styles.difficultyBtnText,
-                    difficulty === d && { color: d === 'easy' ? Colors.light.success : d === 'medium' ? Colors.light.warning : Colors.light.error }
+                    difficulty === d && { color: d === 'easy' ? colors.success : d === 'medium' ? colors.warning : colors.error }
                   ]}>
                     {d.charAt(0).toUpperCase() + d.slice(1)}
                   </Text>
@@ -534,7 +538,7 @@ export const QAForumScreen = () => {
               onRemove={() => setAttachment(null)} 
             />
             
-            {posting && <ActivityIndicator style={{ marginTop: 20 }} color={Colors.light.primary} />}
+            {posting && <ActivityIndicator style={{ marginTop: 20 }} color={colors.primary} />}
           </ScrollView>
         </View>
       </Modal>
@@ -542,10 +546,10 @@ export const QAForumScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, isDark: boolean) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -557,12 +561,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: Colors.light.text,
+    color: colors.text,
   },
   postBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
@@ -587,7 +591,7 @@ const styles = StyleSheet.create({
   filterToggleText: {
     fontSize: 14,
     fontWeight: '500',
-    color: Colors.light.primary,
+    color: colors.primary,
   },
   viewModeTabs: {
     flexDirection: 'row',
@@ -601,22 +605,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: Colors.light.border,
+    borderColor: colors.border,
     gap: 6,
   },
   viewModeTabActive: {
-    backgroundColor: Colors.light.primary + '15',
-    borderColor: Colors.light.primary,
+    backgroundColor: colors.primary + '15',
+    borderColor: colors.primary,
   },
   viewModeTabText: {
     fontSize: 14,
     fontWeight: '500',
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
   viewModeTabTextActive: {
-    color: Colors.light.primary,
+    color: colors.primary,
   },
   resultsCount: {
     flexDirection: 'row',
@@ -627,11 +631,11 @@ const styles = StyleSheet.create({
   },
   resultsCountText: {
     fontSize: 14,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
   clearSearchText: {
     fontSize: 14,
-    color: Colors.light.primary,
+    color: colors.primary,
     fontWeight: '500',
   },
   center: {
@@ -650,17 +654,17 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 20,
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
   },
   emptySubtitle: {
     marginTop: 8,
     fontSize: 16,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   askBtn: {
     marginTop: 20,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 24,
@@ -675,7 +679,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadMoreBtn: {
-    backgroundColor: Colors.light.primary + '15',
+    backgroundColor: colors.primary + '15',
     paddingHorizontal: 24,
     paddingVertical: 10,
     borderRadius: 20,
@@ -683,7 +687,7 @@ const styles = StyleSheet.create({
   loadMoreText: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.light.primary,
+    color: colors.primary,
   },
   listContent: {
     padding: 16,
@@ -691,7 +695,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.background,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -699,21 +703,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
+    borderBottomColor: colors.border,
   },
   cancelText: {
     fontSize: 16,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: Colors.light.text,
+    color: colors.text,
   },
   submitText: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.light.primary,
+    color: colors.primary,
   },
   modalScroll: {
     flex: 1,
@@ -724,12 +728,12 @@ const styles = StyleSheet.create({
   titleInput: {
     fontSize: 20,
     fontWeight: '700',
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 20,
   },
   descriptionInput: {
     fontSize: 16,
-    color: Colors.light.text,
+    color: colors.text,
     minHeight: 120,
     marginBottom: 20,
   },
@@ -744,15 +748,17 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     marginBottom: 8,
   },
   smallInput: {
     borderWidth: 1,
-    borderColor: Colors.light.border,
+    borderColor: colors.border,
     borderRadius: 8,
     padding: 10,
     fontSize: 14,
+    color: colors.text,
+    backgroundColor: isDark ? '#333' : '#FFFFFF',
   },
   difficultyRow: {
     flexDirection: 'row',
@@ -763,17 +769,18 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: Colors.light.border,
+    borderColor: colors.border,
     borderRadius: 8,
     alignItems: 'center',
+    backgroundColor: isDark ? '#222' : '#F9F9F9',
   },
   difficultyBtnActive: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: isDark ? '#444' : '#f0f0f0',
     borderWidth: 2,
   },
   difficultyBtnText: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
 });

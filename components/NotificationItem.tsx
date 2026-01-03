@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import { useTheme } from './ThemeContext';
@@ -55,7 +55,7 @@ const formatNotificationTime = (createdAt: string): string => {
   return created.toLocaleDateString();
 };
 
-export default function NotificationItem({ notification, onPress, onDelete }: NotificationItemProps) {
+const NotificationItem = memo(({ notification, onPress, onDelete }: NotificationItemProps) => {
   const { colors, isDark } = useTheme();
   const iconData = useMemo(() => getNotificationIcon(notification.type), [notification.type]);
   const timeAgo = useMemo(() => formatNotificationTime(notification.createdAt), [notification.createdAt]);
@@ -105,7 +105,9 @@ export default function NotificationItem({ notification, onPress, onDelete }: No
       )}
     </TouchableOpacity>
   );
-}
+});
+
+export default NotificationItem;
 
 const styles = StyleSheet.create({
   container: {
