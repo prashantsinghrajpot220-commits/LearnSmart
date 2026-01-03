@@ -29,7 +29,9 @@ export default function BreakActivitySuggestion({
   useEffect(() => {
     if (!showAll) {
       const randomActivity = getRandomBreakActivity();
-      setCurrentActivity(randomActivity);
+      setTimeout(() => {
+        setCurrentActivity(randomActivity);
+      }, 0);
     }
   }, [showAll]);
 

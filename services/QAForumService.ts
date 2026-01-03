@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserStore } from '@/store/userStore';
 import { Question, Answer, VoteType, QuestionDifficulty } from '@/types/qa';
 import { notificationService } from './NotificationService';
+import { reputationService } from './ReputationService';
 
 const STORAGE_KEYS = {
   QUESTIONS: '@learnsmart/qa_questions',
@@ -96,7 +97,7 @@ export class QAForumService {
   }
 
   // Answer Methods
-  private async loadAnswers(questionId: string): Promise<Answer[]> {
+  async loadAnswers(questionId: string): Promise<Answer[]> {
     if (this.answersCache.has(questionId)) return this.answersCache.get(questionId)!;
     try {
       const raw = await AsyncStorage.getItem(STORAGE_KEYS.ANSWERS(questionId));
@@ -148,6 +149,7 @@ export class QAForumService {
     };
     await this.persistAnswers(questionId, [...answers, newAnswer]);
     await addUserAnswer(newAnswer.id);
+    await reputationService.handleNewAnswer();
     
     // Notify question owner
     const question = await this.getQuestion(questionId);
@@ -178,7 +180,10 @@ export class QAForumService {
     if (previousVote === 'downvote') answer.downvoteCount = Math.max(0, answer.downvoteCount - 1);
 
     // Add new vote
-    if (voteType === 'upvote') answer.upvoteCount++;
+    if (voteType === 'upvote') {
+        answer.upvoteCount++;
+        await reputationService.handleUpvote(answer);
+    }
     if (voteType === 'downvote') answer.downvoteCount++;
 
     answers[answerIdx] = answer;
@@ -195,6 +200,7 @@ export class QAForumService {
       answer.helpfulCount++;
       answers[answerIdx] = answer;
       await this.persistAnswers(questionId, [...answers]);
+      await reputationService.handleHelpfulMark(answer);
   }
   
   sortAnswers(answers: Answer[], sortBy: 'helpfulness' | 'recency'): Answer[] {

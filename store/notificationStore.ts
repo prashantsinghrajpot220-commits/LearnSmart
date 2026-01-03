@@ -6,7 +6,8 @@ export type AppNotificationType =
   | 'group_message'
   | 'group_quiz_created'
   | 'group_quiz_result'
-  | 'qa_new_answer';
+  | 'qa_new_answer'
+  | 'achievement';
 
 export interface AppNotification {
   id: string;

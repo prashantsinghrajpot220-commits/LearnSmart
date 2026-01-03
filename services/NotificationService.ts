@@ -54,6 +54,14 @@ export class NotificationService {
       data: { questionId: params.questionId },
     });
   }
+
+  notifyBadgeUnlocked(badge: { name: string; icon: string }): void {
+    useNotificationStore.getState().pushNotification({
+      type: 'achievement',
+      title: 'Badge unlocked! 🏅',
+      message: `Congratulations! You've earned the ${badge.icon} ${badge.name} badge.`,
+    });
+  }
 }
 
 export const notificationService = NotificationService.getInstance();
