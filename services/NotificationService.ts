@@ -45,6 +45,15 @@ export class NotificationService {
       data: { groupId: params.groupId },
     });
   }
+
+  notifyNewAnswer(params: { questionId: string; questionTitle: string; answererName: string }): void {
+    useNotificationStore.getState().pushNotification({
+      type: 'qa_new_answer',
+      title: 'New answer to your question',
+      message: `${params.answererName} answered: "${params.questionTitle}"`,
+      data: { questionId: params.questionId },
+    });
+  }
 }
 
 export const notificationService = NotificationService.getInstance();

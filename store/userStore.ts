@@ -60,6 +60,11 @@ interface UserState {
   studyGroupMemberships: StudyGroupMembership[];
   groupQuizHistory: GroupQuizHistoryEntry[];
 
+  // Q&A Forum
+  userQuestions: string[];
+  userAnswers: string[];
+  userVotes: Record<string, 'upvote' | 'downvote'>;
+
   // Actions
   setAgeGroup: (age: AgeGroup) => Promise<void>;
   getAgeGroup: () => AgeGroup | null;
@@ -90,6 +95,11 @@ interface UserState {
   updateWeeklyRank: (rank: number) => void;
   setWeeklyLeaderboard: (entries: LeaderboardEntry[]) => void;
   resetWeeklyData: () => void;
+
+  // Q&A Forum actions
+  addUserQuestion: (questionId: string) => Promise<void>;
+  addUserAnswer: (answerId: string) => Promise<void>;
+  addUserVote: (answerId: string, voteType: 'upvote' | 'downvote') => Promise<void>;
 }
 
 const STORAGE_KEYS = {
@@ -107,6 +117,9 @@ const STORAGE_KEYS = {
   WEEKLY_LEADERBOARD: '@learnsmart/weekly_leaderboard',
   STUDY_GROUP_MEMBERSHIPS: '@learnsmart/study_group_memberships',
   GROUP_QUIZ_HISTORY: '@learnsmart/group_quiz_history',
+  USER_QUESTIONS: '@learnsmart/user_questions',
+  USER_ANSWERS: '@learnsmart/user_answers',
+  USER_VOTES: '@learnsmart/user_votes',
 };
 
 const generateUserId = () => {
@@ -144,6 +157,10 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   studyGroupMemberships: [],
   groupQuizHistory: [],
+
+  userQuestions: [],
+  userAnswers: [],
+  userVotes: {},
 
   setAgeGroup: async (age: AgeGroup) => {
     const currentSignupDate = get().signupDate;
@@ -232,6 +249,9 @@ export const useUserStore = create<UserState>((set, get) => ({
       weeklyLeaderboard: [],
       studyGroupMemberships: [],
       groupQuizHistory: [],
+      userQuestions: [],
+      userAnswers: [],
+      userVotes: {},
     });
     await AsyncStorage.multiRemove([
       STORAGE_KEYS.USER_NAME,
@@ -248,6 +268,9 @@ export const useUserStore = create<UserState>((set, get) => ({
       STORAGE_KEYS.WEEKLY_LEADERBOARD,
       STORAGE_KEYS.STUDY_GROUP_MEMBERSHIPS,
       STORAGE_KEYS.GROUP_QUIZ_HISTORY,
+      STORAGE_KEYS.USER_QUESTIONS,
+      STORAGE_KEYS.USER_ANSWERS,
+      STORAGE_KEYS.USER_VOTES,
     ]);
   },
 
@@ -268,6 +291,9 @@ export const useUserStore = create<UserState>((set, get) => ({
         weeklyLeaderboard,
         studyGroupMemberships,
         groupQuizHistory,
+        userQuestions,
+        userAnswers,
+        userVotes,
       ] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.USER_NAME),
         AsyncStorage.getItem(STORAGE_KEYS.SELECTED_CLASS),
@@ -283,6 +309,9 @@ export const useUserStore = create<UserState>((set, get) => ({
         AsyncStorage.getItem(STORAGE_KEYS.WEEKLY_LEADERBOARD),
         AsyncStorage.getItem(STORAGE_KEYS.STUDY_GROUP_MEMBERSHIPS),
         AsyncStorage.getItem(STORAGE_KEYS.GROUP_QUIZ_HISTORY),
+        AsyncStorage.getItem(STORAGE_KEYS.USER_QUESTIONS),
+        AsyncStorage.getItem(STORAGE_KEYS.USER_ANSWERS),
+        AsyncStorage.getItem(STORAGE_KEYS.USER_VOTES),
       ]);
 
       let currentUserId = userId;
@@ -340,6 +369,9 @@ export const useUserStore = create<UserState>((set, get) => ({
         weeklyLeaderboard: safeParse(weeklyLeaderboard, [] as LeaderboardEntry[]),
         studyGroupMemberships: safeParse(studyGroupMemberships, [] as StudyGroupMembership[]),
         groupQuizHistory: safeParse(groupQuizHistory, [] as GroupQuizHistoryEntry[]),
+        userQuestions: safeParse(userQuestions, [] as string[]),
+        userAnswers: safeParse(userAnswers, [] as string[]),
+        userVotes: safeParse(userVotes, {} as Record<string, 'upvote' | 'downvote'>),
       });
     } catch (error) {
       console.error('Failed to load user data:', error);
@@ -496,5 +528,31 @@ export const useUserStore = create<UserState>((set, get) => ({
     });
     AsyncStorage.setItem(STORAGE_KEYS.GAMIFICATION_DATA, JSON.stringify(newData));
     AsyncStorage.setItem(STORAGE_KEYS.WEEKLY_LEADERBOARD, JSON.stringify([]));
+  },
+
+  // Q&A Forum actions
+  addUserQuestion: async (questionId: string) => {
+    const current = get().userQuestions;
+    if (!current.includes(questionId)) {
+      const next = [...current, questionId];
+      set({ userQuestions: next });
+      await AsyncStorage.setItem(STORAGE_KEYS.USER_QUESTIONS, JSON.stringify(next));
+    }
+  },
+
+  addUserAnswer: async (answerId: string) => {
+    const current = get().userAnswers;
+    if (!current.includes(answerId)) {
+      const next = [...current, answerId];
+      set({ userAnswers: next });
+      await AsyncStorage.setItem(STORAGE_KEYS.USER_ANSWERS, JSON.stringify(next));
+    }
+  },
+
+  addUserVote: async (answerId: string, voteType: 'upvote' | 'downvote') => {
+    const current = get().userVotes;
+    const next = { ...current, [answerId]: voteType };
+    set({ userVotes: next });
+    await AsyncStorage.setItem(STORAGE_KEYS.USER_VOTES, JSON.stringify(next));
   },
 }));
