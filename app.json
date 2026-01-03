@@ -40,17 +40,11 @@
         }
       ]
     ],
-    "scheme": "learnsmart",{
-  "expo": {
-    "name": "LearnSmart",
-    "slug": "learnsmart",
-    "version": "1.0.0",
+"scheme": "learnsmart",
     "extra": {
       "eas": {
         "projectId": "e59be169-5d35-47b6-aca1-c1b2eb835a25"
       }
     }
-  }
-}
   }
 }
