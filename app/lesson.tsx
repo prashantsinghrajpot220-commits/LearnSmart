@@ -10,7 +10,7 @@ import {
 import { useLocalSearchParams } from 'expo-router';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import LessonView from '@/components/LessonView';
-import { getChapterLessons } from '@/constants/curriculum';
+import { getChapterLessons, LessonContent } from '@/constants/curriculum';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
 import { useSmartyContext } from '@/context/ChatContext';
 import { BreadcrumbNav } from '@/components/BreadcrumbNav';
@@ -21,13 +21,6 @@ import { useXPStore } from '@/store/xpStore';
 import { useAchievementStore } from '@/store/achievementStore';
 import { coinRewardService } from '@/services/CoinRewardService';
 import { streakService } from '@/services/streakService';
-
-interface LessonContent {
-  title: string;
-  icon: string;
-  bulletPoints: string[];
-  paragraphs: string[];
-}
 
 export default function Lesson() {
   const { colors } = useTheme();

@@ -16,7 +16,31 @@ export const CLASS_OPTIONS = [
 
 const CLASS_1_5_SUBJECTS = ['English', 'Hindi', 'Maths', 'EVS'];
 
-const CLASS_6_10_SUBJECTS = ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'];
+const CLASS_6_8_SUBJECTS = [
+  'Mathematics', 
+  'Science', 
+  'Social Science', 
+  'English I', 
+  'English II', 
+  'English Grammar', 
+  'Hindi I', 
+  'Hindi II', 
+  'Hindi Grammar'
+];
+
+const CLASS_9_10_SUBJECTS = [
+  'Mathematics', 
+  'Physics', 
+  'Chemistry', 
+  'Biology', 
+  'Social Science', 
+  'English I', 
+  'English II', 
+  'English Grammar', 
+  'Hindi I', 
+  'Hindi II', 
+  'Hindi Grammar'
+];
 
 const STREAM_SUBJECTS: Record<string, string[]> = {
   Science: ['Physics', 'Chemistry', 'Biology', 'Mathematics', 'English'],
@@ -82,8 +106,48 @@ const CHAPTER_DATA: Record<string, Record<string, string[]>> = {
     'Class 6': ['Food: Where Does It Come From?', 'Components of Food', 'Fibre to Fabric'],
     'Class 7': ['Nutrition in Plants', 'Nutrition in Animals', 'Fibre to Fabric'],
     'Class 8': ['Crop Production and Management', 'Microorganisms: Friend and Foe', 'Synthetic Fibres and Plastics'],
+  },
+  Physics: {
+    'Class 9': ['Motion', 'Force and Laws of Motion', 'Gravitation'],
+    'Class 10': ['Light Reflection and Refraction', 'Human Eye and Colorful World', 'Electricity'],
+    'Class 11': ['Physical World', 'Units and Measurements', 'Motion in a Straight Line', 'Laws of Motion', 'Work, Energy and Power'],
+    'Class 12': ['Electric Charges and Fields', 'Electrostatic Potential', 'Current Electricity', 'Moving Charges', 'Magnetism'],
+  },
+  Chemistry: {
     'Class 9': ['Matter in Our Surroundings', 'Is Matter Around Us Pure?', 'Atoms and Molecules'],
     'Class 10': ['Chemical Reactions and Equations', 'Acids, Bases and Salts', 'Metals and Non-metals'],
+    'Class 11': ['Some Basic Concepts of Chemistry', 'Structure of Atom', 'Classification of Elements', 'Chemical Bonding', 'Thermodynamics'],
+    'Class 12': ['Solutions', 'Electrochemistry', 'Surface Chemistry', 'd-block Elements', 'Alcohols and Phenols'],
+  },
+  Biology: {
+    'Class 9': ['The Fundamental Unit of Life', 'Tissues', 'Diversity in Living Organisms'],
+    'Class 10': ['Life Processes', 'Control and Coordination', 'How do Organisms Reproduce?'],
+    'Class 11': ['The Living World', 'Biological Classification', 'Plant Kingdom', 'Animal Kingdom', 'Morphology'],
+    'Class 12': ['Reproduction in Organisms', 'Genetics', 'Evolution', 'Ecology', 'Biotechnology'],
+  },
+  'English I': {
+    'Class 9': ['The Fun They Had', 'The Sound of Music'],
+    'Class 10': ['A Letter to God', 'Nelson Mandela: Long Walk to Freedom'],
+  },
+  'English II': {
+    'Class 9': ['The Lost Child', 'The Adventures of Toto'],
+    'Class 10': ['A Triumph of Surgery', 'The Thief\'s Story'],
+  },
+  'English Grammar': {
+    'Class 9': ['Tenses', 'Modals', 'Determiners'],
+    'Class 10': ['Tenses', 'Modals', 'Reporting'],
+  },
+  'Hindi I': {
+    'Class 9': ['दो बैलों की कथा', 'ल्हासा की ओर'],
+    'Class 10': ['सूरदास के पद', 'राम-लक्ष्मण-परशुराम संवाद'],
+  },
+  'Hindi II': {
+    'Class 9': ['गिल्लू', 'स्मृति'],
+    'Class 10': ['हरिहर काका', 'सपनों के-से दिन'],
+  },
+  'Hindi Grammar': {
+    'Class 9': ['शब्द निर्माण', 'अर्थ की दृष्टि से वाक्य भेद'],
+    'Class 10': ['पद परिचय', 'वाक्य के भेद'],
   },
   'Social Science': {
     'Class 6': ['History: What, Where, How and When?', 'Geography: The Earth in the Solar System', 'Civics: Understanding Diversity'],
@@ -91,18 +155,6 @@ const CHAPTER_DATA: Record<string, Record<string, string[]>> = {
     'Class 8': ['History: How, When and Where', 'Geography: Resources', 'Civics: The Indian Constitution'],
     'Class 9': ['History: The French Revolution', 'Geography: India - Size and Location', 'Civics: What is Democracy? Why Democracy?'],
     'Class 10': ['History: The Rise of Nationalism in Europe', 'Geography: Resources and Development', 'Civics: Power Sharing'],
-  },
-  Physics: {
-    'Class 11': ['Physical World', 'Units and Measurements', 'Motion in a Straight Line', 'Laws of Motion', 'Work, Energy and Power'],
-    'Class 12': ['Electric Charges and Fields', 'Electrostatic Potential', 'Current Electricity', 'Moving Charges', 'Magnetism'],
-  },
-  Chemistry: {
-    'Class 11': ['Some Basic Concepts of Chemistry', 'Structure of Atom', 'Classification of Elements', 'Chemical Bonding', 'Thermodynamics'],
-    'Class 12': ['Solutions', 'Electrochemistry', 'Surface Chemistry', 'd-block Elements', 'Alcohols and Phenols'],
-  },
-  Biology: {
-    'Class 11': ['The Living World', 'Biological Classification', 'Plant Kingdom', 'Animal Kingdom', 'Morphology'],
-    'Class 12': ['Reproduction in Organisms', 'Genetics', 'Evolution', 'Ecology', 'Biotechnology'],
   },
   Economics: {
     'Class 11': ['Introduction to Economics', 'Collection of Data', 'Organisation of Data', 'Presentation of Data', 'Measures of Central Tendency'],
@@ -130,16 +182,166 @@ const CHAPTER_DATA: Record<string, Record<string, string[]>> = {
   },
 };
 
+export enum SubjectCategory {
+  SCIENCE = 'Science',
+  MATHEMATICS = 'Mathematics',
+  SOCIAL_SCIENCE = 'Social Science',
+  ENGLISH = 'English',
+  HINDI = 'Hindi',
+  PHYSICS = 'Physics',
+  CHEMISTRY = 'Chemistry',
+  BIOLOGY = 'Biology',
+  GRAMMAR = 'Grammar',
+}
+
+export interface DiagramLabel {
+  text: string;
+  x: number;
+  y: number;
+  tooltip: string;
+}
+
+export interface DiagramData {
+  type: string;
+  imageUrl?: string;
+  labels: DiagramLabel[];
+  animationType?: 'fade-in' | 'slide' | 'motion' | 'molecular' | 'circuit' | 'pulse';
+}
+
 export interface LessonContent {
   title: string;
   icon: string;
   bulletPoints: string[];
   paragraphs: string[];
+  imageUrl?: string;
+  diagramData?: DiagramData;
+  category?: SubjectCategory;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const LESSON_DATA: Record<string, any> = {
+  'Class 9': {
+    Physics: {
+      'Motion': [
+        {
+          title: 'Introduction to Motion',
+          icon: '🏃',
+          bulletPoints: [
+            'Motion is a change in position with time',
+            'Distance is the total path length traveled',
+            'Displacement is the shortest distance from start to end',
+            'Uniform motion covers equal distance in equal time',
+          ],
+          paragraphs: [
+            'In our daily life, we see some objects at rest and others in motion. Birds fly, fish swim, blood flows through veins and arteries, and cars move. Atoms, molecules, planets, stars and galaxies are all in motion. We often perceive an object to be in motion when its position changes with time.',
+          ],
+          imageUrl: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&q=80&w=1000',
+          diagramData: {
+            type: 'motion',
+            labels: [
+              { text: 'Start (A)', x: 20, y: 50, tooltip: 'The reference point' },
+              { text: 'End (B)', x: 80, y: 50, tooltip: 'Final position after 5 seconds' },
+              { text: 'Path', x: 50, y: 45, tooltip: 'The trajectory of the object' }
+            ],
+            animationType: 'motion'
+          }
+        }
+      ],
+      'Force and Laws of Motion': [
+        {
+          title: 'First Law of Motion',
+          icon: '🚀',
+          bulletPoints: [
+            'An object remains at rest unless acted upon by a force',
+            'Objects in motion stay in motion unless acted upon',
+            'This property is known as Inertia',
+          ],
+          paragraphs: [
+            'Newton\'s First Law of Motion states that an object will remain at rest or in uniform motion in a straight line unless acted upon by an external unbalanced force. This tendency of undisturbed objects to stay at rest or to keep moving with the same velocity is called inertia.',
+          ],
+          diagramData: {
+            type: 'physics',
+            labels: [
+              { text: 'Applied Force', x: 30, y: 30, tooltip: 'External push or pull' },
+              { text: 'Friction', x: 70, y: 70, tooltip: 'Opposing force' }
+            ],
+            animationType: 'slide'
+          }
+        }
+      ]
+    },
+    Chemistry: {
+      'Atoms and Molecules': [
+        {
+          title: 'Laws of Chemical Combination',
+          icon: '⚛️',
+          bulletPoints: [
+            'Law of conservation of mass: Mass cannot be created or destroyed',
+            'Law of constant proportions: Elements are always in fixed ratio',
+            'Dalton\'s atomic theory explains these laws',
+          ],
+          paragraphs: [
+            'The laws of chemical combination were established after much experimental work by Lavoisier and Joseph L. Proust. These laws form the foundation of chemical science by explaining how atoms combine to form molecules.',
+          ],
+          diagramData: {
+            type: 'chemistry',
+            labels: [
+              { text: 'Oxygen Atom', x: 50, y: 30, tooltip: 'Atomic mass 16u' },
+              { text: 'Hydrogen Atom', x: 30, y: 60, tooltip: 'Atomic mass 1u' },
+              { text: 'Chemical Bond', x: 45, y: 45, tooltip: 'Forces holding atoms together' }
+            ],
+            animationType: 'molecular'
+          }
+        }
+      ]
+    },
+    Biology: {
+      'The Fundamental Unit of Life': [
+        {
+          title: 'Cell Structure',
+          icon: '🧬',
+          bulletPoints: [
+            'The cell is the structural and functional unit of life',
+            'Robert Hooke discovered cells in 1665',
+            'Plasma membrane regulates entry/exit',
+            'Nucleus is the control center',
+          ],
+          paragraphs: [
+            'While examining a thin slice of cork, Robert Hooke saw that the cork resembled the structure of a honeycomb consisting of many little compartments. Cork is a substance which comes from the bark of a tree. In Latin, cell means "a little room".',
+          ],
+          diagramData: {
+            type: 'biology',
+            labels: [
+              { text: 'Nucleus', x: 50, y: 50, tooltip: 'Contains genetic material' },
+              { text: 'Cytoplasm', x: 70, y: 60, tooltip: 'Jelly-like substance' },
+              { text: 'Cell Membrane', x: 90, y: 50, tooltip: 'Outer boundary' }
+            ],
+            animationType: 'pulse'
+          }
+        }
+      ]
+    },
+    'English I': {
+      'The Fun They Had': [
+        {
+          title: 'The Mechanical Teacher',
+          icon: '🤖',
+          bulletPoints: [
+            'Story set in the year 2157',
+            'Children learn from mechanical teachers on screens',
+            'They find an old "real" book from the past',
+            'Margie hates her mechanical teacher',
+          ],
+          paragraphs: [
+            'Margie even wrote about it that night in her diary. On the page headed 17 May 2157, she wrote, "Today Tommy found a real book!" It was a very old book. Margie\'s grandfather once said that when he was a little boy his grandfather told him that there was a time when all stories were printed on paper.',
+          ],
+          imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1000'
+        }
+      ]
+    }
+  },
   'Class 10': {
-    Science: {
+    Chemistry: {
       'Chemical Reactions and Equations': [
         {
           title: 'What is a Chemical Reaction?',
@@ -151,8 +353,17 @@ const LESSON_DATA: Record<string, any> = {
             'Signs of a chemical reaction include change in color, gas production, or temperature change',
           ],
           paragraphs: [
-            'A chemical reaction is a process that leads to the chemical transformation of one set of chemical substances to another. When a chemical reaction occurs, the atoms that make up the reactants are rearranged to form different products. For example, when you burn wood, the carbon in the wood reacts with oxygen in the air to produce carbon dioxide and water vapor. This is why you see flames and feel heat - it is energy being released during the reaction.',
+            'A chemical reaction is a process that leads to the chemical transformation of one set of chemical substances to another. When a chemical reaction occurs, the atoms that make up the reactants are rearranged to form different products. For example, when you burn wood, the carbon in the wood reacts with oxygen in the air to produce carbon dioxide and water vapor.',
           ],
+          imageUrl: 'https://images.unsplash.com/photo-1532187875460-12d059c47a49?auto=format&fit=crop&q=80&w=1000',
+          diagramData: {
+            type: 'chemistry',
+            labels: [
+              { text: 'Reactants', x: 20, y: 50, tooltip: 'Magnesium and Oxygen' },
+              { text: 'Products', x: 80, y: 50, tooltip: 'Magnesium Oxide' }
+            ],
+            animationType: 'fade-in'
+          }
         },
         {
           title: 'Acids, Bases and Salts',
@@ -164,7 +375,7 @@ const LESSON_DATA: Record<string, any> = {
             'pH scale measures how acidic or basic a solution is',
           ],
           paragraphs: [
-            'Acids, bases, and salts are fundamental chemical compounds that we encounter in our daily lives. Lemon juice, vinegar, and stomach acid are examples of acids. They contain hydrogen ions (H+) that give them their characteristic sour taste. Bases like soap, baking soda, and bleach contain hydroxide ions (OH-) and feel slippery to the touch. When an acid and base react together, they neutralize each other and form a salt and water.',
+            'Acids, bases, and salts are fundamental chemical compounds that we encounter in our daily lives. Lemon juice, vinegar, and stomach acid are examples of acids. They contain hydrogen ions (H+) that give them their characteristic sour taste. Bases like soap, baking soda, and bleach contain hydroxide ions (OH-) and feel slippery to the touch.',
           ],
         },
       ],
@@ -179,7 +390,7 @@ const LESSON_DATA: Record<string, any> = {
             'Acids can be organic or inorganic',
           ],
           paragraphs: [
-            'Acids are an essential part of chemistry and everyday life. In the kitchen, you find acids in lemon juice (citric acid), vinegar (acetic acid), and tomatoes (tartaric acid). In laboratories, strong acids like hydrochloric acid and sulfuric acid are used for various purposes. Understanding acids helps us understand how they react with other substances and their importance in industry and medicine.',
+            'Acids are an essential part of chemistry and everyday life. In the kitchen, you find acids in lemon juice (citric acid), vinegar (acetic acid), and tomatoes (tartaric acid). In laboratories, strong acids like hydrochloric acid and sulfuric acid are used for various purposes.',
           ],
         },
       ],
@@ -196,7 +407,7 @@ const LESSON_DATA: Record<string, any> = {
             'Every real number has a decimal representation',
           ],
           paragraphs: [
-            'Real numbers form the foundation of mathematics and include all the numbers we use in everyday life. They include whole numbers like 5, fractions like 3/4, and special numbers like π (pi) and √2 (square root of 2) that cannot be written as simple fractions. Understanding real numbers is essential for solving equations and understanding more advanced mathematical concepts.',
+            'Real numbers form the foundation of mathematics and include all the numbers we use in everyday life. They include whole numbers like 5, fractions like 3/4, and special numbers like π (pi) and √2 (square root of 2) that cannot be written as simple fractions.',
           ],
         },
       ],
@@ -355,8 +566,10 @@ export function getSubjectsForClass(className: string, stream?: string): string[
 
   if (classNum >= 1 && classNum <= 5) {
     return CLASS_1_5_SUBJECTS;
-  } else if (classNum >= 6 && classNum <= 10) {
-    return CLASS_6_10_SUBJECTS;
+  } else if (classNum >= 6 && classNum <= 8) {
+    return CLASS_6_8_SUBJECTS;
+  } else if (classNum >= 9 && classNum <= 10) {
+    return CLASS_9_10_SUBJECTS;
   } else if (classNum === 11 || classNum === 12) {
     if (stream && STREAM_SUBJECTS[stream]) {
       return STREAM_SUBJECTS[stream];

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from './ThemeContext';
@@ -23,32 +23,28 @@ export default function SmartCoinDisplay({
   const { colors } = useTheme();
   const { gamificationData } = useUserStore();
   const [animatedValue] = useState(new Animated.Value(0));
-  const [coinAmount, setCoinAmount] = useState(amount || gamificationData.smartCoins);
-  const [previousAmount, setPreviousAmount] = useState(coinAmount);
+  
+  const currentAmount = amount ?? gamificationData.smartCoins;
+  const previousAmountRef = useRef(currentAmount);
 
   useEffect(() => {
-    const newAmount = amount ?? gamificationData.smartCoins;
-    if (newAmount !== coinAmount) {
-      setPreviousAmount(coinAmount);
-      setCoinAmount(newAmount);
-
-      if (showAnimation && newAmount > previousAmount) {
-        // Start animation
-        Animated.sequence([
-          Animated.timing(animatedValue, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-          Animated.timing(animatedValue, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-        ]).start();
-      }
+    if (showAnimation && currentAmount > previousAmountRef.current) {
+      // Start animation
+      Animated.sequence([
+        Animated.timing(animatedValue, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedValue, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
     }
-  }, [gamificationData.smartCoins, amount]);
+    previousAmountRef.current = currentAmount;
+  }, [currentAmount, showAnimation, animatedValue]);
 
   const sizeStyles = {
     small: {
@@ -110,7 +106,7 @@ export default function SmartCoinDisplay({
             },
           ]}
         >
-          {coinAmount ?? 0}
+          {currentAmount ?? 0}
         </Text>
         {showLabel && (
           <Text
@@ -122,7 +118,7 @@ export default function SmartCoinDisplay({
               },
             ]}
           >
-            {(coinAmount ?? 0) === 1 ? 'Coin' : 'Coins'}
+            {(currentAmount ?? 0) === 1 ? 'Coin' : 'Coins'}
           </Text>
         )}
       </View>

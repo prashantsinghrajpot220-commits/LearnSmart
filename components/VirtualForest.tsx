@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -30,8 +30,17 @@ export default function VirtualForest({ sessionId, showHistory = false }: Virtua
     forestScore: 0,
   });
 
+  const loadForestData = useCallback(async () => {
+    const trees = await focusTracker.getRecentTrees(20);
+    const stats = await focusTracker.getForestStats();
+    setRecentTrees(trees);
+    setForestStats(stats);
+  }, []);
+
   useEffect(() => {
-    loadForestData();
+    const timer = setTimeout(() => {
+      loadForestData();
+    }, 0);
     
     // Subscribe to growth updates
     const interval = setInterval(() => {
@@ -41,15 +50,11 @@ export default function VirtualForest({ sessionId, showHistory = false }: Virtua
       }
     }, 500);
 
-    return () => clearInterval(interval);
-  }, [sessionId]);
-
-  const loadForestData = async () => {
-    const trees = await focusTracker.getRecentTrees(20);
-    const stats = await focusTracker.getForestStats();
-    setRecentTrees(trees);
-    setForestStats(stats);
-  };
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
+  }, [sessionId, loadForestData]);
 
   const handleRestartTree = async () => {
     if (sessionId) {

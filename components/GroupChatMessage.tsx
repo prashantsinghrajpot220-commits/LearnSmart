@@ -2,12 +2,12 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { BorderRadius, FontSizes, FontWeights, Spacing } from '@/constants/theme';
 import { useTheme } from '@/components/ThemeContext';
-import type { GroupChatMessage, StudyGroup } from '@/services/StudyGroupService';
+import type { GroupChatMessage as IGroupChatMessage, StudyGroup } from '@/services/StudyGroupService';
 import { useUserStore } from '@/store/userStore';
 import { getAvatarById } from '@/data/avatarStore';
 
 interface GroupChatMessageProps {
-  message: GroupChatMessage;
+  message: IGroupChatMessage;
   group: StudyGroup;
 }
 
