@@ -139,11 +139,9 @@ const styles = StyleSheet.create({
   },
   coinAmount: {
     fontWeight: FontWeights.bold,
-    lineHeight: null,
   },
   coinLabel: {
     fontWeight: FontWeights.medium,
     marginTop: -2,
-    lineHeight: null,
   },
 });
