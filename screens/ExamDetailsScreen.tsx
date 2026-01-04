@@ -13,6 +13,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useTheme, ThemeColors } from '@/components/ThemeContext';
 import { examService } from '@/services/ExamService';
+import { getDaysRemaining } from '@/data/majorExams';
 import { Exam } from '@/types/productivity';
 import { Feather } from '@expo/vector-icons';
 
@@ -64,7 +65,7 @@ export default function ExamDetailsScreen() {
     }
 
     try {
-      const urgencyDaysRemaining = examService.getDaysRemaining(formData.date) || 0;
+      const urgencyDaysRemaining = getDaysRemaining(formData.date) || 0;
       
       await examService.addExam({
         name: formData.name,

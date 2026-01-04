@@ -95,7 +95,7 @@ export default function QuizModal({
         throw new Error('Quiz content is unavailable right now.');
       }
 
-      setQuestions(safeQuestions);
+      setQuestions(safeQuestions, chapter, subject, chapter);
     } catch (err) {
       console.error('Failed to load quiz:', err);
       setError(err instanceof Error ? err.message : 'Failed to load quiz');

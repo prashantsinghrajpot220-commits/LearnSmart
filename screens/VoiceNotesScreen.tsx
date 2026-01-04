@@ -31,7 +31,7 @@ export default function VoiceNotesScreen() {
       filtered = filtered.filter(
         (note) =>
           note.title.toLowerCase().includes(lowerQuery) ||
-          note.summary.toLowerCase().includes(lowerQuery) ||
+          note.summarizedContent.toLowerCase().includes(lowerQuery) ||
           note.tags.some((tag) => tag.toLowerCase().includes(lowerQuery))
       );
     }

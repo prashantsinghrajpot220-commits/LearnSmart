@@ -106,8 +106,8 @@ export const QuestionDetailScreen = () => {
   const renderHeader = () => (
     <View style={styles.questionSection}>
       <View style={styles.questionHeader}>
-        <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor(question.difficulty) + '20' }]}>
-          <Text style={[styles.difficultyText, { color: getDifficultyColor(question.difficulty) }]}>
+        <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor(question.difficulty, colors) + '20' }]}>
+          <Text style={[styles.difficultyText, { color: getDifficultyColor(question.difficulty, colors) }]}>
             {question.difficulty.toUpperCase()}
           </Text>
         </View>
@@ -193,7 +193,7 @@ export const QuestionDetailScreen = () => {
   );
 };
 
-const getDifficultyColor = (difficulty: string) => {
+const getDifficultyColor = (difficulty: string, colors: any) => {
   switch (difficulty) {
     case 'easy': return colors.success;
     case 'medium': return colors.warning;

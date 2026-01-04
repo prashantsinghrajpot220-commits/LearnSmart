@@ -590,7 +590,7 @@ export default function GroupDetailScreen() {
 
             <View style={styles.quizModalContent}>
               {activeQuiz ? (
-                <GroupQuizFlow onEnd={handleEndQuiz} onSubmit={handleSubmitQuizResult} submitting={submittingQuiz} />
+                <GroupQuizFlow onFinish={handleEndQuiz} submitting={submittingQuiz} />
               ) : null}
             </View>
           </View>

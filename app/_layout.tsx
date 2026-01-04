@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Platform } from 'react-native';
-import mobileAds from 'react-native-google-mobile-ads';
+import mobileAds from '@/utils/googleAds';
 import { ThemeProvider, useTheme } from '../components/ThemeContext';
 import { SmartyChatProvider } from '../context/ChatContext';
 import SmartyChat from '../components/SmartyChat';

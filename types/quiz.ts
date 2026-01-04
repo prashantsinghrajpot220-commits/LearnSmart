@@ -21,6 +21,8 @@ export interface QuizResult {
   timeSpent: number;
   difficulty: DifficultyLevel;
   topic: string;
+  subject: string;
+  chapter: string;
 }
 
 export interface MistakeRecord {
