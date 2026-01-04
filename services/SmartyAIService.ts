@@ -140,7 +140,7 @@ export async function sendMessageToSmarty(
               image_url: { url: `data:${att.mimeType};base64,${base64}` }
             });
           } catch (e) {
-            console.error('Failed to read image as base64', e);
+            // Failed to read image as base64 - continue without image
           }
         } else if (att.type === 'file') {
           const extractedText = await extractTextFromFile(att);
@@ -203,13 +203,12 @@ export async function sendMessageToSmarty(
     addMessage('assistant', finalResponse);
     return finalResponse;
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     setTyping(false);
-    if (error.name === 'AbortError') {
+    if (error instanceof Error && error.name === 'AbortError') {
       addMessage('assistant', 'Response cancelled', [], 'stopped');
       return 'Response cancelled';
     }
-    console.error('Smarty AI Error:', error);
     const fallbackResponse = "I'm having trouble connecting. 📡 Try again soon!";
     addMessage('assistant', fallbackResponse);
     return fallbackResponse;

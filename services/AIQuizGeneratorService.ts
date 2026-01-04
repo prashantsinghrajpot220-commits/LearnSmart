@@ -80,7 +80,7 @@ export class AIQuizGeneratorService {
 
       return this.parseQuizResponse(content, subject, chapter, difficulty, topic || chapter);
     } catch (error) {
-      console.error('AI Quiz Generation Error:', error);
+      // Error generating quiz, returning fallback
       return this.getFallbackQuiz(subject, chapter, difficulty, questionCount);
     }
   }
@@ -182,7 +182,7 @@ Note: correctAnswer should be 0, 1, 2, or 3 (index of correct option in the opti
 
       return questions.slice(0, 5);
     } catch (error) {
-      console.error('Failed to parse quiz response:', error);
+      // Error parsing quiz response, returning fallback
       return this.getFallbackQuiz(subject, chapter, difficulty, 5);
     }
   }

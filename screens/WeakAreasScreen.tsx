@@ -25,7 +25,7 @@ export default function WeakAreasScreen() {
       const areas = await mistakeAnalysisService.identifyWeakAreas();
       setWeakAreas(areas);
     } catch (error) {
-      console.error('Failed to load weak areas:', error);
+                  // Debug statement removed
     } finally {
       setLoading(false);
       setRefreshing(false);

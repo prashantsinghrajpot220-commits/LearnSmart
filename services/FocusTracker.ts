@@ -94,7 +94,7 @@ class FocusTracker {
       trees.push(tree);
       await AsyncStorage.setItem(TREES_STORAGE_KEY, JSON.stringify(trees));
     } catch (error) {
-      console.error('Failed to save tree:', error);
+                  // Error handled silently
     }
   }
 
@@ -103,7 +103,7 @@ class FocusTracker {
       const data = await AsyncStorage.getItem(TREES_STORAGE_KEY);
       return data ? JSON.parse(data) : [];
     } catch (error) {
-      console.error('Failed to get trees:', error);
+                  // Error handled silently
       return [];
     }
   }
@@ -189,7 +189,7 @@ class FocusTracker {
     try {
       await AsyncStorage.setItem(ACTIVE_TREE_KEY, JSON.stringify(tree));
     } catch (error) {
-      console.error('Failed to save active tree:', error);
+                  // Error handled silently
     }
   }
 
@@ -209,7 +209,7 @@ class FocusTracker {
         }
       }
     } catch (error) {
-      console.error('Failed to load active tree:', error);
+                  // Error handled silently
     }
     return null;
   }
@@ -242,7 +242,7 @@ class FocusTracker {
         forestScore,
       };
     } catch (error) {
-      console.error('Failed to get forest stats:', error);
+                  // Error handled silently
       return {
         totalTrees: 0,
         treesThisWeek: 0,
@@ -260,7 +260,7 @@ class FocusTracker {
         .sort((a, b) => new Date(b.plantedAt).getTime() - new Date(a.plantedAt).getTime())
         .slice(0, limit);
     } catch (error) {
-      console.error('Failed to get recent trees:', error);
+                  // Error handled silently
       return [];
     }
   }

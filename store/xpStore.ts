@@ -118,7 +118,7 @@ export const useXPStore = create<XPState>((set, get) => ({
         lastXPUpdate: new Date().toISOString(),
       }));
     } catch (error) {
-      console.error('Failed to save XP:', error);
+                  // Debug statement removed
     }
 
     return { rankUp, newRank, milestone };
@@ -186,7 +186,7 @@ export const useXPStore = create<XPState>((set, get) => ({
         });
       }
     } catch (error) {
-      console.error('Failed to load XP:', error);
+                  // Debug statement removed
     }
   },
 
@@ -200,7 +200,7 @@ export const useXPStore = create<XPState>((set, get) => ({
     try {
       await AsyncStorage.removeItem(STORAGE_KEY);
     } catch (error) {
-      console.error('Failed to reset XP:', error);
+                  // Debug statement removed
     }
   },
 }));

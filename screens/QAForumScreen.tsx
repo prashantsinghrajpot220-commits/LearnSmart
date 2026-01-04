@@ -252,8 +252,9 @@ export const QAForumScreen = () => {
       setIsPostModalVisible(false);
       resetForm();
       await loadSubjects();
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      Alert.alert('Error', message);
     } finally {
       setPosting(false);
     }

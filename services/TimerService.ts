@@ -37,7 +37,7 @@ class TimerService {
         return { ...DEFAULT_SETTINGS, ...JSON.parse(data) };
       }
     } catch (error) {
-      console.error('Failed to load timer settings:', error);
+                  // Error handled silently
     }
     return DEFAULT_SETTINGS;
   }
@@ -48,7 +48,7 @@ class TimerService {
       const updated = { ...current, ...settings };
       await AsyncStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(updated));
     } catch (error) {
-      console.error('Failed to save timer settings:', error);
+                  // Error handled silently
     }
   }
 
@@ -230,7 +230,7 @@ class TimerService {
       
       await AsyncStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(sessions));
     } catch (error) {
-      console.error('Failed to save session:', error);
+                  // Error handled silently
     }
   }
 
@@ -239,7 +239,7 @@ class TimerService {
       const sessions = await this.getAllSessions();
       return sessions.find((s) => s.id === sessionId) || null;
     } catch (error) {
-      console.error('Failed to get session:', error);
+                  // Error handled silently
       return null;
     }
   }
@@ -249,7 +249,7 @@ class TimerService {
       const data = await AsyncStorage.getItem(SESSIONS_STORAGE_KEY);
       return data ? JSON.parse(data) : [];
     } catch (error) {
-      console.error('Failed to get sessions:', error);
+                  // Error handled silently
       return [];
     }
   }
@@ -266,7 +266,7 @@ class TimerService {
         return sessionDate >= cutoffDate;
       });
     } catch (error) {
-      console.error('Failed to get session history:', error);
+                  // Error handled silently
       return [];
     }
   }
@@ -279,7 +279,7 @@ class TimerService {
         await this.saveSession(session);
       }
     } catch (error) {
-      console.error('Failed to update focus score:', error);
+                  // Error handled silently
     }
   }
 
@@ -291,7 +291,7 @@ class TimerService {
         await this.saveSession(session);
       }
     } catch (error) {
-      console.error('Failed to mark tree survived:', error);
+                  // Error handled silently
     }
   }
 
@@ -300,7 +300,7 @@ class TimerService {
     try {
       await AsyncStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(state));
     } catch (error) {
-      console.error('Failed to save active state:', error);
+                  // Error handled silently
     }
   }
 
@@ -325,7 +325,7 @@ class TimerService {
         return state;
       }
     } catch (error) {
-      console.error('Failed to load active state:', error);
+                  // Error handled silently
     }
     return null;
   }
@@ -368,7 +368,7 @@ class TimerService {
         treesGrown: completedSessions.filter((s) => s.treeSurvived).length,
       };
     } catch (error) {
-      console.error('Failed to get stats:', error);
+                  // Error handled silently
       return {
         totalSessions: 0,
         totalStudyTime: 0,

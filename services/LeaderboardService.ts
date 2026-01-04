@@ -52,7 +52,7 @@ export class LeaderboardService {
       }
       return false;
     } catch (error) {
-      console.error('Failed to check weekly reset:', error);
+                  // Error handled silently
       return false;
     }
   }
@@ -62,9 +62,9 @@ export class LeaderboardService {
     try {
       const { resetWeeklyData } = useUserStore.getState();
       resetWeeklyData();
-      console.log('Weekly data reset completed');
+                  // Action completed
     } catch (error) {
-      console.error('Failed to reset weekly data:', error);
+                  // Error handled silently
     }
   }
 
@@ -78,9 +78,9 @@ export class LeaderboardService {
       }
       
       // In a real app, you'd also update the server-side leaderboard here
-      console.log(`Updated weekly XP for user ${userId}: +${xpAmount}`);
+                  // Action completed
     } catch (error) {
-      console.error('Failed to update weekly XP:', error);
+                  // Error handled silently
     }
   }
 
@@ -211,7 +211,7 @@ export class LeaderboardService {
       const { setWeeklyLeaderboard } = useUserStore.getState();
       setWeeklyLeaderboard(leaderboard.entries);
     } catch (error) {
-      console.error('Failed to save leaderboard:', error);
+                  // Error handled silently
     }
   }
 
@@ -223,7 +223,7 @@ export class LeaderboardService {
         return JSON.parse(stored);
       }
     } catch (error) {
-      console.error('Failed to load leaderboard:', error);
+                  // Error handled silently
     }
     return null;
   }

@@ -62,7 +62,7 @@ export class NoteSummarizerService {
 
       return this.parseSummarizationResponse(content);
     } catch (error) {
-      console.error('AI Summarization Error:', error);
+                  // Error handled silently
       return this.getFallbackSummary(text, context);
     }
   }
@@ -143,7 +143,7 @@ Return a JSON object with the following structure:
         suggestedTags: parsed.suggestedTags || [],
       };
     } catch (error) {
-      console.error('Failed to parse summarization response:', error);
+                  // Error handled silently
       // Return the raw content as summary
       return {
         summary: content,

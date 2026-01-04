@@ -196,7 +196,7 @@ export const useAchievementStore = create<AchievementStore>((set, get) => ({
         set({ achievements: merged });
       }
     } catch (error) {
-      console.error('Failed to load achievements:', error);
+                  // Debug statement removed
     }
   },
 
@@ -284,7 +284,7 @@ export const useAchievementStore = create<AchievementStore>((set, get) => ({
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     } catch (error) {
-      console.error('Failed to save achievement:', error);
+                  // Debug statement removed
     }
   },
 
@@ -301,7 +301,7 @@ export const useAchievementStore = create<AchievementStore>((set, get) => ({
     try {
       await AsyncStorage.removeItem(STORAGE_KEY);
     } catch (error) {
-      console.error('Failed to reset achievements:', error);
+                  // Debug statement removed
     }
   },
 }));

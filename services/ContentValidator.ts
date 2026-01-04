@@ -30,7 +30,7 @@ async function ensureInitialized(): Promise<void> {
       const raw = await AsyncStorage.getItem(STORAGE_KEYS.QUARANTINE);
       quarantineCache = raw ? (JSON.parse(raw) as QuarantineMap) : {};
     } catch (err) {
-      console.warn('Failed to load quarantine cache:', err);
+      // Failed to load quarantine cache - initialize empty cache
       quarantineCache = {};
     }
   })();
@@ -55,7 +55,7 @@ async function appendModerationEvent(event: ModerationEvent): Promise<void> {
     const next = [event, ...existing].slice(0, 200);
     await AsyncStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(next));
   } catch (err) {
-    console.warn('Failed to append moderation event:', err);
+    // Failed to append moderation event - continue without logging
   }
 }
 
@@ -67,7 +67,7 @@ async function updateQuarantine(contentId: string, update: QuarantineMap[string]
   try {
     await AsyncStorage.setItem(STORAGE_KEYS.QUARANTINE, JSON.stringify(quarantineCache));
   } catch (err) {
-    console.warn('Failed to update quarantine store:', err);
+    // Failed to update quarantine store - continue without persistence
   }
 }
 

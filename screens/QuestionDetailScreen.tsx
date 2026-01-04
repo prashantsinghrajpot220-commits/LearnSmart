@@ -70,8 +70,9 @@ export const QuestionDetailScreen = () => {
       await qaForumService.postAnswer(questionId, answerText, attachment?.uri);
       setAnswerText('');
       setAttachment(null);
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      Alert.alert('Error', message);
     } finally {
       setPosting(false);
     }
@@ -81,8 +82,9 @@ export const QuestionDetailScreen = () => {
     if (!questionId) return;
     try {
       await qaForumService.voteAnswer(questionId, answerId, type);
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      Alert.alert('Error', message);
     }
   };
 
@@ -90,8 +92,9 @@ export const QuestionDetailScreen = () => {
     if (!questionId) return;
     try {
       await qaForumService.markHelpful(questionId, answerId);
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      Alert.alert('Error', message);
     }
   };
 

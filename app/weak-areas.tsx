@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import WeakAreasScreen from '@/screens/WeakAreasScreen';
-import { HeaderButton } from '@/components/HeaderComponent';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/components/ThemeContext';
 

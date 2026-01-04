@@ -31,7 +31,7 @@ export default function PersonalizedPlanScreen() {
       const studyPlan = await mistakeAnalysisService.generatePersonalizedStudyPlan();
       setPlan(studyPlan);
     } catch (error) {
-      console.error('Failed to load personalized plan:', error);
+                  // Debug statement removed
     } finally {
       setLoading(false);
     }

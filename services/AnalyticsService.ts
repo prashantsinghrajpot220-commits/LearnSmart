@@ -41,7 +41,7 @@ export class AnalyticsService {
         this.analyticsData = JSON.parse(data);
       }
     } catch (error) {
-      console.error('Failed to initialize AnalyticsService:', error);
+                  // Error handled silently
     }
   }
 
@@ -298,7 +298,7 @@ export class AnalyticsService {
         JSON.stringify(this.analyticsData)
       );
     } catch (error) {
-      console.error('Failed to save analytics:', error);
+                  // Error handled silently
     }
   }
 

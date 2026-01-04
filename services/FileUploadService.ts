@@ -111,7 +111,7 @@ export const extractTextFromFile = async (attachment: Attachment): Promise<strin
     
     return `[Extracted text from ${attachment.name}]`;
   } catch (error) {
-    console.error('Error extracting text:', error);
+    // Error extracting text - return empty string
     return '';
   }
 };

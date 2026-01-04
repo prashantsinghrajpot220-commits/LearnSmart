@@ -20,10 +20,9 @@ export class CoinRewardService {
     try {
       const { addSmartCoins } = useUserStore.getState();
       await addSmartCoins(reward.amount, reward.reason);
-      console.log(`Awarded ${reward.amount} SmartCoins: ${reward.reason}`);
       return true;
     } catch (error) {
-      console.error('Failed to award coins:', error);
+      // Failed to award coins - silently fail
       return false;
     }
   }

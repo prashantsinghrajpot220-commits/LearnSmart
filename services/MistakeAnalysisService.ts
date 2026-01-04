@@ -33,7 +33,7 @@ export class MistakeAnalysisService {
       this.mistakesCache = mistakesData ? JSON.parse(mistakesData) : [];
       this.quizResultsCache = resultsData ? JSON.parse(resultsData) : [];
     } catch (error) {
-      console.error('Failed to initialize MistakeAnalysisService:', error);
+                  // Error handled silently
       this.mistakesCache = [];
       this.quizResultsCache = [];
     }
@@ -47,7 +47,7 @@ export class MistakeAnalysisService {
         JSON.stringify(this.mistakesCache)
       );
     } catch (error) {
-      console.error('Failed to record mistake:', error);
+                  // Error handled silently
     }
   }
 
@@ -59,7 +59,7 @@ export class MistakeAnalysisService {
         JSON.stringify(this.quizResultsCache)
       );
     } catch (error) {
-      console.error('Failed to record quiz result:', error);
+                  // Error handled silently
     }
   }
 
@@ -255,7 +255,7 @@ export class MistakeAnalysisService {
         JSON.stringify(this.mistakesCache)
       );
     } catch (error) {
-      console.error('Failed to clear old mistakes:', error);
+                  // Error handled silently
     }
   }
 
@@ -268,7 +268,7 @@ export class MistakeAnalysisService {
         AsyncStorage.removeItem(QUIZ_RESULTS_STORAGE_KEY),
       ]);
     } catch (error) {
-      console.error('Failed to clear all data:', error);
+                  // Error handled silently
     }
   }
 
