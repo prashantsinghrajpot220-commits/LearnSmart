@@ -1,6 +1,17 @@
 {
   "expo": {
     "name": "LearnSmart",
-    "slug": "learnsmart"
+    "slug": "learnsmart",
+    "android": {
+      "package": "com.learnsmart.app"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "learnsmart-project-id"
+      }
+    }
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-3940256099942544~3347511713"
   }
 }
