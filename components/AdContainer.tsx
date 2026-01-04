@@ -10,7 +10,7 @@ import {
 import { Spacing, BorderRadius, FontSizes, FontWeights } from '@/constants/theme';
 import { useTheme, ThemeColors } from './ThemeContext';
 import { Feather } from '@expo/vector-icons';
-import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
+import { BannerAd, BannerAdSize } from '@/utils/googleAds';
 import { AD_UNIT_IDS } from '@/config/adConfig';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');

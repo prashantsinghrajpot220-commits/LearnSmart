@@ -86,7 +86,7 @@ export default function NoteCard({ note, onDelete, onToggleStar }: NoteCardProps
       </View>
 
       <Text style={styles.preview} numberOfLines={3}>
-        {note.summary}
+        {note.summarizedContent}
       </Text>
 
       {note.tags.length > 0 && (

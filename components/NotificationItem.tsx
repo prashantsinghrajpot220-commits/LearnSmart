@@ -89,7 +89,7 @@ const NotificationItem = memo(({ notification, onPress, onDelete }: Notification
         <Text style={[styles.message, { color: colors.textSecondary }]} numberOfLines={2}>
           {notification.message}
         </Text>
-        <Text style={[styles.time, { color: colors.textTertiary }]}>
+        <Text style={[styles.time, { color: colors.textSecondary }]}>
           {timeAgo}
         </Text>
       </View>

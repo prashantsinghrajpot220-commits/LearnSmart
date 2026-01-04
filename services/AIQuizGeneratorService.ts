@@ -10,6 +10,7 @@ interface QuizContext {
   difficulty: DifficultyLevel;
   studentClass?: string;
   studentStream?: string;
+  topic?: string;
 }
 
 export class AIQuizGeneratorService {

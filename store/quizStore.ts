@@ -150,6 +150,8 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         timeSpent,
         difficulty: get().currentDifficulty,
         topic: quizTopic,
+        subject: quizSubject,
+        chapter: quizChapter,
       };
       await mistakeAnalysisService.recordQuizResult(quizResult);
     } catch (error) {
@@ -191,6 +193,8 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         timeSpent,
         difficulty: get().currentDifficulty,
         topic: quizTopic,
+        subject: quizSubject,
+        chapter: quizChapter,
       };
     } catch (error) {
       console.error('Failed to award rewards for quiz:', error);
