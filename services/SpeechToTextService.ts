@@ -98,7 +98,7 @@ export class SpeechToTextService {
       try {
         this.recognition.stop();
       } catch (error) {
-        console.error('Error stopping recognition:', error);
+                    // Error handled silently
       }
       this.isListening = false;
     }
@@ -165,7 +165,7 @@ export class SpeechToTextService {
       
       return true;
     } catch (error) {
-      console.error('Microphone permission denied:', error);
+                  // Error handled silently
       return false;
     }
   }

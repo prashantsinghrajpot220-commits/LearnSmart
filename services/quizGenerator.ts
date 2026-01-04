@@ -101,7 +101,7 @@ Please generate fresh, unique questions - do not repeat questions from previous 
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Quiz API Error:', response.status, errorText);
+                  // Error handled silently
       throw new Error(`API error: ${response.status}`);
     }
 
@@ -132,7 +132,7 @@ Please generate fresh, unique questions - do not repeat questions from previous 
     return questions;
 
   } catch (error) {
-    console.error('Quiz Generation Error:', error);
+                // Error handled silently
     setError(error instanceof Error ? error.message : 'Failed to generate quiz questions');
     setLoading(false);
     
@@ -161,7 +161,7 @@ function parseQuizResponse(content: string): ParsedQuizResponse | null {
       try {
         return JSON.parse(jsonMatch[1]);
       } catch {
-        console.error('Failed to parse quiz JSON from markdown');
+                    // Error handled silently
       }
     }
     
@@ -171,7 +171,7 @@ function parseQuizResponse(content: string): ParsedQuizResponse | null {
       try {
         return JSON.parse(braceMatch[0]);
       } catch {
-        console.error('Failed to parse quiz JSON from text');
+                    // Error handled silently
       }
     }
     

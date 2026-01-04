@@ -58,8 +58,6 @@ export class ChallengeService {
     this.challenges.push(challenge);
     
     // In real app, send notification to challenged user
-    console.log(`Challenge created: ${userName} challenged you to a ${subject} quiz!`);
-    
     return challenge.id;
   }
 
@@ -72,8 +70,6 @@ export class ChallengeService {
     if (challenge.status !== 'pending') return false;
 
     challenge.status = 'accepted';
-    console.log(`Challenge accepted: ${challenge.challengedName} accepted the ${challenge.subject} challenge!`);
-    
     return true;
   }
 
@@ -121,8 +117,6 @@ export class ChallengeService {
           });
         }
       }
-
-      console.log(`Challenge completed: ${challenge.winner === 'tie' ? 'It\'s a tie!' : `${challenge.winner} wins!`}`);
     }
 
     return {

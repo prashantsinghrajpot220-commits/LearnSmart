@@ -135,7 +135,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         }
       }
     } catch (error) {
-      console.error('Failed to record mistakes:', error);
+                  // Debug statement removed
     }
 
     // Record quiz result
@@ -155,7 +155,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       };
       await mistakeAnalysisService.recordQuizResult(quizResult);
     } catch (error) {
-      console.error('Failed to record quiz result:', error);
+                  // Debug statement removed
     }
 
     // Award XP and SmartCoins for completing a quiz
@@ -197,7 +197,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         chapter: quizChapter,
       };
     } catch (error) {
-      console.error('Failed to award rewards for quiz:', error);
+                  // Debug statement removed
       return null;
     }
   },

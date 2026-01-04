@@ -156,7 +156,6 @@ export default function VoiceRecorder({
               styles.waveformBar,
               waveAnimatedStyle,
               {
-                animationDelay: `${index * 0.1}s`,
                 opacity: isRecording ? 1 : 0.3,
               },
             ]}

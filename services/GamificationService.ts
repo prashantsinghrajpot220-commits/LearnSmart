@@ -19,8 +19,6 @@ export class GamificationService {
       await addSmartCoins(amount, reason);
       await addCoinTransaction({ amount, reason, type: 'earned' });
 
-      console.log(`Awarded ${amount} SmartCoins for: ${reason}`);
-
       // Check for milestone after earning coins
       await this.checkCoinMilestones(amount);
     } else {
@@ -43,23 +41,23 @@ export class GamificationService {
 
   // Award coins for badge unlock
   async awardForBadgeUnlock(badgeName: string, badgeId: string) {
-    let coins = 0;
+    const coinAmount = this.getBadgeCoinAmount(badgeId);
+
+    if (coinAmount > 0) {
+      await this.awardSmartCoins(coinAmount, `Badge unlocked: ${badgeName}`);
+    }
+  }
+
+  private getBadgeCoinAmount(badgeId: string): number {
     switch (badgeId) {
       case 'helper':
-        coins = 10;
-        break;
+        return 10;
       case 'expert':
-        coins = 25;
-        break;
+        return 25;
       case 'community_star':
-        coins = 50;
-        break;
+        return 50;
       default:
-        coins = 5;
-    }
-
-    if (coins > 0) {
-      await this.awardSmartCoins(coins, `Badge unlocked: ${badgeName}`);
+        return 5;
     }
   }
 

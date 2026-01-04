@@ -55,7 +55,7 @@ export const useVoiceNoteStore = create<VoiceNoteState>((set, get) => ({
         JSON.stringify(get().notes)
       );
     } catch (error) {
-      console.error('Failed to add voice note:', error);
+                  // Debug statement removed
     }
   },
 
@@ -74,7 +74,7 @@ export const useVoiceNoteStore = create<VoiceNoteState>((set, get) => ({
         JSON.stringify(get().notes)
       );
     } catch (error) {
-      console.error('Failed to update voice note:', error);
+                  // Debug statement removed
     }
   },
 
@@ -91,7 +91,7 @@ export const useVoiceNoteStore = create<VoiceNoteState>((set, get) => ({
         JSON.stringify(get().notes)
       );
     } catch (error) {
-      console.error('Failed to delete voice note:', error);
+                  // Debug statement removed
     }
   },
 
@@ -147,7 +147,7 @@ export const useVoiceNoteStore = create<VoiceNoteState>((set, get) => ({
         set({ notes: JSON.parse(data) });
       }
     } catch (error) {
-      console.error('Failed to load voice notes:', error);
+                  // Debug statement removed
     }
   },
 
@@ -156,7 +156,7 @@ export const useVoiceNoteStore = create<VoiceNoteState>((set, get) => ({
       set({ notes: [], currentNote: null });
       await AsyncStorage.removeItem(VOICE_NOTES_STORAGE_KEY);
     } catch (error) {
-      console.error('Failed to clear voice notes:', error);
+                  // Debug statement removed
     }
   },
 }));

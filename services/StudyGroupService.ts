@@ -107,7 +107,7 @@ export class StudyGroupService {
       const raw = await AsyncStorage.getItem(STORAGE_KEYS.GROUPS);
       this.groupsCache = raw ? (JSON.parse(raw) as StudyGroup[]) : [];
     } catch (error) {
-      console.error('Failed to load study groups:', error);
+                  // Error handled silently
       this.groupsCache = [];
     }
 
@@ -119,7 +119,7 @@ export class StudyGroupService {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.GROUPS, JSON.stringify(next));
     } catch (error) {
-      console.error('Failed to persist study groups:', error);
+                  // Error handled silently
     }
 
     this.groupListeners.forEach((cb) => cb(next));
@@ -386,7 +386,7 @@ export class StudyGroupService {
       this.chatCache.set(groupId, messages);
       return messages;
     } catch (error) {
-      console.error('Failed to load group chat:', error);
+                  // Error handled silently
       this.chatCache.set(groupId, []);
       return [];
     }
@@ -397,7 +397,7 @@ export class StudyGroupService {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.CHAT(groupId), JSON.stringify(messages));
     } catch (error) {
-      console.error('Failed to persist group chat:', error);
+                  // Error handled silently
     }
 
     this.chatListeners.get(groupId)?.forEach((cb) => cb(messages));
@@ -461,7 +461,7 @@ export class StudyGroupService {
       this.notesCache.set(groupId, notes);
       return notes;
     } catch (error) {
-      console.error('Failed to load group notes:', error);
+                  // Error handled silently
       this.notesCache.set(groupId, []);
       return [];
     }
@@ -472,7 +472,7 @@ export class StudyGroupService {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.NOTES(groupId), JSON.stringify(notes));
     } catch (error) {
-      console.error('Failed to persist group notes:', error);
+                  // Error handled silently
     }
 
     this.notesListeners.get(groupId)?.forEach((cb) => cb(notes));
@@ -529,7 +529,7 @@ export class StudyGroupService {
       this.scheduleCache.set(groupId, entries);
       return entries;
     } catch (error) {
-      console.error('Failed to load group schedule:', error);
+                  // Error handled silently
       this.scheduleCache.set(groupId, []);
       return [];
     }
@@ -540,7 +540,7 @@ export class StudyGroupService {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.SCHEDULE(groupId), JSON.stringify(entries));
     } catch (error) {
-      console.error('Failed to persist group schedule:', error);
+                  // Error handled silently
     }
 
     this.scheduleListeners.get(groupId)?.forEach((cb) => cb(entries));

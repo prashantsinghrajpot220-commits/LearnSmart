@@ -16,6 +16,7 @@ import { useUserStore } from '@/store/userStore';
 import { generateQuizQuestions } from '@/services/quizGenerator';
 import { checkNetworkConnectivity } from '@/services/networkService';
 import { ContentValidator } from '@/services/ContentValidator';
+import { QuizQuestion } from '@/types/quiz';
 import QuizCard from './QuizCard';
 import QuizResultsScreen from './QuizResultsScreen';
 import { QuestionSkeleton } from './SkeletonLoader';
@@ -95,9 +96,9 @@ export default function QuizModal({
         throw new Error('Quiz content is unavailable right now.');
       }
 
-      setQuestions(safeQuestions, chapter, subject, chapter);
+      setQuestions(safeQuestions as QuizQuestion[], chapter, subject, chapter);
     } catch (err) {
-      console.error('Failed to load quiz:', err);
+      // Failed to load quiz - handled by setError
       setError(err instanceof Error ? err.message : 'Failed to load quiz');
     } finally {
       setLoading(false);

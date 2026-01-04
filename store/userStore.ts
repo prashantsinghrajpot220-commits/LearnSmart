@@ -478,7 +478,7 @@ export const useUserStore = create<UserState>((set, get) => ({
           const parsed = JSON.parse(gamificationData);
           loadedGamificationData = { ...loadedGamificationData, ...parsed };
         } catch (error) {
-          console.error('Failed to parse gamification data:', error);
+                      // Debug statement removed
         }
       }
 
@@ -487,7 +487,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         try {
           return JSON.parse(raw) as T;
         } catch (error) {
-          console.error('Failed to parse stored JSON:', error);
+                      // Debug statement removed
           return fallback;
         }
       };
@@ -526,7 +526,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         lastAnswerDate: lastAnswerDate || null,
       });
     } catch (error) {
-      console.error('Failed to load user data:', error);
+                  // Debug statement removed
     }
   },
 
@@ -567,13 +567,13 @@ export const useUserStore = create<UserState>((set, get) => ({
     
     set({ gamificationData: newData });
     await AsyncStorage.setItem(STORAGE_KEYS.GAMIFICATION_DATA, JSON.stringify(newData));
-    console.log(`Added ${amount} SmartCoins for: ${reason}`);
+                // Debug statement removed
   },
 
   spendSmartCoins: async (amount: number, item: string) => {
     const currentData = get().gamificationData;
     if (currentData.smartCoins < amount) {
-      console.log('Insufficient SmartCoins');
+                  // Debug statement removed
       return false;
     }
 
@@ -584,7 +584,7 @@ export const useUserStore = create<UserState>((set, get) => ({
     
     set({ gamificationData: newData });
     await AsyncStorage.setItem(STORAGE_KEYS.GAMIFICATION_DATA, JSON.stringify(newData));
-    console.log(`Spent ${amount} SmartCoins on: ${item}`);
+                // Debug statement removed
     return true;
   },
 
@@ -609,7 +609,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       
       set({ gamificationData: newData });
       AsyncStorage.setItem(STORAGE_KEYS.GAMIFICATION_DATA, JSON.stringify(newData));
-      console.log(`Unlocked avatar: ${avatarId}`);
+                  // Debug statement removed
     }
   },
 
@@ -632,7 +632,7 @@ export const useUserStore = create<UserState>((set, get) => ({
     
     set({ gamificationData: newData });
     await AsyncStorage.setItem(STORAGE_KEYS.GAMIFICATION_DATA, JSON.stringify(newData));
-    console.log(`Purchased avatar ${avatarId} for ${cost} coins`);
+                // Debug statement removed
     return true;
   },
 
@@ -646,7 +646,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       
       set({ gamificationData: newData });
       AsyncStorage.setItem(STORAGE_KEYS.GAMIFICATION_DATA, JSON.stringify(newData));
-      console.log(`Reached rank milestone: ${rankName}`);
+                  // Debug statement removed
     }
   },
 

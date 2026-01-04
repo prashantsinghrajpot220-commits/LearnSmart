@@ -57,7 +57,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       const activeNotificationId = notifications.find((n) => !n.read)?.id ?? null;
       set({ notifications, activeNotificationId });
     } catch (error) {
-      console.error('Failed to load notifications:', error);
+                  // Debug statement removed
       set({ notifications: [], activeNotificationId: null });
     }
   },
@@ -83,7 +83,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch (error) {
-      console.error('Failed to persist notifications:', error);
+                  // Debug statement removed
     }
   },
 
@@ -101,7 +101,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
     } catch (error) {
-      console.error('Failed to persist notifications:', error);
+                  // Debug statement removed
     }
   },
 
@@ -114,7 +114,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
     } catch (error) {
-      console.error('Failed to persist notifications:', error);
+                  // Debug statement removed
     }
   },
 
@@ -129,7 +129,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
     } catch (error) {
-      console.error('Failed to persist notifications:', error);
+                  // Debug statement removed
     }
   },
 
@@ -139,7 +139,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([]));
     } catch (error) {
-      console.error('Failed to clear notifications:', error);
+                  // Debug statement removed
     }
   },
 
@@ -158,7 +158,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
     } catch (error) {
-      console.error('Failed to persist notifications:', error);
+                  // Debug statement removed
     }
   },
 }));

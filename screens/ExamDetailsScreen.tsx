@@ -49,7 +49,7 @@ export default function ExamDetailsScreen() {
         setExam(null);
       }
     } catch (error) {
-      console.error('Failed to load exam:', error);
+                  // Debug statement removed
     } finally {
       setLoading(false);
     }
@@ -85,7 +85,7 @@ export default function ExamDetailsScreen() {
       setFormData({ name: '', subject: '', date: '' });
       router.back();
     } catch (error) {
-      console.error('Failed to add exam:', error);
+                  // Debug statement removed
     }
   };
 
@@ -109,7 +109,7 @@ export default function ExamDetailsScreen() {
       setShowEditModal(false);
       loadExam();
     } catch (error) {
-      console.error('Failed to update exam:', error);
+                  // Debug statement removed
     }
   };
 
@@ -122,7 +122,7 @@ export default function ExamDetailsScreen() {
         router.back();
       }
     } catch (error) {
-      console.error('Failed to delete exam:', error);
+                  // Debug statement removed
     }
   };
 
@@ -133,7 +133,7 @@ export default function ExamDetailsScreen() {
       await examService.markExamCompleted(exam.id);
       loadExam();
     } catch (error) {
-      console.error('Failed to mark exam as completed:', error);
+                  // Debug statement removed
     }
   };
 

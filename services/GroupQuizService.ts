@@ -80,7 +80,7 @@ export class GroupQuizService {
       this.cache.set(groupId, quizzes);
       return quizzes;
     } catch (error) {
-      console.error('Failed to load group quizzes:', error);
+                  // Error handled silently
       this.cache.set(groupId, []);
       return [];
     }
@@ -92,7 +92,7 @@ export class GroupQuizService {
     try {
       await AsyncStorage.setItem(STORAGE_KEY(groupId), JSON.stringify(quizzes));
     } catch (error) {
-      console.error('Failed to persist group quizzes:', error);
+                  // Error handled silently
     }
 
     this.listeners.get(groupId)?.forEach((cb) => cb(quizzes));

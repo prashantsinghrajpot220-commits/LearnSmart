@@ -104,7 +104,7 @@ function notifyNetworkChange(event: NetworkEventType, details: any): void {
     try {
       callback(event, details);
     } catch (error) {
-      console.error('Network callback error:', error);
+                  // Error handled silently
     }
   });
 }

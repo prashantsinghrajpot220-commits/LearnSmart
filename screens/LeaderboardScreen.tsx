@@ -33,7 +33,7 @@ export default function LeaderboardScreen() {
       
       setLeaderboard(data);
     } catch (error) {
-      console.error('Failed to load leaderboard:', error);
+                  // Debug statement removed
       Alert.alert('Error', 'Failed to load leaderboard data');
     } finally {
       setLoading(false);

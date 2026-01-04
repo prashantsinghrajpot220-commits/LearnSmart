@@ -47,7 +47,7 @@ export default function SessionHistoryScreen() {
       setSessions(sortedSessions);
       setStats(statsData);
     } catch (error) {
-      console.error('Failed to load session history:', error);
+                  // Debug statement removed
     } finally {
       setLoading(false);
     }

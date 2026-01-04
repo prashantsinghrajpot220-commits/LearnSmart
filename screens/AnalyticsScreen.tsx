@@ -33,7 +33,7 @@ export default function AnalyticsScreen() {
       setMetrics(performanceMetrics);
       setTopicPerformance(topics);
     } catch (error) {
-      console.error('Failed to load analytics:', error);
+                  // Debug statement removed
     } finally {
       setLoading(false);
     }

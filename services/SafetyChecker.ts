@@ -192,7 +192,7 @@ export class SafetyChecker {
         provider: 'remote',
       };
     } catch (err) {
-      console.warn('Remote safety check unavailable, falling back to local checks:', err);
+                  // Warning handled
       return local;
     }
   }

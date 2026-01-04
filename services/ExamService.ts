@@ -31,7 +31,7 @@ class ExamService {
       
       this.initialized = true;
     } catch (error) {
-      console.error('Failed to initialize exam service:', error);
+      // Failed to initialize exam service - use default data
       this.exams = [...majorExams];
       this.initialized = true;
     }
@@ -152,7 +152,7 @@ class ExamService {
       const data = await AsyncStorage.getItem(REMINDERS_STORAGE_KEY);
       return data ? JSON.parse(data) : [];
     } catch (error) {
-      console.error('Failed to get reminders:', error);
+      // Failed to get reminders - return empty array
       return [];
     }
   }
@@ -217,7 +217,7 @@ class ExamService {
     try {
       await AsyncStorage.setItem(EXAMS_STORAGE_KEY, JSON.stringify(this.exams));
     } catch (error) {
-      console.error('Failed to save exams:', error);
+      // Failed to save exams - continue without persistence
     }
   }
 

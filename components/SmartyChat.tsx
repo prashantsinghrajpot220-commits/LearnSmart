@@ -150,17 +150,20 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
   const handleVoiceNoteCreated = async (summarizedText: string) => {
     // Save the voice note
     const context = getContextInfo();
+    const now = Date.now();
     await addNote({
-      id: `note_${Date.now()}`,
-      title: `Note from ${context.currentSubject || 'Study'}`,
+      id: `note_${now}`,
+      title: `Note from ${context.subject || 'Study'}`,
       originalTranscript: summarizedText,
       summarizedContent: summarizedText,
-      subject: context.currentSubject,
-      chapter: context.currentChapter,
-      tags: context.currentSubject ? [context.currentSubject] : [],
+      subject: context.subject,
+      chapter: context.chapter,
+      tags: context.subject ? [context.subject] : [],
       duration: 0,
-      language: 'en',
+      language: 'en' as const,
       isStarred: false,
+      createdAt: now,
+      updatedAt: now,
     });
 
     setShowVoiceRecorder(false);
@@ -456,8 +459,8 @@ export default function SmartyChat({ onClose, fullScreen = false }: SmartyChatPr
             <Text style={styles.modalTitle}>Create Voice Note</Text>
             <VoiceRecorder
               onTranscriptionComplete={handleVoiceNoteCreated}
-              subject={getContextInfo().currentSubject}
-              chapter={getContextInfo().currentChapter}
+              subject={getContextInfo().subject}
+              chapter={getContextInfo().chapter}
             />
             <TouchableOpacity
               style={styles.modalCloseButton}

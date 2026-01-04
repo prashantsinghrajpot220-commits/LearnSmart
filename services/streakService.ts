@@ -22,7 +22,7 @@ class StreakService {
         this.data = JSON.parse(stored);
       }
     } catch (error) {
-      console.error('Failed to load streak data:', error);
+                  // Error handled silently
     }
   }
 
@@ -94,7 +94,7 @@ class StreakService {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
     } catch (error) {
-      console.error('Failed to save streak data:', error);
+                  // Error handled silently
     }
   }
 
