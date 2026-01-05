@@ -1,21 +1,15 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
-import { 
-  FaHome, 
-  FaBook, 
-  FaQuestionCircle, 
-  FaUsers, 
-  FaUser 
-} from 'react-icons/fa';
+import { FaHome, FaBook, FaQuestionCircle, FaUsers, FaUser } from 'react-icons/fa';
 
-interface TabItem {
+interface Tab {
   path: string;
-  icon: React.ReactNode;
+  icon: React.ReactElement;
   label: string;
 }
 
-const tabs: TabItem[] = [
+const tabs: Tab[] = [
   { path: '/dashboard', icon: <FaHome />, label: 'Home' },
   { path: '/chapters', icon: <FaBook />, label: 'Study' },
   { path: '/qa-forum', icon: <FaQuestionCircle />, label: 'Q&A' },
@@ -23,14 +17,14 @@ const tabs: TabItem[] = [
   { path: '/profile', icon: <FaUser />, label: 'Profile' },
 ];
 
-export const BottomTabNavigatorWeb: React.FC = () => {
+export function BottomTabNavigatorWeb() {
   const navigate = useNavigate();
   const location = useLocation();
   const { colors, isDark } = useTheme();
 
   const isActive = (path: string) => {
-    return location.pathname === path || 
-           (path === '/dashboard' && location.pathname === '/');
+    return location.pathname === path ||
+      (path === '/dashboard' && location.pathname === '/');
   };
 
   return (
@@ -51,9 +45,9 @@ export const BottomTabNavigatorWeb: React.FC = () => {
       {tabs.map((tab) => {
         const active = isActive(tab.path);
         return (
-          <button
-            key={tab.path}
-            onClick={() => navigate(tab.path)}
+          <button 
+            key={tab.path} 
+            onClick={() => navigate(tab.path)} 
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -64,17 +58,18 @@ export const BottomTabNavigatorWeb: React.FC = () => {
               border: 'none',
               cursor: 'pointer',
               minWidth: '60px',
+              position: 'relative',
             }}
           >
-            <span style={{ 
-              fontSize: '20px', 
+            <span style={{
+              fontSize: '20px',
               color: active ? colors.primary : colors.textSecondary,
               marginBottom: '4px'
             }}>
               {tab.icon}
             </span>
-            <span style={{ 
-              fontSize: '10px', 
+            <span style={{
+              fontSize: '10px',
               color: active ? colors.primary : colors.textSecondary,
               fontWeight: active ? '600' : '400'
             }}>
@@ -95,4 +90,4 @@ export const BottomTabNavigatorWeb: React.FC = () => {
       })}
     </div>
   );
-};
+}
