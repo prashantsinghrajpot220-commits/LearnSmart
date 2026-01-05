@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
-import { FaArrowLeft, FaBell, FaCog, FaSearch } from 'react-icons/fa';
+import { FaArrowLeft, FaSearch, FaBell, FaCog } from 'react-icons/fa';
 
-export const HeaderComponentWeb: React.FC = () => {
+export function HeaderComponentWeb() {
   const navigate = useNavigate();
   const location = useLocation();
   const { colors } = useTheme();
@@ -45,8 +45,8 @@ export const HeaderComponentWeb: React.FC = () => {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         {showBackButton && (
-          <button
-            onClick={() => navigate(-1)}
+          <button 
+            onClick={() => navigate(-1)} 
             style={{
               background: 'transparent',
               border: 'none',
@@ -58,11 +58,11 @@ export const HeaderComponentWeb: React.FC = () => {
             <FaArrowLeft size={18} />
           </button>
         )}
-        <h1 style={{ 
-          fontSize: '18px', 
-          fontWeight: '600', 
+        <h1 style={{
+          fontSize: '18px',
+          fontWeight: '600',
           margin: 0,
-          color: colors.text 
+          color: colors.text
         }}>
           {getTitle()}
         </h1>
@@ -70,8 +70,8 @@ export const HeaderComponentWeb: React.FC = () => {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         {showSearchButton && (
-          <button
-            onClick={() => console.log('Search clicked')}
+          <button 
+            onClick={() => console.log('Search clicked')} 
             style={{
               background: 'transparent',
               border: 'none',
@@ -84,8 +84,8 @@ export const HeaderComponentWeb: React.FC = () => {
           </button>
         )}
         
-        <button
-          onClick={() => navigate('/notifications')}
+        <button 
+          onClick={() => navigate('/notifications')} 
           style={{
             background: 'transparent',
             border: 'none',
@@ -108,8 +108,8 @@ export const HeaderComponentWeb: React.FC = () => {
           }} />
         </button>
 
-        <button
-          onClick={() => navigate('/settings')}
+        <button 
+          onClick={() => navigate('/settings')} 
           style={{
             background: 'transparent',
             border: 'none',
@@ -123,4 +123,4 @@ export const HeaderComponentWeb: React.FC = () => {
       </div>
     </div>
   );
-};
+}

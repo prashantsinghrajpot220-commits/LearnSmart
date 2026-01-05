@@ -9,10 +9,6 @@ import { MainLayoutWeb } from './layouts/MainLayoutWeb';
 import { HomePage } from './pages/HomePage';
 import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
-import { QAPage } from './pages/QAPage';
-import { ProfilePage } from './pages/ProfilePage';
-import { ExplorePage } from './pages/ExplorePage';
-import { StudyGroupsPage } from './pages/StudyGroupsPage';
 
 function App() {
   return (
@@ -22,12 +18,12 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="auth" element={<AuthPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="qa-forum" element={<QAPage />} />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="explore" element={<ExplorePage />} />
-          <Route path="study-groups" element={<StudyGroupsPage />} />
           
           {/* Additional routes will be added as components are converted */}
+          <Route path="qa-forum" element={<div>QA Forum - Coming Soon</div>} />
+          <Route path="profile" element={<div>Profile - Coming Soon</div>} />
+          <Route path="explore" element={<div>Explore - Coming Soon</div>} />
+          <Route path="study-groups" element={<div>Study Groups - Coming Soon</div>} />
           <Route path="chapters" element={<div>Chapters - Coming Soon</div>} />
           <Route path="lesson" element={<div>Lesson View - Coming Soon</div>} />
           <Route path="leaderboard" element={<div>Leaderboard - Coming Soon</div>} />

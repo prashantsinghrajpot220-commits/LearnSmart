@@ -2,15 +2,15 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 
-export const HomePage: React.FC = () => {
+export function HomePage() {
   const { colors } = useTheme();
   const navigate = useNavigate();
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
       justifyContent: 'center',
       background: `linear-gradient(135deg, ${colors.primary}20 0%, ${colors.secondary}20 100%)`
     }}>
@@ -23,31 +23,19 @@ export const HomePage: React.FC = () => {
         </p>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <button 
-            className="web-button web-button-primary"
-            onClick={() => navigate('/dashboard')}
-          >
+          <button className="web-button web-button-primary" onClick={() => navigate('/dashboard')}>
             📚 Browse Curriculum
           </button>
           
-          <button 
-            className="web-button web-button-secondary"
-            onClick={() => navigate('/qa-forum')}
-          >
+          <button className="web-button web-button-secondary" onClick={() => navigate('/qa-forum')}>
             💬 Q&A Forum
           </button>
           
-          <button 
-            className="web-button web-button-secondary"
-            onClick={() => navigate('/study-groups')}
-          >
+          <button className="web-button web-button-secondary" onClick={() => navigate('/study-groups')}>
             👥 Study Groups
           </button>
           
-          <button 
-            className="web-button web-button-secondary" 
-            onClick={() => navigate('/explore')}
-          >
+          <button className="web-button web-button-secondary" onClick={() => navigate('/explore')}>
             🎯 Explore Features
           </button>
         </div>
@@ -60,4 +48,4 @@ export const HomePage: React.FC = () => {
       </div>
     </div>
   );
-};
+}
