@@ -1,0 +1,8 @@
+npm warn Unknown env config "python". This will stop working in the next major version of npm.
+Starting project at /home/engine/project
+[33m[1mWarning: [22mRoot-level [1m"expo"[22m object found. Ignoring extra key in Expo config: "react-native-google-mobile-ads"
+[90mLearn more: https://expo.fyi/root-expo-object[0m[0m
+Starting Metro Bundler
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+Waiting on http://localhost:8081
+Logs for your project will appear below.
