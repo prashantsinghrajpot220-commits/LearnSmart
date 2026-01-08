@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { coinRewardService } from '@/services/CoinRewardService';
-import { rankSystem } from '@/utils/rankSystem';
 
 export interface Rank {
   name: string;

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -47,7 +47,7 @@ export default function AnimatedLoginForm() {
       }).start();
     });
 
-    const keyboardWillHide = Keyboard.addListener('keyboardDidHide', () => {
+    const keyboardDidHide = Keyboard.addListener('keyboardDidHide', () => {
       Animated.timing(cardOffset, {
         toValue: 0,
         duration: 300,
@@ -57,7 +57,7 @@ export default function AnimatedLoginForm() {
 
     return () => {
       keyboardWillShow.remove();
-      keyboardWillHide.remove();
+      keyboardDidHide.remove();
     };
   }, [cardOffset]);
 
@@ -238,7 +238,7 @@ export default function AnimatedLoginForm() {
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Name</Text>
               <TextInput
-                style={[styles.input, errors.name && styles.inputError]}
+                style={[styles.input, errors.name ? styles.inputError : undefined]}
                 placeholder="Enter your name"
                 placeholderTextColor={colors.textSecondary}
                 value={name}
@@ -252,7 +252,7 @@ export default function AnimatedLoginForm() {
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Email</Text>
             <TextInput
-              style={[styles.input, errors.email && styles.inputError]}
+              style={[styles.input, errors.email ? styles.inputError : undefined]}
               placeholder="Enter your email"
               placeholderTextColor={colors.textSecondary}
               keyboardType="email-address"

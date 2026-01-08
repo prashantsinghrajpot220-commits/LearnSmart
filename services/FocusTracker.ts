@@ -22,7 +22,7 @@ class FocusTracker {
   private appStateSubscription: any = null;
 
   // Tree management
-  async startGrowingTree(sessionId: string, treeType: Tree['type'] = 'oak'): Promise<string> {
+  async startGrowingTree(sessionId: string, _treeType: Tree['type'] = 'oak'): Promise<string> {
     const treeId = `tree_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     this.activeTree = {
@@ -121,7 +121,7 @@ class FocusTracker {
   // Focus tracking
   private startTracking(): void {
     // Track app state changes
-    const subscription = AppState.addEventListener('change', this.handleAppStateChange);
+    this.appStateSubscription = AppState.addEventListener('change', this.handleAppStateChange);
     
     // Check focus periodically
     this.focusCheckInterval = setInterval(() => {

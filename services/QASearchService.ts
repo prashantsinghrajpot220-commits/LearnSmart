@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Question, QuestionDifficulty } from '@/types/qa';
 
-export { QuestionDifficulty } from '@/types/qa';
+export type { QuestionDifficulty } from '@/types/qa';
 export type QuestionStatus = 'unanswered' | 'answered' | 'solved';
 
 export interface SearchFilters {
@@ -63,11 +63,6 @@ export class QASearchService {
       this.questionsCache = [];
     }
     return this.questionsCache!;
-  }
-
-  private async persistQuestions(questions: Question[]) {
-    this.questionsCache = questions;
-    await AsyncStorage.setItem(STORAGE_KEYS.QUESTIONS, JSON.stringify(questions));
   }
 
   async search(options: SearchOptions): Promise<SearchResult> {

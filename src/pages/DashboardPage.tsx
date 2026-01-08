@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { FaBook, FaQuestionCircle, FaUsers, FaTrophy } from 'react-icons/fa';
@@ -6,7 +6,7 @@ import { FaBook, FaQuestionCircle, FaUsers, FaTrophy } from 'react-icons/fa';
 interface DashboardCard {
   title: string;
   description: string;
-  icon: React.ReactElement;
+  icon: ReactElement;
   path: string;
   color: string;
 }
@@ -93,10 +93,6 @@ export function DashboardPage() {
                 cursor: 'pointer',
                 transition: 'transform 0.2s, box-shadow 0.2s',
                 textAlign: 'center',
-                ':hover': {
-                  transform: 'translateY(-2px)',
-                  boxShadow: `0 4px 12px ${card.color}20`,
-                },
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';

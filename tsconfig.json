@@ -21,6 +21,7 @@
     }
   },
   "include": [
+    "app",
     "src",
     "screens",
     "components",
