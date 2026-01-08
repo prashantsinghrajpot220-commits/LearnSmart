@@ -6,7 +6,6 @@ import {
   ComparisonData,
   PerformanceChartData,
 } from '@/types/analytics';
-import { QuizResult } from '@/types/quiz';
 import { mistakeAnalysisService } from './MistakeAnalysisService';
 
 const ANALYTICS_STORAGE_KEY = 'learnsmart_analytics';
@@ -69,10 +68,6 @@ export class AnalyticsService {
     );
 
     const accuracy = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
-
-    const mistakes = mistakeAnalysisService.getMistakes().filter(
-      (m) => m.timestamp >= weekStart && m.timestamp <= now
-    );
 
     // Identify improvement and strong areas
     const topicAccuracy = new Map<string, { correct: number; total: number }>();
@@ -138,7 +133,6 @@ export class AnalyticsService {
 
   getPerformanceMetrics(): PerformanceMetrics {
     const quizResults = mistakeAnalysisService['quizResultsCache'];
-    const mistakes = mistakeAnalysisService.getMistakes();
 
     const quizzesTaken = quizResults.length;
     const totalQuestions = quizResults.reduce(
@@ -178,7 +172,6 @@ export class AnalyticsService {
 
   getTopicPerformance(): TopicPerformance[] {
     const quizResults = mistakeAnalysisService['quizResultsCache'];
-    const mistakes = mistakeAnalysisService.getMistakes();
 
     const topicStats = new Map<
       string,

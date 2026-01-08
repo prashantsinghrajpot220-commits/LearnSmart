@@ -1,0 +1,237 @@
+npm warn Unknown env config "python". This will stop working in the next major version of npm.
+app/_layout.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+app/analytics.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+app/auth.tsx(21,20): error TS6133: 'setIsSignup' is declared but its value is never read.
+app/chapters.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+app/chapters.tsx(22,39): error TS7016: Could not find a declaration file for module '@/data/booksData'. '/home/engine/project/data/booksData.js' implicitly has an 'any' type.
+app/chat.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+app/exam-details.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+app/home-12plus.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+app/home-12plus.tsx(14,1): error TS6133: 'DarkModeToggle' is declared but its value is never read.
+app/home.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+app/home.tsx(18,1): error TS6133: 'DarkModeToggle' is declared but its value is never read.
+app/home.tsx(21,1): error TS6133: 'ProgressBar' is declared but its value is never read.
+app/index.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+app/lesson.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+app/lesson.tsx(16,1): error TS6133: 'BreadcrumbNav' is declared but its value is never read.
+app/personalized-plan.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+app/session-history.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+app/trophy-room.tsx(6,31): error TS6133: 'Achievement' is declared but its value is never read.
+app/voice-notes.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+app/weak-areas.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+app/weak-areas.tsx(9,9): error TS6133: 'router' is declared but its value is never read.
+components/AchievementCard.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/AchievementCard.tsx(147,41): error TS6133: 'isDark' is declared but its value is never read.
+components/AchievementNotification.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/AdContainer.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/AdContainer.tsx(99,20): error TS6133: 'colors' is declared but its value is never read.
+components/AvatarCard.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/AvatarCard.tsx(130,54): error TS6133: 'isUnlocked' is declared but its value is never read.
+components/AvatarCard.tsx(130,75): error TS6133: 'isPurchased' is declared but its value is never read.
+components/AvatarSelector.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/AvatarSelector.tsx(6,44): error TS6133: 'FontWeights' is declared but its value is never read.
+components/BadgeDisplay.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/BadgeDisplay.tsx(2,34): error TS6133: 'Animated' is declared but its value is never read.
+components/BadgeDisplay.tsx(3,19): error TS6133: 'BorderRadius' is declared but its value is never read.
+components/BadgeDisplay.tsx(4,20): error TS6133: 'ThemeColors' is declared but its value is never read.
+components/BadgeProgress.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/BadgeProgress.tsx(3,19): error TS6133: 'BorderRadius' is declared but its value is never read.
+components/BadgeProgress.tsx(4,20): error TS6133: 'ThemeColors' is declared but its value is never read.
+components/BooksGrid.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/BottomTabNavigator.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/BottomTabNavigator.tsx(10,3): error TS6133: 'interpolate' is declared but its value is never read.
+components/BottomTabNavigator.tsx(30,19): error TS6133: 'isDark' is declared but its value is never read.
+components/BreakActivitySuggestion.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/CartoonCharacter.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/CartoonCharacter.tsx(3,24): error TS2307: Cannot find module 'lottie-react-native' or its corresponding type declarations.
+components/CoinDisplay.tsx(5,10): error TS6133: 'Spacing' is declared but its value is never read.
+components/CoinDisplay.tsx(86,20): error TS6133: 'iconSize' is declared but its value is never read.
+components/CoinDisplay.tsx(86,38): error TS6133: 'textSize' is declared but its value is never read.
+components/CoinRewardAnimation.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/CoinRewardAnimation.tsx(21,9): error TS6133: 'gamificationData' is declared but its value is never read.
+components/Dropdown.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/EngagementSuggestions.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/ErrorBoundary.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/ErrorBoundary.tsx(1,50): error TS6133: 'useContext' is declared but its value is never read.
+components/ErrorBoundary.tsx(31,9): error TS6133: 'userName' is declared but its value is never read.
+components/ErrorBoundary.tsx(70,17): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+components/ExamCountdownWidget.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/FilePreview.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/FileUploadButton.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/FileUploadButton.tsx(2,46): error TS6133: 'View' is declared but its value is never read.
+components/GroupCard.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/GroupChatMessage.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/GroupLeaderboard.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/GroupNoteCard.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/HeaderComponent.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/ImagePreview.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/LeaderboardCard.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/LeaderboardCard.tsx(109,57): error TS6133: 'rank' is declared but its value is never read.
+components/LeaderboardEntry.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/LeaderboardEntry.tsx(2,34): error TS6133: 'Image' is declared but its value is never read.
+components/LessonView.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/LessonView.tsx(73,10): error TS6133: 'showBreakActivity' is declared but its value is never read.
+components/LessonView.tsx(153,9): error TS6133: 'handleBreakActivitySelect' is declared but its value is never read.
+components/LessonView.tsx(153,50): error TS6133: 'activity' is declared but its value is never read.
+components/NoConnectionScreen.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/NoConnectionScreen.tsx(7,7): error TS6133: 'SCREEN_WIDTH' is declared but its value is never read.
+components/NoConnectionScreen.tsx(91,19): error TS6133: 'isDark' is declared but its value is never read.
+components/NoteCard.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/NotificationBadge.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/NotificationItem.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/NotificationItem.tsx(59,19): error TS6133: 'isDark' is declared but its value is never read.
+components/PasswordInput.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/PasswordInput.tsx(1,27): error TS6133: 'useRef' is declared but its value is never read.
+components/PasswordInput.tsx(71,13): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: ViewProps): View', gave the following error.
+    Type '"" | { borderColor: string; } | undefined' is not assignable to type 'ViewStyle | Falsy | RegisteredStyle<ViewStyle> | RecursiveArray<ViewStyle | Falsy | RegisteredStyle<ViewStyle>> | readonly (ViewStyle | ... 1 more ... | RegisteredStyle<...>)[]'.
+      Type '""' is not assignable to type 'ViewStyle | Falsy | RegisteredStyle<ViewStyle> | RecursiveArray<ViewStyle | Falsy | RegisteredStyle<ViewStyle>> | readonly (ViewStyle | ... 1 more ... | RegisteredStyle<...>)[]'.
+  Overload 2 of 2, '(props: ViewProps, context: any): View', gave the following error.
+    Type '"" | { borderColor: string; } | undefined' is not assignable to type 'ViewStyle | Falsy | RegisteredStyle<ViewStyle> | RecursiveArray<ViewStyle | Falsy | RegisteredStyle<ViewStyle>> | readonly (ViewStyle | ... 1 more ... | RegisteredStyle<...>)[]'.
+      Type '""' is not assignable to type 'ViewStyle | Falsy | RegisteredStyle<ViewStyle> | RecursiveArray<ViewStyle | Falsy | RegisteredStyle<ViewStyle>> | readonly (ViewStyle | ... 1 more ... | RegisteredStyle<...>)[]'.
+components/PathwaysTab.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/PathwaysTab.tsx(16,33): error TS7016: Could not find a declaration file for module '@/data/seniorData'. '/home/engine/project/data/seniorData.js' implicitly has an 'any' type.
+components/PathwaysView.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/PerformanceChart.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/PerformanceChart.tsx(88,41): error TS6133: 'isDark' is declared but its value is never read.
+components/PomodoroTimer.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/PomodoroTimer.tsx(13,25): error TS6133: 'TimerPhase' is declared but its value is never read.
+components/PomodoroTimer.tsx(31,3): error TS6133: 'onSessionComplete' is declared but its value is never read.
+components/PomodoroTimer.tsx(43,10): error TS6133: 'showSettings' is declared but its value is never read.
+components/PomodoroTimer.tsx(43,24): error TS6133: 'setShowSettings' is declared but its value is never read.
+components/PomodoroTimer.tsx(88,9): error TS6133: 'formatTime' is declared but its value is never read.
+components/PomodoroTimer.tsx(94,9): error TS6133: 'getProgress' is declared but its value is never read.
+components/PomodoroTimer.tsx(118,9): error TS6133: 'handleStartBreak' is declared but its value is never read.
+components/PomodoroTimer.tsx(134,9): error TS6133: 'getPhaseText' is declared but its value is never read.
+components/PomodoroTimer.tsx(141,9): error TS6133: 'isRunning' is declared but its value is never read.
+components/PomodoroTimer.tsx(280,3): error TS6133: 'onStart' is declared but its value is never read.
+components/PomodoroTimer.tsx(386,3): error TS6133: 'settings' is declared but its value is never read.
+components/PomodoroTimer.tsx(387,3): error TS6133: 'onDurationChange' is declared but its value is never read.
+components/ProgressBar.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/QuestionFilters.tsx(1,27): error TS6133: 'useEffect' is declared but its value is never read.
+components/QuizCard.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/QuizCard.tsx(40,3): error TS6133: 'onPrevious' is declared but its value is never read.
+components/QuizCard.tsx(238,27): error TS6133: 'e' is declared but its value is never read.
+components/QuizModal.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/QuizModal.tsx(12,33): error TS6133: 'FontSizes' is declared but its value is never read.
+components/QuizModal.tsx(12,44): error TS6133: 'FontWeights' is declared but its value is never read.
+components/QuizResultsScreen.tsx(2,8): error TS6133: 'React' is declared but its value is never read.
+components/RankBadge.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/RankBadge.tsx(5,34): error TS6133: 'Spacing' is declared but its value is never read.
+components/RankBadge.tsx(5,43): error TS6133: 'BorderRadius' is declared but its value is never read.
+components/RankBadge.tsx(22,17): error TS6133: 'progress' is declared but its value is never read.
+components/RankBadge.tsx(23,9): error TS6133: 'gamificationData' is declared but its value is never read.
+components/RankDisplay.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/RankDisplay.tsx(23,9): error TS6133: 'textSize' is declared but its value is never read.
+components/RankDisplay.tsx(100,9): error TS6133: 'borderRadius' is declared but its value is never read.
+components/ReputationCard.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/SearchBar.tsx(35,30): error TS2503: Cannot find namespace 'NodeJS'.
+components/SessionCard.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/SessionCard.tsx(10,1): error TS6133: 'focusTracker' is declared but its value is never read.
+components/SkeletonLoader.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/SmartCoinDisplay.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/SmartCoinDisplay.tsx(15,7): error TS6133: 'screenWidth' is declared but its value is never read.
+components/SmartyChat.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/SocialNotificationBanner.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/StreakBadge.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/StreakBadge.tsx(2,62): error TS6133: 'Easing' is declared but its value is never read.
+components/StreakBadge.tsx(2,70): error TS6133: 'Platform' is declared but its value is never read.
+components/StreakCounter.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/TrophyRoom.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/TrophyRoom.tsx(14,31): error TS6133: 'Achievement' is declared but its value is never read.
+components/VirtualForest.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/VirtualForest.tsx(8,3): error TS6133: 'Dimensions' is declared but its value is never read.
+components/VirtualForest.tsx(25,20): error TS6133: 'setTreeType' is declared but its value is never read.
+components/VoiceRecorder.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/VoiceRecorder.tsx(23,7): error TS6133: 'screenWidth' is declared but its value is never read.
+components/VoiceRecorder.tsx(49,19): error TS2503: Cannot find namespace 'NodeJS'.
+components/VoiceRecorder.tsx(221,41): error TS6133: 'isDark' is declared but its value is never read.
+components/WeakAreaCard.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+components/WelcomeSlider.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+components/WelcomeSlider.tsx(12,45): error TS2307: Cannot find module 'lottie-react-native' or its corresponding type declarations.
+config/adConfig.ts(16,14): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+config/adConfig.ts(17,10): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+config/adConfig.ts(21,14): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+config/adConfig.ts(22,10): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+config/affiliateConfig.ts(33,30): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+config/affiliateConfig.ts(36,30): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+config/affiliateConfig.ts(50,16): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+config/affiliateConfig.ts(51,20): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+data/majorExams.ts(4,7): error TS6133: 'getCurrentYear' is declared but its value is never read.
+screens/AboutScreen.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+screens/AnalyticsScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+screens/AvatarStoreScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+screens/AvatarStoreScreen.tsx(29,9): error TS6133: 'currentXP' is declared but its value is never read.
+screens/ExamDetailsScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+screens/ExamDetailsScreen.tsx(16,1): error TS6133: 'getDaysRemaining' is declared but its value is never read.
+screens/ExamDetailsScreen.tsx(27,10): error TS6133: 'showAddModal' is declared but its value is never read.
+screens/GroupDetailScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+screens/GroupDetailScreen.tsx(34,19): error TS6133: 'userName' is declared but its value is never read.
+screens/GroupDetailScreen.tsx(34,29): error TS6133: 'selectedAvatar' is declared but its value is never read.
+screens/GroupDetailScreen.tsx(269,9): error TS6133: 'handleSubmitQuizResult' is declared but its value is never read.
+screens/LeaderboardScreen.tsx(53,9): error TS6133: 'handleWeekToggle' is declared but its value is never read.
+screens/NotificationCenterScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+screens/NotificationCenterScreen.tsx(13,34): error TS6133: 'Feather' is declared but its value is never read.
+screens/PersonalizedPlanScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+screens/PersonalizedPlanScreen.tsx(15,11): error TS6196: 'DayPlan' is declared but never used.
+screens/PrivacyPolicyScreen.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+screens/ProfileScreen.tsx(24,1): error TS6133: 'CoinDisplay' is declared but its value is never read.
+screens/ProfileScreen.tsx(51,10): error TS6133: 'streak' is declared but its value is never read.
+screens/QAForumScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+screens/QAForumScreen.tsx(18,1): error TS6133: 'Colors' is declared but its value is never read.
+screens/QuestionDetailScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+screens/ReputationLeaderboardScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+screens/SessionHistoryScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+screens/SessionHistoryScreen.tsx(60,9): error TS6133: 'formatDate' is declared but its value is never read.
+screens/SessionHistoryScreen.tsx(75,9): error TS6133: 'getFocusScoreColor' is declared but its value is never read.
+screens/SmartCoinHistoryScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+screens/StudyGroupsScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+screens/TermsScreen.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+screens/VoiceNotesScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+screens/WeakAreasScreen.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+screens/WeakAreasScreen.tsx(7,3): error TS6133: 'TouchableOpacity' is declared but its value is never read.
+screens/WeakAreasScreen.tsx(12,19): error TS6133: 'BorderRadius' is declared but its value is never read.
+services/AIQuizGeneratorService.ts(3,24): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+services/AnalyticsService.ts(9,1): error TS6133: 'QuizResult' is declared but its value is never read.
+services/AnalyticsService.ts(73,11): error TS6133: 'mistakes' is declared but its value is never read.
+services/AnalyticsService.ts(141,11): error TS6133: 'mistakes' is declared but its value is never read.
+services/AnalyticsService.ts(181,11): error TS6133: 'mistakes' is declared but its value is never read.
+services/ExamService.ts(3,57): error TS6133: 'sortExamsByDate' is declared but its value is never read.
+services/FocusTracker.ts(20,31): error TS2503: Cannot find namespace 'NodeJS'.
+services/FocusTracker.ts(21,27): error TS2503: Cannot find namespace 'NodeJS'.
+services/FocusTracker.ts(25,45): error TS6133: 'treeType' is declared but its value is never read.
+services/FocusTracker.ts(124,11): error TS6133: 'subscription' is declared but its value is never read.
+services/GamificationService.ts(16,48): error TS6133: 'notificationPreferences' is declared but its value is never read.
+services/LeaderboardService.ts(74,31): error TS6133: 'gamificationData' is declared but its value is never read.
+services/MistakeAnalysisService.ts(213,53): error TS6133: 'subject' is declared but its value is never read.
+services/MistakeAnalysisService.ts(213,70): error TS6133: 'chapter' is declared but its value is never read.
+services/NoteSummarizerService.ts(3,24): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+services/QASearchService.ts(4,10): error TS1205: Re-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+services/QASearchService.ts(68,17): error TS6133: 'persistQuestions' is declared but its value is never read.
+services/SafetyChecker.ts(12,32): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+services/SmartyAIService.ts(13,24): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+services/SpeechToTextService.ts(112,5): error TS6133: 'audioData' is declared but its value is never read.
+services/TimerService.ts(28,26): error TS2503: Cannot find namespace 'NodeJS'.
+services/networkService.ts(113,32): error TS2503: Cannot find namespace 'NodeJS'.
+services/quizGenerator.ts(3,24): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+services/quizGenerator.ts(103,13): error TS6133: 'errorText' is declared but its value is never read.
+services/streakService.ts(51,11): error TS6133: 'yesterday' is declared but its value is never read.
+src/App.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/BottomTabNavigatorWeb.tsx(23,19): error TS6133: 'isDark' is declared but its value is never read.
+src/components/HeaderComponentWeb.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/context/ThemeContext.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/context/ThemeContext.tsx(2,24): error TS7016: Could not find a declaration file for module '../constants/theme'. '/home/engine/project/src/constants/theme.js' implicitly has an 'any' type.
+src/layouts/MainLayoutWeb.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/layouts/MainLayoutWeb.tsx(10,9): error TS6133: 'navigate' is declared but its value is never read.
+src/pages/DashboardPage.tsx(96,17): error TS2353: Object literal may only specify known properties, and '':hover'' does not exist in type 'Properties<string | number, string & {}>'.
+src/pages/HomePage.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+store/quizStore.ts(2,1): error TS6133: 'AsyncStorage' is declared but its value is never read.
+store/quizStore.ts(38,7): error TS6133: 'MAX_QUESTIONS' is declared but its value is never read.
+store/userStore.ts(560,41): error TS6133: 'reason' is declared but its value is never read.
+store/userStore.ts(573,43): error TS6133: 'item' is declared but its value is never read.
+store/xpStore.ts(4,1): error TS6133: 'rankSystem' is declared but its value is never read.
+utils/googleAds.web.ts(1,1): error TS6133: 'React' is declared but its value is never read.
+utils/googleAds.web.ts(2,1): error TS6192: All imports in import declaration are unused.
+utils/treeGrowth.ts(50,9): error TS6133: 'rotationValue' is declared but its value is never read.
+vite.config.ts(3,18): error TS2307: Cannot find module 'path' or its corresponding type declarations.
+vite.config.ts(9,25): error TS2304: Cannot find name '__dirname'.

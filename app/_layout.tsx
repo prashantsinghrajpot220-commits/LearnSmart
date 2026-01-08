@@ -48,7 +48,7 @@ function RootLayoutContent() {
         .then(() => {
           console.log('AdMob initialized');
         })
-        .catch(err => {
+        .catch((err: unknown) => {
           console.warn('AdMob initialization failed:', err);
         });
     }
@@ -103,7 +103,7 @@ function RootLayoutContent() {
     return () => {
       cleanupNetworkListener();
     };
-  }, [loadXP, loadAchievements]);
+  }, [loadXP, loadAchievements, loadNotes]);
 
   const showFloatingChat = !['/chat', '/auth', '/'].includes(pathname);
 
